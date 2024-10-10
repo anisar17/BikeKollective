@@ -2,15 +2,20 @@
 
 ## Setup Instructions
 
+Install Flutter (see https://docs.flutter.dev/get-started/install, includes Dart SDK)
 Install VS Code
-Install Extensions "Dart" and "Flutter"
+Install VS Code Extensions "Dart" and "Flutter"
+Open the project in VS Code
+Setup FlutterFire (see https://firebase.flutter.dev/docs/overview)
 
 
-https://docs.flutter.dev/get-started/install
+## References
 
 Flutter VS Code
 https://docs.flutter.dev/tools/vs-code
 
-Firebase
+Firebase and Flutter
 https://firebase.google.com/docs/flutter/setup?platform=android
 
+Flutter Code Labs
+https://github.com/flutter/codelabs
