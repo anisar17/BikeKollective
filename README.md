@@ -10,3 +10,7 @@ https://docs.flutter.dev/get-started/install
 
 Flutter VS Code
 https://docs.flutter.dev/tools/vs-code
+
+Firebase
+https://firebase.google.com/docs/flutter/setup?platform=android
+
