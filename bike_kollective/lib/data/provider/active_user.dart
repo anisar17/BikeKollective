@@ -18,20 +18,42 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
     state = null;
   }
 
-  void signIn(final String uid) {
+  void signIn(String uid) {
     // Respond to successful login with the given authentication UID
-    // TODO - handle error accessing database
-    dbAccess.getUserByUid(uid).then((user) {state = user;});
+    dbAccess.getUserByUid(uid)
+    .then((user) {
+      state = user;
+    })
+    .catchError((error) {
+      // TODO - send sign in error notification to error notifier?
+      state = null;
+    });
   }
 
   void signUp(String uid) {
     // Respond to account creation with the given authentication UID
     // Note: call this in AuthStateChangeAction<UserCreated> callback
+    dbAccess.addUser(UserModel.newUser(uid: uid))
+    .then((user) {
+      state = user;
+    })
+    .catchError((error) {
+      // TODO - send sign up error notification to error notifier?
+      state = null;
+    });
+  }
 
-    // The new user is created needing verification and agreement signing
-    var newUser = UserModel(uid: uid, verified: null, agreed: null, banned: null, points: 0, owns: [], rides: []);
-    // Create a database entry for the user
-    // TODO - handle error accessing database
-    dbAccess.addUser(newUser).then((_) {state = newUser;});
+  void setVerified() {
+    // TODO - update user as verified
+    // TODO - future, move to backend function that monitors email verification?
+  }
+
+  void setAgreed() {
+    // TODO - update user as agreed
+  }
+
+  void setBanned() {
+    // TODO - update user as banned
+    // TODO - future, move to backend function that monitors ride times?
   }
 }

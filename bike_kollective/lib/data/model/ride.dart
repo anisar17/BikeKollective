@@ -1,3 +1,5 @@
+import 'package:bike_kollective/data/model/bike.dart';
+import 'package:bike_kollective/data/model/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum RideReviewTag { 
@@ -29,6 +31,7 @@ class RideReview {
 
 // Ride data, format version 1
 class RideModel {
+  final DocumentReference? docRef;
   final DocumentReference rider;
   final DocumentReference bike;
   final GeoPoint startPoint;
@@ -38,6 +41,7 @@ class RideModel {
   final RideReview? review;
 
   const RideModel({
+    required this.docRef,
     required this.rider,
     required this.bike,
     required this.startPoint,
@@ -46,6 +50,52 @@ class RideModel {
     required this.finishTime,
     required this.review,
   });
+
+  factory RideModel.newRide({
+    required UserModel rider,
+    required BikeModel bike
+    }) {
+    // Start the ride
+    return RideModel(
+    docRef: null,
+    rider: rider.docRef!,
+    bike: bike.docRef!,
+    startPoint: bike.locationPoint,
+    startTime: DateTime.now(),
+    finishPoint: null,
+    finishTime: null,
+    review: null,
+    );
+  }
+
+  factory RideModel.fromMap(Map<String, dynamic> map, {required DocumentReference? docRef}) {
+    return RideModel(
+      docRef: docRef,
+      rider: map["rider"],
+      bike: map["bike"],
+      startPoint: map["startPoint"],
+      startTime: map["startTime"],
+      finishPoint: map["finishPoint"],
+      finishTime: map["finishTime"],
+      review: map["review"]
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "rider": rider,
+      "bike": bike,
+      "startPoint": startPoint,
+      "startTime": startTime,
+      "finishPoint": finishPoint,
+      "finishTime": finishTime,
+      "review": review
+    };
+  }
+
+  bool isFromDatabase() {
+    return (docRef != null);
+  }
 
   bool isFinished() {
     return (finishTime != null);
