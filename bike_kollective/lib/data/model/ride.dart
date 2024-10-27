@@ -1,6 +1,7 @@
 import 'package:bike_kollective/data/model/bike.dart';
+import 'package:bike_kollective/data/model/bk_document_reference.dart';
+import 'package:bike_kollective/data/model/bk_geo_point.dart';
 import 'package:bike_kollective/data/model/user.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum RideReviewTag { 
   funToRide, wellMaintained, fast, comfortable, looksGood,
@@ -31,12 +32,12 @@ class RideReview {
 
 // Ride data, format version 1
 class RideModel {
-  final DocumentReference? docRef;
-  final DocumentReference rider;
-  final DocumentReference bike;
-  final GeoPoint startPoint;
+  final BKDocumentReference? docRef;
+  final BKDocumentReference rider;
+  final BKDocumentReference bike;
+  final BKGeoPoint startPoint;
   final DateTime startTime;
-  final GeoPoint? finishPoint;
+  final BKGeoPoint? finishPoint;
   final DateTime? finishTime;
   final RideReview? review;
 
@@ -68,7 +69,7 @@ class RideModel {
     );
   }
 
-  factory RideModel.fromMap(Map<String, dynamic> map, {required DocumentReference? docRef}) {
+  factory RideModel.fromMap(Map<String, dynamic> map, {required BKDocumentReference? docRef}) {
     return RideModel(
       docRef: docRef,
       rider: map["rider"],
@@ -91,6 +92,29 @@ class RideModel {
       "finishTime": finishTime,
       "review": review
     };
+  }
+
+  RideModel copyWith({
+    BKDocumentReference? docRef,
+    BKDocumentReference? rider,
+    BKDocumentReference? bike,
+    BKGeoPoint? startPoint,
+    DateTime? startTime,
+    BKGeoPoint? finishPoint,
+    DateTime? finishTime,
+    RideReview? review
+  }) {
+    // Make a copy with data changes
+    return RideModel(
+      docRef: docRef ?? this.docRef,
+      rider: rider ?? this.rider,
+      bike: bike ?? this.bike,
+      startPoint: startPoint ?? this.startPoint,
+      startTime: startTime ?? this.startTime,
+      finishPoint: finishPoint ?? this.finishPoint,
+      finishTime: finishTime ?? this.finishTime,
+      review: review ?? this.review
+    );
   }
 
   bool isFromDatabase() {

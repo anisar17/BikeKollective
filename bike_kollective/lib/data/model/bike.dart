@@ -1,4 +1,6 @@
-import "package:cloud_firestore/cloud_firestore.dart";
+
+import 'package:bike_kollective/data/model/bk_document_reference.dart';
+import 'package:bike_kollective/data/model/bk_geo_point.dart';
 
 enum BikeStatus { available, inUse, hasIssue }
 
@@ -6,18 +8,18 @@ enum BikeType { road, mountain, electric, tandem, kids }
 
 // Bike data, format version 1
 class BikeModel {
-  final DocumentReference? docRef;
-  final DocumentReference owner;
+  final BKDocumentReference? docRef;
+  final BKDocumentReference owner;
   final String name;
   final BikeType type;
   final String description;
   final String code;
   final String imageUrl;
   final BikeStatus status;
-  final GeoPoint locationPoint;
+  final BKGeoPoint locationPoint;
   final DateTime locationUpdated;
-  final List<DocumentReference> rides;
-  final List<DocumentReference> issues;
+  final List<BKDocumentReference> rides;
+  final List<BKDocumentReference> issues;
 
   const BikeModel({
     required this.docRef,
@@ -35,13 +37,13 @@ class BikeModel {
   });
 
   factory BikeModel.newBike({
-    required DocumentReference owner,
+    required BKDocumentReference owner,
     required String name,
     required BikeType type,
     required String description,
     required String code,
     required String imageLocalPath,
-    required GeoPoint startingPoint,
+    required BKGeoPoint startingPoint,
     }) {
     // Start the bike
     return BikeModel(
@@ -60,7 +62,7 @@ class BikeModel {
     );
   }
 
-  factory BikeModel.fromMap(Map<String, dynamic> map, {required DocumentReference? docRef}) {
+  factory BikeModel.fromMap(Map<String, dynamic> map, {required BKDocumentReference? docRef}) {
     return BikeModel(
       docRef: docRef,
       owner: map["owner"],
@@ -91,6 +93,37 @@ class BikeModel {
       "rides": rides,
       "issues": issues
     };
+  }
+
+  BikeModel copyWith({
+    BKDocumentReference? docRef,
+    BKDocumentReference? owner,
+    String? name,
+    BikeType? type,
+    String? description,
+    String? code,
+    String? imageUrl,
+    BikeStatus? status,
+    BKGeoPoint? locationPoint,
+    DateTime? locationUpdated,
+    List<BKDocumentReference>? rides,
+    List<BKDocumentReference>? issues
+  }) {
+    // Make a copy with data changes
+    return BikeModel(
+      docRef: docRef ?? this.docRef,
+      owner: owner ?? this.owner,
+      name: name ?? this.name,
+      type: type ?? this.type,
+      description: description ?? this.description,
+      code: code ?? this.code,
+      imageUrl: imageUrl ?? this.imageUrl,
+      status: status ?? this.status,
+      locationPoint: locationPoint ?? this.locationPoint,
+      locationUpdated: locationUpdated ?? this.locationUpdated,
+      rides: rides ?? this.rides,
+      issues: issues ?? this.issues
+    );
   }
 
   bool isFromDatabase() {

@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:bike_kollective/data/model/bike.dart';
+import 'package:bike_kollective/data/model/bk_document_reference.dart';
+import 'package:bike_kollective/data/model/bk_geo_point.dart';
 import 'package:bike_kollective/data/model/issue.dart';
 import 'package:bike_kollective/data/model/ride.dart';
 import 'package:bike_kollective/data/model/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Note: all accesses to database interface should be made through this provider
@@ -17,22 +20,22 @@ final databaseProvider = Provider<BKDB>((ref) {
 abstract class BKDB {
   // User CRUD operations
   Future<UserModel> addUser(UserModel user);
-  Future<UserModel> getUserByReference(DocumentReference ref);
+  Future<UserModel> getUserByReference(BKDocumentReference ref);
   Future<UserModel> getUserByUid(String uid);
   Future<UserModel> updateUser(UserModel user);
   Future<void> deleteUser(UserModel user);
 
   // Bike CRUD operations
   Future<BikeModel> addBike(BikeModel bike);
-  Future<BikeModel> getBikeByReference(DocumentReference ref);
-  Future<List<BikeModel>> getAvailableBikesNearPoint(GeoPoint point);
+  Future<BikeModel> getBikeByReference(BKDocumentReference ref);
+  Future<List<BikeModel>> getAvailableBikesNearPoint(BKGeoPoint point);
   Future<List<BikeModel>> getBikesOwnedByUser(UserModel user);
   Future<BikeModel> updateBike(BikeModel bike);
   Future<void> deleteBike(BikeModel bike);
 
   // Ride CRUD operations
   Future<RideModel> addRide(RideModel ride);
-  Future<RideModel> getRideByReference(DocumentReference ref);
+  Future<RideModel> getRideByReference(BKDocumentReference ref);
   Future<RideModel?> getActiveRideForUser(UserModel user);
   Future<List<RideModel>> getRidesTakenByUser(UserModel user);
   Future<RideModel> updateRide(RideModel ride);
@@ -40,271 +43,428 @@ abstract class BKDB {
 
   // Issue CRUD operations
   Future<IssueModel> addIssue(IssueModel issue);
-  Future<IssueModel> getIssueByReference(DocumentReference ref);
+  Future<IssueModel> getIssueByReference(BKDocumentReference ref);
   Future<IssueModel> updateIssue(IssueModel issue);
   Future<void> deleteIssue(IssueModel issue);
 }
+
+
 
 // This database implementation can be used by developers to create fake data
 // to display while developing the UI
 // Note: be sure to return DebugData in the databaseProvider above
 class DebugData extends BKDB {
-  @override
-  Future<BikeModel> addBike(BikeModel bike) {
-    // TODO: implement addBike
-    throw UnimplementedError();
+  // These maps contain fake data with BKDocumentReference.fakeDocumentId keys
+  Map<String, UserModel> users;
+  Map<String, BikeModel> bikes;
+  Map<String, RideModel> rides;
+  Map<String, IssueModel> issues;
+  // The next number to use for a new BKDocumentReference.fakeDocumentId
+  int nextId;
+
+  DebugData() :  
+    users = {}, bikes = {}, rides = {}, issues = {}, nextId = 0 {
+    initData();
   }
 
-  @override
-  Future<IssueModel> addIssue(IssueModel issue) {
-    // TODO: implement addIssue
-    throw UnimplementedError();
+  String getTypeLetter<T>(T data) {
+    return {
+      UserModel: "U",
+      BikeModel: "B",
+      RideModel: "R",
+      IssueModel: "I"
+    }[T]!;
   }
 
-  @override
-  Future<RideModel> addRide(RideModel ride) {
-    // TODO: implement addRide
-    throw UnimplementedError();
+  BKDocumentReference add<T>(T data) {
+    // Helper to add new data to the "database" properly, putting it
+    // in the right map based on its type and giving it a valid 
+    // document reference. Returns the document reference for the
+    // new item.
+    // Generate a fake document reference with a unique ID
+    var ref = BKDocumentReference.fake(getTypeLetter(data) + (nextId++ as String));
+    var id = ref.fakeDocumentId!;
+    // Store the data based on its type
+    if(T == UserModel) {
+      users[id] = (data as UserModel).copyWith(docRef: ref);
+    } else if(T == BikeModel) {
+      bikes[id] = (data as BikeModel).copyWith(docRef: ref);
+    } else if(T == RideModel) {
+      rides[id] = (data as RideModel).copyWith(docRef: ref);
+    } else if(T == IssueModel) {
+      issues[id] = (data as IssueModel).copyWith(docRef: ref);
+    } else {
+      assert(false, "Unknown data type");
+    }
+    return ref;
   }
+
+  void initData() {
+    // (Re)populate the fake data with initial values
+    // Clear old data
+    users.clear();
+    bikes.clear();
+    rides.clear();
+    issues.clear();
+    nextId = 0;
+    // Store initial fake data
+    // Fake users    
+    var fakeUserRef = add(UserModel(
+      docRef: null,
+      uid: "",
+      verified: DateTime.now(),
+      agreed: DateTime.now(),
+      banned: null,
+      points: 10,
+      owns: [],
+      rides: []));
+    // TODO - add more fake users
+
+    // Fake bikes
+    var fakeBikeRef = add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "BMX 100",
+      type: BikeType.mountain,
+      description: "A sturdy bike for dirt trails.",
+      code: "1234",
+      imageUrl: "",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: []));
+
+    // Fake rides
+    // TODO - add more fake rides
+
+    // Fake issues
+    // TODO - add more fake issues
+
+    // Update the references between documents
+    getUserByReference(fakeUserRef).then(
+      (user) {updateUser(user.copyWith(owns: [fakeBikeRef]));});
+    // TODO - update any other relationships
+  }
+
+  // User CRUD operations
 
   @override
   Future<UserModel> addUser(UserModel user) {
-    // TODO: implement addUser
-    throw UnimplementedError();
+    var ref = add(user);
+    return getUserByReference(ref);
   }
 
   @override
-  Future<void> deleteBike(BikeModel bike) {
-    // TODO: implement deleteBike
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> deleteIssue(IssueModel issue) {
-    // TODO: implement deleteIssue
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> deleteRide(RideModel ride) {
-    // TODO: implement deleteRide
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> deleteUser(UserModel user) {
-    // TODO: implement deleteUser
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<RideModel?> getActiveRideForUser(UserModel user) {
-    // TODO: implement getActiveRideForUser
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<BikeModel>> getAvailableBikesNearPoint(GeoPoint point) {
-    // TODO: implement getAvailableBikesNearPoint
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<BikeModel> getBikeByReference(DocumentReference<Object?> ref) {
-    // TODO: implement getBikeByReference
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<BikeModel>> getBikesOwnedByUser(UserModel user) {
-    // TODO: implement getBikesOwnedByUser
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<IssueModel> getIssueByReference(DocumentReference<Object?> ref) {
-    // TODO: implement getIssueByReference
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<RideModel> getRideByReference(DocumentReference<Object?> ref) {
-    // TODO: implement getRideByReference
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<RideModel>> getRidesTakenByUser(UserModel user) {
-    // TODO: implement getRidesTakenByUser
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<UserModel> getUserByReference(DocumentReference<Object?> ref) {
-    // TODO: implement getUserByReference
-    throw UnimplementedError();
+  Future<UserModel> getUserByReference(BKDocumentReference ref) {
+    return Future<UserModel>.sync(() {return users[ref.fakeDocumentId!]!;});
   }
 
   @override
   Future<UserModel> getUserByUid(String uid) {
-    // TODO: implement getUserByUid
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<BikeModel> updateBike(BikeModel bike) {
-    // TODO: implement updateBike
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<IssueModel> updateIssue(IssueModel issue) {
-    // TODO: implement updateIssue
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<RideModel> updateRide(RideModel ride) {
-    // TODO: implement updateRide
-    throw UnimplementedError();
+    for(var user in users.values) {
+      if(user.uid == uid) {
+        return Future<UserModel>.value(user);
+      }
+    }
+    return Future<UserModel>.error(Exception("User not found"));
   }
 
   @override
   Future<UserModel> updateUser(UserModel user) {
-    // TODO: implement updateUser
-    throw UnimplementedError();
+    var id = user.docRef!.fakeDocumentId!;
+    return Future<UserModel>.sync(() {return users.update(id, (old) {return user;});});
   }
-  // TODO - implement
+
+  @override
+  Future<void> deleteUser(UserModel user) {
+    var id = user.docRef!.fakeDocumentId!;
+    users.remove(id);
+    return Future<void>.value();
+  }
+
+
+  // Bike CRUD operations
+
+  @override
+  Future<BikeModel> addBike(BikeModel bike) {
+    var ref = add(bike);
+    return getBikeByReference(ref);
+  }
+
+  @override
+  Future<BikeModel> getBikeByReference(BKDocumentReference ref) {
+    return Future<BikeModel>.sync(() {return bikes[ref.fakeDocumentId!]!;});
+  }
+
+  @override
+  Future<List<BikeModel>> getAvailableBikesNearPoint(BKGeoPoint point) {
+    const nearbyDegrees = 0.1; // About 7 miles
+    return Future<List<BikeModel>>.sync(() {
+      List<BikeModel> nearbyBikes = [];
+      for(var bike in bikes.values) {
+        if(bike.status == BikeStatus.available) {
+          if(((bike.locationPoint.latitude - point.latitude).abs() < nearbyDegrees) &&
+             ((bike.locationPoint.longitude - point.longitude).abs() < nearbyDegrees)) {
+            nearbyBikes.add(bike);
+          }
+        }
+      }
+      return nearbyBikes;
+    });
+  }
+
+  @override
+  Future<List<BikeModel>> getBikesOwnedByUser(UserModel user) {
+    return Future<List<BikeModel>>.sync(() {
+      List<BikeModel> bikes = [];
+      for(var ref in user.owns) {
+        getBikeByReference(ref).then((bike) {bikes.add(bike);});
+      }
+      return bikes;
+    });
+  }
+
+  @override
+  Future<BikeModel> updateBike(BikeModel bike) {
+    var id = bike.docRef!.fakeDocumentId!;
+    return Future<BikeModel>.sync(() {return bikes.update(id, (old) {return bike;});});
+  }
+
+  @override
+  Future<void> deleteBike(BikeModel bike) {
+    var id = bike.docRef!.fakeDocumentId!;
+    bikes.remove(id);
+    return Future<void>.value();
+  }
+
+
+  // Ride CRUD operations
+
+  @override
+  Future<RideModel> addRide(RideModel ride) {
+    var ref = add(ride);
+    return getRideByReference(ref);
+  }
+
+  @override
+  Future<RideModel> getRideByReference(BKDocumentReference ref) {
+    return Future<RideModel>.sync(() {return rides[ref.fakeDocumentId!]!;});
+  }
+
+  @override
+  Future<RideModel?> getActiveRideForUser(UserModel user) {
+    // Note: this function assumes only one active ride
+    return Future<RideModel?>.sync(() {
+      RideModel? activeRide;
+      for(var ref in user.rides) {
+        getRideByReference(ref).then((ride) {
+          if(!ride.isFinished()) {
+            activeRide = ride;
+          }
+        });
+        if(activeRide != null) {
+          break;
+        }
+      }
+      return activeRide;
+    });
+  }
+
+  @override
+  Future<List<RideModel>> getRidesTakenByUser(UserModel user) {
+    return Future<List<RideModel>>.sync(() {
+      List<RideModel> rides = [];
+      for(var ref in user.rides) {
+        getRideByReference(ref).then((ride) {rides.add(ride);});
+      }
+      return rides;
+    });
+  }
+
+  @override
+  Future<RideModel> updateRide(RideModel ride) {
+    var id = ride.docRef!.fakeDocumentId!;
+    return Future<RideModel>.sync(() {return rides.update(id, (old) {return ride;});});
+  }
+
+  @override
+  Future<void> deleteRide(RideModel ride) {
+    var id = ride.docRef!.fakeDocumentId!;
+    rides.remove(id);
+    return Future<void>.value();
+  }
+
+
+  // Issue CRUD operations
+
+  @override
+  Future<IssueModel> addIssue(IssueModel issue) {
+    var ref = add(issue);
+    return getIssueByReference(ref);
+  }
+
+  @override
+  Future<IssueModel> getIssueByReference(BKDocumentReference ref) {
+    return Future<IssueModel>.sync(() {return issues[ref.fakeDocumentId!]!;});
+  }
+
+  @override
+  Future<IssueModel> updateIssue(IssueModel issue) {
+    var id = issue.docRef!.fakeDocumentId!;
+    return Future<IssueModel>.sync(() {return issues.update(id, (old) {return issue;});});
+  }
+
+  @override
+  Future<void> deleteIssue(IssueModel issue) {
+    var id = issue.docRef!.fakeDocumentId!;
+    issues.remove(id);
+    return Future<void>.value();
+  }
 }
+
+
 
 // TODO - define Mocks for automated testing? Perhaps later
 
+
+
 // This database implementation interacts with the Firestore backend
 class RealFirestore extends BKDB {
-  @override
-  Future<BikeModel> addBike(BikeModel bike) {
-    // TODO: implement addBike
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<IssueModel> addIssue(IssueModel issue) {
-    // TODO: implement addIssue
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<RideModel> addRide(RideModel ride) {
-    // TODO: implement addRide
-    throw UnimplementedError();
-  }
+  // User CRUD operations
 
   @override
   Future<UserModel> addUser(UserModel user) {
-    // TODO: implement addUser
+    // TODO: implement
     throw UnimplementedError();
   }
 
   @override
-  Future<void> deleteBike(BikeModel bike) {
-    // TODO: implement deleteBike
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> deleteIssue(IssueModel issue) {
-    // TODO: implement deleteIssue
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> deleteRide(RideModel ride) {
-    // TODO: implement deleteRide
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> deleteUser(UserModel user) {
-    // TODO: implement deleteUser
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<RideModel?> getActiveRideForUser(UserModel user) {
-    // TODO: implement getActiveRideForUser
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<BikeModel>> getAvailableBikesNearPoint(GeoPoint point) {
-    // TODO: implement getAvailableBikesNearPoint
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<BikeModel> getBikeByReference(DocumentReference<Object?> ref) {
-    // TODO: implement getBikeByReference
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<BikeModel>> getBikesOwnedByUser(UserModel user) {
-    // TODO: implement getBikesOwnedByUser
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<IssueModel> getIssueByReference(DocumentReference<Object?> ref) {
-    // TODO: implement getIssueByReference
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<RideModel> getRideByReference(DocumentReference<Object?> ref) {
-    // TODO: implement getRideByReference
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<RideModel>> getRidesTakenByUser(UserModel user) {
-    // TODO: implement getRidesTakenByUser
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<UserModel> getUserByReference(DocumentReference<Object?> ref) {
-    // TODO: implement getUserByReference
+  Future<UserModel> getUserByReference(BKDocumentReference ref) {
+    // TODO: implement
     throw UnimplementedError();
   }
 
   @override
   Future<UserModel> getUserByUid(String uid) {
-    // TODO: implement getUserByUid
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<BikeModel> updateBike(BikeModel bike) {
-    // TODO: implement updateBike
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<IssueModel> updateIssue(IssueModel issue) {
-    // TODO: implement updateIssue
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<RideModel> updateRide(RideModel ride) {
-    // TODO: implement updateRide
+    // TODO: implement
     throw UnimplementedError();
   }
 
   @override
   Future<UserModel> updateUser(UserModel user) {
-    // TODO: implement updateUser
+    // TODO: implement
     throw UnimplementedError();
   }
-  // TODO - implement
+
+  @override
+  Future<void> deleteUser(UserModel user) {
+    // TODO: implement
+    throw UnimplementedError();
+  }
+
+
+  // Bike CRUD operations
+
+  @override
+  Future<BikeModel> addBike(BikeModel bike) {
+    // TODO: implement
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<BikeModel> getBikeByReference(BKDocumentReference ref) {
+    // TODO: implement
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<BikeModel>> getAvailableBikesNearPoint(BKGeoPoint point) {
+    // TODO: implement
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<BikeModel>> getBikesOwnedByUser(UserModel user) {
+    // TODO: implement
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<BikeModel> updateBike(BikeModel bike) {
+    // TODO: implement
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deleteBike(BikeModel bike) {
+    // TODO: implement
+    throw UnimplementedError();
+  }
+
+
+  // Ride CRUD operations
+
+  @override
+  Future<RideModel> addRide(RideModel ride) {
+    // TODO: implement
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<RideModel> getRideByReference(BKDocumentReference ref) {
+    // TODO: implement
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<RideModel?> getActiveRideForUser(UserModel user) {
+    // TODO: implement
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<RideModel>> getRidesTakenByUser(UserModel user) {
+    // TODO: implement
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<RideModel> updateRide(RideModel ride) {
+    // TODO: implement
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deleteRide(RideModel ride) {
+    // TODO: implement
+    throw UnimplementedError();
+  }
+
+
+  // Issue CRUD operations
+
+  @override
+  Future<IssueModel> addIssue(IssueModel issue) {
+    // TODO: implement
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<IssueModel> getIssueByReference(BKDocumentReference ref) {
+    // TODO: implement
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<IssueModel> updateIssue(IssueModel issue) {
+    // TODO: implement
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deleteIssue(IssueModel issue) {
+    // TODO: implement
+    throw UnimplementedError();
+  }
 }
