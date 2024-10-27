@@ -142,8 +142,8 @@ class DebugData extends BKDB {
     // TODO - add more fake issues
 
     // Update the references between documents
-    getUserByReference(fakeUserRef).then(
-      (user) {updateUser(user.copyWith(owns: [fakeBikeRef]));});
+    updateUser(users[fakeUserRef.fakeDocumentId!]!.copyWith(owns: [fakeBikeRef]));
+    
     // TODO - update any other relationships
   }
 
@@ -217,11 +217,11 @@ class DebugData extends BKDB {
   @override
   Future<List<BikeModel>> getBikesOwnedByUser(UserModel user) {
     return Future<List<BikeModel>>.sync(() {
-      List<BikeModel> bikes = [];
+      List<BikeModel> ownedBikes = [];
       for(var ref in user.owns) {
-        getBikeByReference(ref).then((bike) {bikes.add(bike);});
+        ownedBikes.add(bikes[ref.fakeDocumentId!]!);
       }
-      return bikes;
+      return ownedBikes;
     });
   }
 
@@ -258,12 +258,9 @@ class DebugData extends BKDB {
     return Future<RideModel?>.sync(() {
       RideModel? activeRide;
       for(var ref in user.rides) {
-        getRideByReference(ref).then((ride) {
-          if(!ride.isFinished()) {
-            activeRide = ride;
-          }
-        });
-        if(activeRide != null) {
+        var ride = rides[ref.fakeDocumentId!]!;
+        if(!ride.isFinished()) {
+          activeRide = ride;
           break;
         }
       }
@@ -274,11 +271,11 @@ class DebugData extends BKDB {
   @override
   Future<List<RideModel>> getRidesTakenByUser(UserModel user) {
     return Future<List<RideModel>>.sync(() {
-      List<RideModel> rides = [];
+      List<RideModel> ridesTaken = [];
       for(var ref in user.rides) {
-        getRideByReference(ref).then((ride) {rides.add(ride);});
+        ridesTaken.add(rides[ref.fakeDocumentId!]!);
       }
-      return rides;
+      return ridesTaken;
     });
   }
 
