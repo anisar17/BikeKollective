@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'ui/screens/explore_bikes/explore_bikes_screen.dart';
 import 'my_bikes_screen.dart';
 import 'current_ride_screen.dart';
+import 'bike_details_screen.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -17,12 +18,14 @@ class _MyHomePageState extends State<MyHomePage> {
     const ExploreBikesScreen(),
     const MyBikesScreen(),
     const CurrentRideScreen(),
+    const BikeDetailsScreen(),
   ];
 
   final List<String> _titles = [
     'Explore Available Bikes',
     'My Bikes',
     'Current Ride',
+    'Bike Details',
   ];
 
   void _onItemTapped(int index) {
@@ -54,6 +57,10 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Current Ride',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.info),
+            label: 'Bike Details',
           ),
         ],
         currentIndex: _selectedIndex,
