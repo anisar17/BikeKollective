@@ -1,6 +1,6 @@
 import 'package:bike_kollective/data/model/bike.dart';
+import 'package:bike_kollective/data/model/bk_document_reference.dart';
 import 'package:bike_kollective/data/model/user.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum IssueTag { 
   stolen, broken, lockBroken, lockMissing
@@ -8,9 +8,9 @@ enum IssueTag {
 
 // Issue data, format version 1
 class IssueModel {
-  final DocumentReference? docRef;
-  final DocumentReference reporter;
-  final DocumentReference bike;
+  final BKDocumentReference? docRef;
+  final BKDocumentReference reporter;
+  final BKDocumentReference bike;
   final List<IssueTag> tags;
   final String comment;
   final DateTime submitted;
@@ -43,7 +43,7 @@ class IssueModel {
     );
   }
 
-  factory IssueModel.fromMap(Map<String, dynamic> map, {required DocumentReference? docRef}) {
+  factory IssueModel.fromMap(Map<String, dynamic> map, {required BKDocumentReference? docRef}) {
     return IssueModel(
       docRef: docRef,
       reporter: map["reporter"],
@@ -64,6 +64,27 @@ class IssueModel {
       "submitted": submitted,
       "resolved": resolved,
     };
+  }
+
+  IssueModel copyWith({
+    BKDocumentReference? docRef,
+    BKDocumentReference? reporter,
+    BKDocumentReference? bike,
+    List<IssueTag>? tags,
+    String? comment,
+    DateTime? submitted,
+    DateTime? resolved
+  }) {
+    // Make a copy with data changes
+    return IssueModel(
+      docRef: docRef ?? this.docRef,
+      reporter: reporter ?? this.reporter,
+      bike: bike ?? this.bike,
+      tags: tags ?? this.tags,
+      comment: comment ?? this.comment,
+      submitted: submitted ?? this.submitted,
+      resolved: resolved ?? this.resolved
+    );
   }
 
   bool isFromDatabase() {

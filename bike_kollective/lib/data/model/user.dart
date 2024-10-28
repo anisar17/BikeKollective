@@ -1,15 +1,16 @@
-import "package:cloud_firestore/cloud_firestore.dart";
+
+import 'package:bike_kollective/data/model/bk_document_reference.dart';
 
 // User data, format version 1
 class UserModel {
-  final DocumentReference? docRef;
+  final BKDocumentReference? docRef;
   final String uid;
   final DateTime? verified;
   final DateTime? agreed;
   final DateTime? banned;
   final int points;
-  final List<DocumentReference> owns;
-  final List<DocumentReference> rides;
+  final List<BKDocumentReference> owns;
+  final List<BKDocumentReference> rides;
 
   const UserModel({
     required this.docRef,
@@ -38,7 +39,7 @@ class UserModel {
     );
   }
 
-  factory UserModel.fromMap(Map<String, dynamic> map, {required DocumentReference? docRef}) {
+  factory UserModel.fromMap(Map<String, dynamic> map, {required BKDocumentReference? docRef}) {
     return UserModel(
       docRef: docRef,
       uid: map["uid"],
@@ -61,6 +62,31 @@ class UserModel {
       "owns": owns,
       "rides": rides,
     };
+  }
+
+  UserModel copyWith({
+    BKDocumentReference? docRef,
+    String? uid,
+    DateTime? verified,
+    DateTime? agreed,
+    DateTime? banned,
+    int? points,
+    List<BKDocumentReference>? owns,
+    List<BKDocumentReference>? rides
+  }) {
+    // Make a copy with data changes
+    // Note: this function only allows setting verified/agreed/banned
+    // to a non-null value since that is only what is needed at this time.
+    return UserModel(
+      docRef: docRef ?? this.docRef,
+      uid: uid ?? this.uid,
+      verified: verified ?? this.verified,
+      agreed: agreed ?? this.agreed,
+      banned: banned ?? this.banned,
+      points: points ?? this.points,
+      owns: owns ?? this.owns,
+      rides: rides ?? this.rides
+    );
   }
 
   bool isFromDatabase() {

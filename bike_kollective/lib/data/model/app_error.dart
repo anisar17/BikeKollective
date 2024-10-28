@@ -3,15 +3,18 @@ enum ErrorCategory { user, database, location, ui }
 
 // Error data
 class AppErrorModel {
-  final ErrorCategory category;
-  final String? displayMessage;
-  final String? logMessage;
+  DateTime? timestamp;
+  ErrorCategory category;
+  String? displayMessage;
+  String? logMessage;
 
-  const AppErrorModel({
+  AppErrorModel({
     required this.category,
     this.displayMessage,
     this.logMessage
-  });
+  }) {
+    timestamp = DateTime.now();
+  }
 
   bool shouldDisplay() {
     return (displayMessage != null);
