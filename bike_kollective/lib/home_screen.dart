@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'explore_bikes_screen.dart';
+import 'ui/screens/explore_bikes/explore_bikes_screen.dart';
 import 'my_bikes_screen.dart';
 import 'current_ride_screen.dart';
 
