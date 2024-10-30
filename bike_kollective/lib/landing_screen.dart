@@ -28,7 +28,7 @@ class LandingScreen extends StatelessWidget {
                 children: [
                   const Spacer(flex: 1),
                   SvgPicture.asset(
-                    'assets/bike_logo.svg',
+                    'assets/bike_landing.svg',
                     height: 200,
                     color: Colors.white,
                   ),
@@ -75,7 +75,7 @@ class LandingScreen extends StatelessWidget {
                   const SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/home');
+                      Navigator.pushReplacementNamed(context, '/waiver');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueAccent.shade700,
