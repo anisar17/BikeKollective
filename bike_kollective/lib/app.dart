@@ -1,3 +1,4 @@
+import 'package:bike_kollective/authentication_screen.dart';
 import 'package:flutter/material.dart';
 import 'landing_screen.dart';
 import 'home_screen.dart';
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const LandingScreen(),
         '/home': (context) => const MyHomePage(),
+        '/auth': (context) => AuthenticationScreen(),
       },
     );
   }

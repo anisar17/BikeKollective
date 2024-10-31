@@ -123,6 +123,8 @@ void reportIssue(BuildContext context) {
 }
 
 class ReportIssueDialog extends StatefulWidget {
+  const ReportIssueDialog({super.key});
+
   @override
   _ReportIssueDialogState createState() => _ReportIssueDialogState();
 }
