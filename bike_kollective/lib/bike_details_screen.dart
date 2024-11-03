@@ -15,7 +15,6 @@ final BikeModel bike = BikeModel(
   code: '1234',
   description: 'A rugged mountain bike built for tough terrains.',
   imageUrl: 'https://i.ebayimg.com/images/g/17MAAOSwaEhZIvm5/s-l140.webp',
-  //imageUrl: 'assets/crusher.jpg', // Placeholder image URL
   status: BikeStatus.available,
   locationPoint: BKGeoPoint.fromGeoPoint(GeoPoint(37.7749, -122.4194)),
   locationUpdated: DateTime.now(),

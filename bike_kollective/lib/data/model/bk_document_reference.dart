@@ -13,12 +13,10 @@ class BKDocumentReference {
   });
 
   factory BKDocumentReference.firestore(DocumentReference ref) {
-    // Start the user as needing verification and agreement
     return BKDocumentReference(firestoreDocumentReference: ref);
   }
 
   factory BKDocumentReference.fake(String id) {
-    // Start the user as needing verification and agreement
     return BKDocumentReference(fakeDocumentId: id);
   }
 

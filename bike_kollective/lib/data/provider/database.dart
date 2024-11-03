@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Note: all accesses to database interface should be made through this provider
 // so that we can hide the implementation details and allow for test mocks
 final databaseProvider = Provider<BKDB>((ref) {
-  return DebugData(); // Uncomment to work with debug data instead of real backend
+  return DummyData(); // Uncomment to work with dummy data instead of real backend
   return RealFirestore();
 });
 
@@ -50,11 +50,11 @@ abstract class BKDB {
 
 
 
-// This database implementation can be used by developers to create fake data
-// to display while developing the UI
-// Note: be sure to return DebugData in the databaseProvider above
-class DebugData extends BKDB {
-  // These maps contain fake data with BKDocumentReference.fakeDocumentId keys
+// This database implementation can be used by developers while developing the UI
+// Note: be sure to return DummyData in the databaseProvider above
+// Note: the dummy data is located in dummy_data.dart
+class DummyData extends BKDB {
+  // These maps are loaded with dummy data with BKDocumentReference.fakeDocumentId keys
   Map<String, UserModel> users;
   Map<String, BikeModel> bikes;
   Map<String, RideModel> rides;
@@ -62,9 +62,9 @@ class DebugData extends BKDB {
   // The next number to use for a new BKDocumentReference.fakeDocumentId
   int nextId;
 
-  DebugData() :  
+  DummyData() :  
     users = {}, bikes = {}, rides = {}, issues = {}, nextId = 0 {
-    initData();
+    init();
   }
 
   String getTypeLetter<T>(T data) {
@@ -82,7 +82,7 @@ class DebugData extends BKDB {
     // document reference. Returns the document reference for the
     // new item.
     // Generate a fake document reference with a unique ID
-    var ref = BKDocumentReference.fake(getTypeLetter(data) + (nextId++ as String));
+    var ref = BKDocumentReference.fake(getTypeLetter(data) + (nextId++).toString());
     var id = ref.fakeDocumentId!;
     // Store the data based on its type
     if(T == UserModel) {
@@ -99,8 +99,8 @@ class DebugData extends BKDB {
     return ref;
   }
 
-  void initData() {
-    // (Re)populate the fake data with initial values
+  void init() {
+    // (Re)populate the dummy data with initial values
     // Clear old data
     users.clear();
     bikes.clear();
@@ -111,29 +111,331 @@ class DebugData extends BKDB {
     // Fake users    
     var fakeUserRef = add(UserModel(
       docRef: null,
-      uid: "",
+      uid: "FAKE_UID",
       verified: DateTime.now(),
       agreed: DateTime.now(),
       banned: null,
       points: 10,
       owns: [],
       rides: []));
-    // TODO - add more fake users
+    // TODO - load fake users from dummy_data.dart
 
     // Fake bikes
-    var fakeBikeRef = add(BikeModel(
+    add(BikeModel(
       docRef: null,
       owner: fakeUserRef,
-      name: "BMX 100",
-      type: BikeType.mountain,
-      description: "A sturdy bike for dirt trails.",
+      name: "Trek Road Bike",
+      type: BikeType.road,
+      description: "Good road bike for cruising around town.",
       code: "1234",
-      imageUrl: "",
+      imageUrl:
+          "https://c02.purpledshub.com/uploads/sites/39/2023/05/Trek-Emonda-AL5-02-2406262.jpg?w=1240&webp=1",
       status: BikeStatus.available,
       locationPoint: const BKGeoPoint(47.6061, 122.3328),
       locationUpdated: DateTime.now(),
       rides: [],
-      issues: []));
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Specialized Mountain Bike",
+      type: BikeType.mountain,
+      description:
+          "Great mountain bike for shredding trails and tearing up jumps.",
+      code: "1234",
+      imageUrl:
+          "https://bikepacking.com/wp-content/uploads/2020/05/2021-specialized-rockhopper-2-2000x1333.jpg",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6027, 122.3128),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Chill Beach Cruiser",
+      type: BikeType.road,
+      description:
+          "Beach cruiser for a leisurely ride. Great for cruising around town.",
+      code: "1234",
+      imageUrl:
+          "https://www.beachbikes.net/cdn/shop/products/f_urban_m_7_black_1024x1024.jpg?v=1482298636",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Tandem Mountain Bike",
+      type: BikeType.tandem,
+      description:
+          "Awesome tandem mountain bike for hitting the trails with a friend or just cruising around town.",
+      code: "1234",
+      imageUrl:
+          "https://images.squarespace-cdn.com/content/v1/569e5cb8bfe8737de92ed0d2/1652375207957-Q54Q0YUK7TY7N8CVBEAQ/TrekT900Tandem_preview.jpg?format=750w",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Trek Road Bike",
+      type: BikeType.road,
+      description: "Good road bike for cruising around town.",
+      code: "1234",
+      imageUrl:
+          "https://c02.purpledshub.com/uploads/sites/39/2023/05/Trek-Emonda-AL5-02-2406262.jpg?w=1240&webp=1",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Specialized Mountain Bike",
+      type: BikeType.mountain,
+      description:
+          "Great mountain bike for shredding trails and tearing up jumps.",
+      code: "1234",
+      imageUrl:
+          "https://bikepacking.com/wp-content/uploads/2020/05/2021-specialized-rockhopper-2-2000x1333.jpg",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6027, 122.3128),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Chill Beach Cruiser",
+      type: BikeType.road,
+      description:
+          "Beach cruiser for a leisurely ride. Great for cruising around town.",
+      code: "1234",
+      imageUrl:
+          "https://www.beachbikes.net/cdn/shop/products/f_urban_m_7_black_1024x1024.jpg?v=1482298636",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Tandem Mountain Bike",
+      type: BikeType.tandem,
+      description:
+          "Awesome tandem mountain bike for hitting the trails with a friend or just cruising around town.",
+      code: "1234",
+      imageUrl:
+          "https://images.squarespace-cdn.com/content/v1/569e5cb8bfe8737de92ed0d2/1652375207957-Q54Q0YUK7TY7N8CVBEAQ/TrekT900Tandem_preview.jpg?format=750w",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Trek Road Bike",
+      type: BikeType.road,
+      description: "Good road bike for cruising around town.",
+      code: "1234",
+      imageUrl:
+          "https://c02.purpledshub.com/uploads/sites/39/2023/05/Trek-Emonda-AL5-02-2406262.jpg?w=1240&webp=1",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Specialized Mountain Bike",
+      type: BikeType.mountain,
+      description:
+          "Great mountain bike for shredding trails and tearing up jumps.",
+      code: "1234",
+      imageUrl:
+          "https://bikepacking.com/wp-content/uploads/2020/05/2021-specialized-rockhopper-2-2000x1333.jpg",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6027, 122.3128),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Chill Beach Cruiser",
+      type: BikeType.road,
+      description:
+          "Beach cruiser for a leisurely ride. Great for cruising around town.",
+      code: "1234",
+      imageUrl:
+          "https://www.beachbikes.net/cdn/shop/products/f_urban_m_7_black_1024x1024.jpg?v=1482298636",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Tandem Mountain Bike",
+      type: BikeType.tandem,
+      description:
+          "Awesome tandem mountain bike for hitting the trails with a friend or just cruising around town.",
+      code: "1234",
+      imageUrl:
+          "https://images.squarespace-cdn.com/content/v1/569e5cb8bfe8737de92ed0d2/1652375207957-Q54Q0YUK7TY7N8CVBEAQ/TrekT900Tandem_preview.jpg?format=750w",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Trek Road Bike",
+      type: BikeType.road,
+      description: "Good road bike for cruising around town.",
+      code: "1234",
+      imageUrl:
+          "https://c02.purpledshub.com/uploads/sites/39/2023/05/Trek-Emonda-AL5-02-2406262.jpg?w=1240&webp=1",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Specialized Mountain Bike",
+      type: BikeType.mountain,
+      description:
+          "Great mountain bike for shredding trails and tearing up jumps.",
+      code: "1234",
+      imageUrl:
+          "https://bikepacking.com/wp-content/uploads/2020/05/2021-specialized-rockhopper-2-2000x1333.jpg",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6027, 122.3128),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Chill Beach Cruiser",
+      type: BikeType.road,
+      description:
+          "Beach cruiser for a leisurely ride. Great for cruising around town.",
+      code: "1234",
+      imageUrl:
+          "https://www.beachbikes.net/cdn/shop/products/f_urban_m_7_black_1024x1024.jpg?v=1482298636",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Tandem Mountain Bike",
+      type: BikeType.tandem,
+      description:
+          "Awesome tandem mountain bike for hitting the trails with a friend or just cruising around town.",
+      code: "1234",
+      imageUrl:
+          "https://images.squarespace-cdn.com/content/v1/569e5cb8bfe8737de92ed0d2/1652375207957-Q54Q0YUK7TY7N8CVBEAQ/TrekT900Tandem_preview.jpg?format=750w",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Trek Road Bike",
+      type: BikeType.road,
+      description: "Good road bike for cruising around town.",
+      code: "1234",
+      imageUrl:
+          "https://c02.purpledshub.com/uploads/sites/39/2023/05/Trek-Emonda-AL5-02-2406262.jpg?w=1240&webp=1",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Specialized Mountain Bike",
+      type: BikeType.mountain,
+      description:
+          "Great mountain bike for shredding trails and tearing up jumps.",
+      code: "1234",
+      imageUrl:
+          "https://bikepacking.com/wp-content/uploads/2020/05/2021-specialized-rockhopper-2-2000x1333.jpg",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6027, 122.3128),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Chill Beach Cruiser",
+      type: BikeType.road,
+      description:
+          "Beach cruiser for a leisurely ride. Great for cruising around town.",
+      code: "1234",
+      imageUrl:
+          "https://www.beachbikes.net/cdn/shop/products/f_urban_m_7_black_1024x1024.jpg?v=1482298636",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
+    add(BikeModel(
+      docRef: null,
+      owner: fakeUserRef,
+      name: "Tandem Mountain Bike",
+      type: BikeType.tandem,
+      description:
+          "Awesome tandem mountain bike for hitting the trails with a friend or just cruising around town.",
+      code: "1234",
+      imageUrl:
+          "https://images.squarespace-cdn.com/content/v1/569e5cb8bfe8737de92ed0d2/1652375207957-Q54Q0YUK7TY7N8CVBEAQ/TrekT900Tandem_preview.jpg?format=750w",
+      status: BikeStatus.available,
+      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+    ));
 
     // Fake rides
     // TODO - add more fake rides
@@ -142,8 +444,11 @@ class DebugData extends BKDB {
     // TODO - add more fake issues
 
     // Update the references between documents
-    updateUser(users[fakeUserRef.fakeDocumentId!]!.copyWith(owns: [fakeBikeRef]));
-    
+    // Populate "owns" in UserModels
+    for(var bike in bikes.values) {
+      var ownerId = bike.owner.fakeDocumentId!;
+      users[ownerId] = users[ownerId]!.copyWith(owns: [...(users[ownerId]!.owns), bike.docRef!]);
+    }
     // TODO - update any other relationships
   }
 

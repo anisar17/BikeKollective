@@ -9,7 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final availableBikesProvider = StateNotifierProvider<AvailableBikesNotifier, List<BikeModel>>((ref) {
   final dbAccess = ref.watch(databaseProvider);
   final locAccess = ref.watch(userLocationProvider);
-  return AvailableBikesNotifier(ref, dbAccess, locAccess);
+  var notifier = AvailableBikesNotifier(ref, dbAccess, locAccess);
+  notifier.refresh();
+  return notifier;
 });
 
 // The available bike search is handled by this class
