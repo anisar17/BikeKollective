@@ -68,7 +68,7 @@ flutter:
   assets:
     - assets/bike_logo.svg
     - assets/bike_landing.svg
-    - assets/crusher.jpg
+    # - assets/crusher.jpg
 
   # To add assets to your application, add an assets section, like this:
   # assets:
