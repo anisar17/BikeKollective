@@ -18,7 +18,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const ExploreBikesScreen(),
     const MyBikesScreen(),
     const CurrentRideScreen(),
-    const BikeDetailsScreen(),
+    // const BikeDetailsScreen(),
   ];
 
   final List<String> _titles = [
