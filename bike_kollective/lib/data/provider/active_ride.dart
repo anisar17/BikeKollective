@@ -13,62 +13,61 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final activeRideProvider = StateNotifierProvider<ActiveRideNotifier, RideModel?>((ref) {
   final dbAccess = ref.watch(databaseProvider);
   final locAccess = ref.watch(userLocationProvider);
+  final errorNotifier = ref.watch(errorProvider.notifier);
   final activeUser = ref.watch(activeUserProvider);
-  return ActiveRideNotifier(ref, dbAccess, locAccess, activeUser); 
+  return ActiveRideNotifier(dbAccess, locAccess, errorNotifier, activeUser); 
 });
 
 // The active ride is handled by this class
 // Note: there can only be one active ride at a time for a given user
 class ActiveRideNotifier extends StateNotifier<RideModel?> {
-  final Ref ref;
   final BKDB dbAccess;
   final UserLocation locAccess;
+  final ErrorNotifier errorNotifier;
   final UserModel? activeUser;
-  ActiveRideNotifier(this.ref, this.dbAccess, this.locAccess, this.activeUser) : super(null);
+  ActiveRideNotifier(this.dbAccess, this.locAccess, this.errorNotifier, this.activeUser) : super(null);
 
-  void refresh() {
+  Future<void> refresh() async {
     // Update the local active ride with any active ride from the database
     if(activeUser == null) {
       state = null;
     } else {
-      dbAccess.getActiveRideForUser(activeUser!)
-      .then((maybeRide) {
-        state = maybeRide;
-      })
-      .catchError((error) {
-        ref.read(errorProvider.notifier).report(AppError(
+      try {
+        state = await dbAccess.getActiveRideForUser(activeUser!);
+      } catch(e) {
+        errorNotifier.report(AppError(
           category: ErrorCategory.database,
           displayMessage: "Could not get active ride",
-          logMessage: "Could not get active ride: $error"));
+          logMessage: "Could not get active ride: $e"));
         state = null;
-      });
+      }
     }
   }
 
-  void startRide(BikeModel bike) {
+  Future<void> startRide(BikeModel bike) async {
     if(activeUser == null) {
-      ref.read(errorProvider.notifier).report(AppError(
-          category: ErrorCategory.state,
-          displayMessage: null,
-          logMessage: "Can't start a ride without a logged in rider"));
+      errorNotifier.report(AppError(
+        category: ErrorCategory.state,
+        displayMessage: null,
+        logMessage: "Can't start a ride without a logged in rider"));
     }
     else if(state != null) {
-      ref.read(errorProvider.notifier).report(AppError(
-          category: ErrorCategory.state,
-          displayMessage: null,
-          logMessage: "Can only have one active ride at a time"));
+      errorNotifier.report(AppError(
+        category: ErrorCategory.state,
+        displayMessage: null,
+        logMessage: "Can only have one active ride at a time"));
     }
     else {
       // TODO - implement
     }
   }
 
-  void finishRide() {
+  Future<void> finishRide() async {
     // End a ride normally
     // TODO - implement
   }
 
-  void reportIssue(IssueModel issue) {
+  Future<void> reportIssue(IssueModel issue) async {
     // End a ride because of an issue reported mid-ride
     // TODO - implement
   }

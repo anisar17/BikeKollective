@@ -20,4 +20,20 @@ class BKGeoPoint {
     // Note: should only be called by database implementation for Firestore
     return GeoPoint(latitude, longitude);
   }
+
+  bool isSame(BKGeoPoint other) {
+    // Check if another BKGeoPoint is so close as to be the same location
+    const sameDiff = 0.001; // About 100 meters
+    return (other.latitude - latitude < sameDiff) && (other.longitude - longitude < sameDiff);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (runtimeType != other.runtimeType) return false;
+    return other is BKGeoPoint && isSame(other);
+  }
+  
+  @override
+  int get hashCode => super.hashCode;
 }
