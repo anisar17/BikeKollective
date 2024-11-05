@@ -28,7 +28,7 @@ class AuthenticationScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Colors.blueAccent,
                     ),
                   ),
                   const Spacer(flex: 2),
