@@ -30,7 +30,7 @@ class LandingScreen extends StatelessWidget {
                 children: [
                   const Spacer(flex: 1),
                   SvgPicture.asset(
-                    'assets/bike_logo.svg',
+                    'assets/bike_landing.svg',
                     height: 200,
                     color: Colors.white,
                   ),
