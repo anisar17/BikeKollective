@@ -5,6 +5,7 @@ import 'package:bike_kollective/data/model/user.dart';
 import 'package:bike_kollective/data/provider/database.dart';
 import 'package:bike_kollective/data/provider/active_user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:bike_kollective/home_screen.dart';
 
 class AuthenticationScreen extends StatelessWidget {
   const AuthenticationScreen({super.key});
@@ -54,7 +55,7 @@ class AuthenticationScreen extends StatelessWidget {
                   const SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: () {
-                      signInWithGoogle();
+                      signInWithGoogle(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueAccent.shade700,
@@ -83,7 +84,7 @@ class AuthenticationScreen extends StatelessWidget {
     );
   }
 
-  signInWithGoogle() async {
+  signInWithGoogle(context) async {
     GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
@@ -93,5 +94,9 @@ class AuthenticationScreen extends StatelessWidget {
     );
     UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credentials);
     print(userCredential.user?.displayName);
+
+    if (userCredential.user != null) {
+      Navigator.pushReplacementNamed(context, '/home');
+    }
   }
 }
