@@ -1,3 +1,4 @@
+import 'package:bike_kollective/add_bike_screen.dart';
 import 'package:flutter/material.dart';
 import 'ui/screens/explore_bikes/explore_bikes_screen.dart';
 import 'my_bikes_screen.dart';
@@ -16,16 +17,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Widget> _pages = [
     const ExploreBikesScreen(),
+    const AddBikeScreen(),
     const MyBikesScreen(),
     const CurrentRideScreen(),
-    const BikeDetailsScreen(),
   ];
 
   final List<String> _titles = [
     'Explore Available Bikes',
+    'Add a Bike',
     'My Bikes',
     'Current Ride',
-    'Bike Details',
   ];
 
   void _onItemTapped(int index) {
@@ -51,16 +52,16 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Add a Bike',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.directions_bike),
             label: 'My Bikes',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Current Ride',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.info),
-            label: 'Bike Details',
           ),
         ],
         currentIndex: _selectedIndex,
