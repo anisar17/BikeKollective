@@ -1,4 +1,4 @@
-import 'package:bike_kollective/add_bike_sceen.dart';
+import 'package:bike_kollective/add_bike_screen.dart';
 import 'package:flutter/material.dart';
 import 'ui/screens/explore_bikes/explore_bikes_screen.dart';
 import 'my_bikes_screen.dart';
