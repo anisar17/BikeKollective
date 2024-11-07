@@ -55,4 +55,55 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
       state = null;
     }
   }
+
+  void signUp(String uid) {
+    // Respond to account creation with the given authentication UID
+    // Note: call this in AuthStateChangeAction<UserCreated> callback
+    dbAccess.addUser(UserModel.newUser(uid: uid))
+    .then((user) {
+      state = user;
+    })
+    .catchError((error) {
+      // TODO - send sign up error notification to error notifier?
+      state = null;
+    });
+  }
+
+  void setVerified() {
+    // Mark the active user as verified
+    // Note: this function expects there is an active user
+    // TODO - future, move to backend function that monitors email verification?
+    dbAccess.updateUser(state!.copyWith(verified: DateTime.now()))
+    .then((user) {
+      state = user;
+    })
+    .catchError((error) {
+      // TODO - send error notification to error notifier?
+    });
+  }
+
+  void setAgreed() {
+    // Mark the active user as having signed the agreement
+    // Note: this function expects there is an active user
+    dbAccess.updateUser(state!.copyWith(agreed: DateTime.now()))
+    .then((user) {
+      state = user;
+    })
+    .catchError((error) {
+      // TODO - send error notification to error notifier?
+    });
+  }
+
+  void setBanned() {
+    // Mark the active user as banned
+    // Note: this function expects there is an active user
+    // TODO - future, move to backend function that monitors ride times?
+    dbAccess.updateUser(state!.copyWith(banned: DateTime.now()))
+    .then((user) {
+      state = user;
+    })
+    .catchError((error) {
+      // TODO - send error notification to error notifier?
+    });
+  }
 }
