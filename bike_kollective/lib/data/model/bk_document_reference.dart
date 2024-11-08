@@ -20,6 +20,22 @@ class BKDocumentReference {
     return BKDocumentReference(fakeDocumentId: id);
   }
 
+  @override
+  bool operator ==(Object other) {
+    if(identical(this, other)) return true;
+    if(runtimeType != other.runtimeType) return false;
+    if(other is BKDocumentReference) {
+      if(firestoreDocumentReference != null) {
+        return firestoreDocumentReference!.id == other.firestoreDocumentReference?.id;
+      }
+      return fakeDocumentId == other.fakeDocumentId;
+    }
+    return false;
+  }
+  
+  @override
+  int get hashCode => super.hashCode;
+
   bool isFirestore() {
     return (firestoreDocumentReference != null);
   }

@@ -1,9 +1,10 @@
 import 'package:bike_kollective/data/model/bike.dart';
 import 'package:bike_kollective/data/model/bk_document_reference.dart';
 import 'package:bike_kollective/data/model/bk_geo_point.dart';
-import 'package:bike_kollective/data/provider/available_bikes.dart';
+import 'package:bike_kollective/data/model/user.dart';
+import 'package:bike_kollective/data/provider/active_user.dart';
 import 'package:bike_kollective/data/provider/database.dart';
-import 'package:bike_kollective/data/provider/user_location.dart';
+import 'package:bike_kollective/data/provider/owned_bikes.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'mocks.dart';
@@ -11,13 +12,11 @@ import 'riverpod_test_utils.dart';
 
 void main() {
   test('initial refresh with success', () async {
-    final mul = MockUserLocation();
-    final mdb = MockBKDB();
-    const fakeLoc = BKGeoPoint(47.6, 122.3);
     var fakeUserRef = BKDocumentReference.fake("FAKEUSER");
+    var fakeBikeRef = BKDocumentReference.fake("FAKEBIKE");
     final fakeBikes = [
       BikeModel(
-      docRef: null,
+      docRef: fakeBikeRef,
       owner: fakeUserRef,
       name: "Trek Road Bike",
       type: BikeType.road,
@@ -32,25 +31,34 @@ void main() {
       issues: [],
     )
     ];
-    when(() => mul.getCurrent()).thenAnswer((_) => Future<BKGeoPoint>.delayed(Duration(milliseconds: 5), () {return fakeLoc;}));
-    when(() => mdb.getAvailableBikesNearPoint(fakeLoc)).thenAnswer((_) => Future<List<BikeModel>>.delayed(Duration(milliseconds: 10), () {return fakeBikes;}));
+    final fakeUser = UserModel(
+      docRef: fakeUserRef,
+      uid: "FAKEUID",
+      verified: DateTime.now(),
+      agreed: DateTime.now(),
+      banned: null,
+      points: 0,
+      owns: [fakeBikeRef],
+      rides: []);
+    final mdb = MockBKDB();
+    final mau = MockActiveUserNotifier(fakeUser);
+    when(() => mdb.getBikesOwnedByUser(fakeUser)).thenAnswer((_) => Future<List<BikeModel>>.delayed(Duration(milliseconds: 10), () {return fakeBikes;}));
     final container = createContainer(
       // Override the provider to have it create our mocks
       overrides: [
-        userLocationProvider.overrideWith((ref) {return mul;}),
-        databaseProvider.overrideWith((ref) {return mdb;})
+        databaseProvider.overrideWith((ref) {return mdb;}),
+        activeUserProvider.overrideWith((ref) {return mau;})
       ]
     );
     // Prevent auto dispose of provider and run provider function
-    final availableBikesSubscription = container.listen<List<BikeModel>>(availableBikesProvider, (_, __) {});
-    final availableBikesNotifier = container.read(availableBikesProvider.notifier);
-    await availableBikesNotifier.refresh();
-    var readBikes = availableBikesSubscription.read();
+    final ownedBikesSubscription = container.listen<List<BikeModel>>(ownedBikesProvider, (_, __) {});
+    final ownedBikesNotifier = container.read(ownedBikesProvider.notifier);
+    await ownedBikesNotifier.refresh();
+    var readBikes = ownedBikesSubscription.read();
     expect(
       readBikes,
       fakeBikes,
     );
-    verify(() => mul.getCurrent()).called(1);
-    verify(() => mdb.getAvailableBikesNearPoint(fakeLoc)).called(1);
+    verify(() => mdb.getBikesOwnedByUser(fakeUser)).called(1);
   });
 }

@@ -1,7 +1,9 @@
+import 'package:bike_kollective/data/model/app_error.dart';
 import 'package:bike_kollective/data/model/bike.dart';
 import 'package:bike_kollective/data/model/user.dart';
 import 'package:bike_kollective/data/provider/active_user.dart';
 import 'package:bike_kollective/data/provider/database.dart';
+import 'package:bike_kollective/data/provider/reported_app_errors.dart';
 import 'package:bike_kollective/data/provider/user_location.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,85 +11,109 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final ownedBikesProvider = StateNotifierProvider<OwnedBikesNotifier, List<BikeModel>>((ref) {
   final dbAccess = ref.watch(databaseProvider);
   final locAccess = ref.watch(userLocationProvider);
+  final errorNotifier = ref.watch(errorProvider.notifier);
   final activeUser = ref.watch(activeUserProvider);
-  return OwnedBikesNotifier(dbAccess, locAccess, activeUser);
+  return OwnedBikesNotifier(dbAccess, locAccess, errorNotifier, activeUser);
 });
 
 // The owned bikes are handled by this class
 class OwnedBikesNotifier extends StateNotifier<List<BikeModel>> {
   final BKDB dbAccess;
   final UserLocation locAccess;
+  final ErrorNotifier errorNotifier;
   final UserModel? activeUser;
-  OwnedBikesNotifier(this.dbAccess, this.locAccess, this.activeUser) : super([]);
+  OwnedBikesNotifier(this.dbAccess, this.locAccess, this.errorNotifier, this.activeUser) : super([]);
 
-  void refresh() {
-    // Update the local list of owned bikes from the database
-    if(activeUser == null) {
+  Future<void> refresh() async {
+    try {
+      state = await dbAccess.getBikesOwnedByUser(activeUser!);
+    } catch(e) {
+      errorNotifier.report(AppError(
+        category: ErrorCategory.database,
+        displayMessage: "Could not get owned bikes",
+        logMessage: "Could not get owned bikes: $e"));
       state = [];
-    } else {
-      dbAccess.getBikesOwnedByUser(activeUser!)
-      .then((bikes) {
-        state = bikes;
-      })
-      .catchError((error) {
-        // TODO - send database error notification to error notifier?
-        state = [];
-      });
     }
   }
 
-  void addBike({
+  Future<void> addBike({
     required String name,
     required BikeType type,
     required String description,
     required String code,
     required String imageLocalPath
-  }) {
+  }) async {
     // Note: this function should never be called before there is an active user
-    locAccess.getCurrent()
-    .then((point) {
-      dbAccess.addBike(BikeModel.newBike(
-        owner: activeUser!.docRef!,
-        name: name,
-        type: type,
-        description: description,
-        code: code,
-        imageLocalPath: imageLocalPath,
-        startingPoint: point))
-      .then((bike) {
-        state = [bike, ...state];
-      })
-      .catchError((error) {
-        // TODO - send database error notification to error notifier?
-      });
-    })
-    .catchError((error) {
-      // TODO - send user location error notification to error notifier?
-    });
+    try {
+      var point = await locAccess.getCurrent();
+      try {
+        var newBike = await dbAccess.addBike(BikeModel.newBike(
+          owner: activeUser!.docRef!,
+          name: name,
+          type: type,
+          description: description,
+          code: code,
+          imageLocalPath: imageLocalPath,
+          startingPoint: point));
+        // Add the bike to the list (force state update)
+        state = [newBike, ...state];
+      } catch(e) {
+        errorNotifier.report(AppError(
+          category: ErrorCategory.database,
+          displayMessage: "Could not add bike",
+          logMessage: "Could not add bike: $e"));
+      }
+    } catch(e) {
+      errorNotifier.report(AppError(
+        category: ErrorCategory.location,
+        displayMessage: "Could not get user location",
+        logMessage: "Could not get user location: $e"));
+    }
   }
 
-  void updateBikeDetails(
+  Future<void> updateBikeDetails (
     BikeModel bike,
     {
-    String? newName,
-    BikeType? newType,
-    String? newDescription,
-    String? newCode,
-    String? newImageLocalPath
-    }) {
-    // TODO - implement
+      String? newName,
+      BikeType? newType,
+      String? newDescription,
+      String? newCode,
+      String? newImageLocalPath
+    }) async {
+    try {
+      var updatedBike = await dbAccess.updateBike(bike.copyWith(
+        name: newName,
+        type: newType,
+        description: newDescription,
+        code: newCode,
+        imageUrl: newImageLocalPath
+      ));
+      // Update the bike in the list (force state update)
+      state = state.map((b) {
+        if(b.docRef == updatedBike.docRef) {
+          return updatedBike;
+        }
+        return b;
+      }).toList();
+    } catch(e) {
+      errorNotifier.report(AppError(
+        category: ErrorCategory.database,
+        displayMessage: "Could not update bike",
+        logMessage: "Could not update bike: $e"));
+    }
   }
 
-  void removeBike(BikeModel bike) {
+  Future<void> removeBike(BikeModel bike) async {
     // Delete existing bike
-    // TODO - make sure the bike isn't being ridden or has unresolved issue
-    // TODO - handle equality operation better (with implementation of == in model class)
-    dbAccess.deleteBike(bike)
-    .then((_) {
+    try {
+      await dbAccess.deleteBike(bike);
+      // Remove the bike from the list
       state = [...state.where((b) {return b != bike;})];
-    })
-    .catchError((error) {
-      // TODO - send database error notification to error notifier?
-    });
+    } catch(e) {
+      errorNotifier.report(AppError(
+        category: ErrorCategory.database,
+        displayMessage: "Could not delete bike",
+        logMessage: "Could not delete bike: $e"));
+    }
   }
 }
