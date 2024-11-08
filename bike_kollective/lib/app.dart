@@ -1,3 +1,4 @@
+import 'package:bike_kollective/authentication_screen.dart';
 import 'package:bike_kollective/ui/screens/waiver_screen/waiver_screen.dart';
 import 'package:flutter/material.dart';
 import 'landing_screen.dart';
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const LandingScreen(),
         '/waiver': (context) => WaiverScreen(),
         '/home': (context) => const MyHomePage(),
+        '/auth': (context) => AuthenticationScreen(),
       },
     );
   }
