@@ -33,22 +33,6 @@ class _BikesViewerState extends State<BikesViewer> {
                 GestureDetector(
                   onTap: () {
                     setState(() {
-                      isListView = false;
-                    });
-                  },
-                  child: Text(
-                    'Map View',
-                    style: TextStyle(
-                      color: isListView ? Colors.grey : Colors.black,
-                      fontSize: 16,
-                      fontWeight:
-                          isListView ? FontWeight.w500 : FontWeight.bold,
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
                       isListView = true;
                     });
                   },
@@ -59,6 +43,22 @@ class _BikesViewerState extends State<BikesViewer> {
                       fontSize: 16,
                       fontWeight:
                           isListView ? FontWeight.bold : FontWeight.w500,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isListView = false;
+                    });
+                  },
+                  child: Text(
+                    'Map View',
+                    style: TextStyle(
+                      color: isListView ? Colors.grey : Colors.black,
+                      fontSize: 16,
+                      fontWeight:
+                          isListView ? FontWeight.w500 : FontWeight.bold,
                     ),
                   ),
                 ),
