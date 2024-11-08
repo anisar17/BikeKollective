@@ -175,10 +175,10 @@ SizedBox(height: 20), // Add some spacing between the Upload Image button and th
 Row(
   mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Align buttons evenly within the Row
   children: [
-    // Cancel Button - Navigates back to previous screen
+    // Cancel Button - Navigates back to home screen
     ElevatedButton(
       onPressed: () {
-        Navigator.pop(context); // Go back to the previous screen
+        Navigator.pushReplacementNamed(context, '/home'); // Go back to the home screen
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.red,
