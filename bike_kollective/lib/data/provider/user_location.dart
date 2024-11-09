@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Provides access to the GPS coordinates of the user
 // Note: poll location only as needed to save battery life
 final userLocationProvider = Provider<UserLocation>((ref) {
-  return DebugUserLocation(); // Uncomment to work with debug data instead of real GPS data
+  return DummyUserLocation(); // Uncomment to work with dummy data instead of real GPS data
   return RealUserLocation();
 });
 
@@ -15,19 +15,26 @@ abstract class UserLocation {
 }
 
 // This implementation can be used by developers to create fake data
-// Note: be sure to return DebugUserLocation in the databaseProvider above
-// TODO - fill in with useful debug data and handling for modifying it
-class DebugUserLocation extends UserLocation {
+// Note: be sure to return DummyUserLocation in the databaseProvider above
+class DummyUserLocation extends UserLocation {
+  BKGeoPoint _point;
+
+  DummyUserLocation() :  
+    _point = const BKGeoPoint(47.6, 122.3);
+
   @override
   Future<BKGeoPoint> forceCurrent(BKGeoPoint point) {
-    // TODO: implement forceCurrent
-    throw UnimplementedError();
+    return Future<BKGeoPoint>.sync(() {
+      _point = point;
+      return _point;
+      });
   }
 
   @override
   Future<BKGeoPoint> getCurrent() {
-    // TODO: implement getCurrent
-    throw UnimplementedError();
+    return Future<BKGeoPoint>.sync(() {
+      return _point;
+      });
   }
 }
 

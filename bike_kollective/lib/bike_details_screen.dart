@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bike_kollective/data/model/bike.dart'; // Import your BikeModel
 import 'package:flutter_rating_bar/flutter_rating_bar.dart'; // Import the packag
 
+// Define the BikeDetailsScreen widget
 class BikeDetailsScreen extends ConsumerWidget {
   final BikeModel bike;
 

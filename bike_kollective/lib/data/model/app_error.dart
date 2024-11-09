@@ -1,14 +1,14 @@
 // General source of the error
-enum ErrorCategory { user, database, location, ui }
+enum ErrorCategory { user, database, location, ui, state }
 
 // Error data
-class AppErrorModel {
+class AppError {
   DateTime? timestamp;
   ErrorCategory category;
   String? displayMessage;
   String? logMessage;
 
-  AppErrorModel({
+  AppError({
     required this.category,
     this.displayMessage,
     this.logMessage

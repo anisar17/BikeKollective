@@ -13,14 +13,28 @@ class BKDocumentReference {
   });
 
   factory BKDocumentReference.firestore(DocumentReference ref) {
-    // Start the user as needing verification and agreement
     return BKDocumentReference(firestoreDocumentReference: ref);
   }
 
   factory BKDocumentReference.fake(String id) {
-    // Start the user as needing verification and agreement
     return BKDocumentReference(fakeDocumentId: id);
   }
+
+  @override
+  bool operator ==(Object other) {
+    if(identical(this, other)) return true;
+    if(runtimeType != other.runtimeType) return false;
+    if(other is BKDocumentReference) {
+      if(firestoreDocumentReference != null) {
+        return firestoreDocumentReference!.id == other.firestoreDocumentReference?.id;
+      }
+      return fakeDocumentId == other.fakeDocumentId;
+    }
+    return false;
+  }
+  
+  @override
+  int get hashCode => super.hashCode;
 
   bool isFirestore() {
     return (firestoreDocumentReference != null);
