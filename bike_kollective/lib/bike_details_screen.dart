@@ -1,10 +1,7 @@
-import 'package:bike_kollective/data/model/bk_document_reference.dart';
-import 'package:bike_kollective/data/model/bk_geo_point.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:bike_kollective/data/model/bike.dart'; // Import your BikeModel
-import 'package:flutter_rating_bar/flutter_rating_bar.dart'; // Import the packag
+import 'package:bike_kollective/data/model/bike.dart';
+import 'bike_details_view.dart'; // Import the new BikeDetailsView component
 
 class BikeDetailsScreen extends ConsumerWidget {
   final BikeModel bike;
@@ -22,50 +19,19 @@ class BikeDetailsScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(bike.imageUrl),
-            SizedBox(height: 16),
-            Text(
-              bike.description,
-              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-            ),
-            SizedBox(height: 16),
-            Text(bike.name,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            SizedBox(height: 4),
-            // Show rating stars
-            RatingBarIndicator(
-              rating: 2.0,
-              itemCount: 5,
-              itemSize: 20.0,
-              direction: Axis.horizontal,
-              itemBuilder: (context, index) => Icon(
-                Icons.star,
-                color: Colors.amber,
-              ),
-            ),
-            // Show bike details
-            SizedBox(height: 8),
-            Text('Owner: ${bike.owner}'),
-            Text('Type: ${bike.type}'),
-            Text('Status: ${bike.status}'),
-            Text('Location: ${bike.locationPoint}'),
-            Text('Rides: ${bike.rides}'),
-            if (bike.issues.isNotEmpty) ...[
-              Text('Issues: ${bike.issues.join(", ")}'),
-            ],
+            BikeDetailsView(
+                bike: bike), // Include the BikeDetailsView component
             Spacer(),
-            // Show action buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    reportIssue(context); // Pass context to function
+                    reportIssue(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Colors.red, //set the background color to red
-                    foregroundColor: Colors.white, //set the text color to white
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
                   ),
                   child: Text(
                     'Report issue',
@@ -74,12 +40,11 @@ class BikeDetailsScreen extends ConsumerWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    checkOutBike(context, bike); // Pass context to function
+                    checkOutBike(context, bike);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Colors.blue, //set the background color to blue
-                    foregroundColor: Colors.white, //set the text color to white
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
                   ),
                   child: Text(
                     'Check out bike',
@@ -94,7 +59,6 @@ class BikeDetailsScreen extends ConsumerWidget {
     );
   }
 }
-// End of BikeDetailsScreen widget
 
 // Show a pop-out dialog to report an issue
 void reportIssue(BuildContext context) {
