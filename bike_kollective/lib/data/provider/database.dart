@@ -52,7 +52,6 @@ abstract class BKDB {
 
 // This database implementation can be used by developers while developing the UI
 // Note: be sure to return DummyData in the databaseProvider above
-// Note: the dummy data is located in dummy_data.dart
 class DummyData extends BKDB {
   // These maps are loaded with dummy data with BKDocumentReference.fakeDocumentId keys
   Map<String, UserModel> users;
@@ -118,7 +117,6 @@ class DummyData extends BKDB {
       points: 10,
       owns: [],
       rides: []));
-    // TODO - load fake users from dummy_data.dart
 
     // Fake bikes
     add(BikeModel(

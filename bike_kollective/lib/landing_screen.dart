@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:bike_kollective/authentication_screen.dart';
 
 class LandingScreen extends StatelessWidget {
   const LandingScreen({super.key});
@@ -28,7 +30,7 @@ class LandingScreen extends StatelessWidget {
                 children: [
                   const Spacer(flex: 1),
                   SvgPicture.asset(
-                    'assets/bike_logo.svg',
+                    'assets/bike_landing.svg',
                     height: 200,
                     color: Colors.white,
                   ),
@@ -75,7 +77,7 @@ class LandingScreen extends StatelessWidget {
                   const SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/home');
+                      Navigator.pushReplacementNamed(context, '/auth');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueAccent.shade700,

@@ -12,7 +12,20 @@
           "package_name": "com.cs467.bikekollective"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "416092678038-mbb166eeaavkmi9rr9v9t41gop2j47rp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cs467.bikekollective",
+            "certificate_hash": "bca897535e041d5456d32ae6638d4f84b866e69d"
+          }
+        },
+        {
+          "client_id": "416092678038-grgis25ojcpc1433q5v1sahdlu015vmt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyARbVeo5iOA6zIHYG41VLGFwQboeziEJdM"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "416092678038-grgis25ojcpc1433q5v1sahdlu015vmt.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "416092678038-t2cn17j6f1qe255cul5jrcr845f5jue7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.bikeKollective"
+              }
+            }
+          ]
         }
       }
     }
