@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: 'Explore Bikes',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add),
@@ -66,6 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blueGrey[800],
+        unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),
     );
