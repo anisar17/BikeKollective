@@ -4,7 +4,7 @@ import 'package:bike_kollective/data/model/bike.dart';
 import 'package:bike_kollective/data/model/bk_document_reference.dart';
 import 'package:bike_kollective/data/model/bk_geo_point.dart';
 import 'package:bike_kollective/ui/current_ride/current_ride_map.dart';
-import 'package:bike_kollective/ui/ride_feedback/ride_feedback_screen.dart';
+import 'package:bike_kollective/ui/screens/ride_feedback/ride_feedback_screen.dart';
 
 class CurrentRideScreen extends StatelessWidget {
   // Dummy data for the ride
