@@ -1,4 +1,4 @@
-import 'package:bike_kollective/ui/screens/waiver_screen/logo.dart';
+import 'package:bike_kollective/ui/waiver_screen/logo.dart';
 import 'package:flutter/material.dart';
 
 class WaiverScreen extends StatefulWidget {

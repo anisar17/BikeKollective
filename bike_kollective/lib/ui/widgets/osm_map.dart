@@ -1,12 +1,15 @@
 import 'package:bike_kollective/bike_details_screen.dart';
+import 'package:bike_kollective/my_bike_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:bike_kollective/data/model/bike.dart';
 
 class OSMMapWithMarkers extends StatefulWidget {
   final List<BikeModel> bikes;
+  final bool isMyBikes;
 
-  const OSMMapWithMarkers({super.key, required this.bikes});
+  const OSMMapWithMarkers(
+      {super.key, required this.bikes, required this.isMyBikes});
 
   @override
   _OSMMapWithMarkersState createState() => _OSMMapWithMarkersState();
@@ -29,7 +32,9 @@ class _OSMMapWithMarkersState extends State<OSMMapWithMarkers> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => BikeDetailsScreen(bike: bike),
+        builder: (context) => widget.isMyBikes
+            ? MyBikeDetailsScreen(bike: bike) // Use your alternative screen
+            : BikeDetailsScreen(bike: bike),
       ),
     );
   }

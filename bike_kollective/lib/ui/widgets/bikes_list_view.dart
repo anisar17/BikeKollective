@@ -1,3 +1,4 @@
+import 'package:bike_kollective/my_bike_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:bike_kollective/data/model/bike.dart';
@@ -5,8 +6,10 @@ import 'package:bike_kollective/bike_details_screen.dart';
 
 class BikesListView extends StatefulWidget {
   final List<BikeModel> availableBikes;
+  final bool isMyBikes;
 
-  const BikesListView({super.key, required this.availableBikes});
+  const BikesListView(
+      {super.key, required this.availableBikes, required this.isMyBikes});
 
   @override
   _BikesListViewState createState() => _BikesListViewState();
@@ -124,7 +127,9 @@ class _BikesListViewState extends State<BikesListView> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => BikeDetailsScreen(bike: bike),
+                            builder: (context) => widget.isMyBikes
+                                ? MyBikeDetailsScreen(bike: bike)
+                                : BikeDetailsScreen(bike: bike),
                           ),
                         );
                       },
