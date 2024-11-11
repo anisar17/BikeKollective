@@ -48,8 +48,6 @@ abstract class BKDB {
   Future<void> deleteIssue(IssueModel issue);
 }
 
-
-
 // This database implementation can be used by developers while developing the UI
 // Note: be sure to return DummyData in the databaseProvider above
 class DummyData extends BKDB {
@@ -61,8 +59,12 @@ class DummyData extends BKDB {
   // The next number to use for a new BKDocumentReference.fakeDocumentId
   int nextId;
 
-  DummyData() :  
-    users = {}, bikes = {}, rides = {}, issues = {}, nextId = 0 {
+  DummyData()
+      : users = {},
+        bikes = {},
+        rides = {},
+        issues = {},
+        nextId = 0 {
     init();
   }
 
@@ -77,20 +79,21 @@ class DummyData extends BKDB {
 
   BKDocumentReference add<T>(T data) {
     // Helper to add new data to the "database" properly, putting it
-    // in the right map based on its type and giving it a valid 
+    // in the right map based on its type and giving it a valid
     // document reference. Returns the document reference for the
     // new item.
     // Generate a fake document reference with a unique ID
-    var ref = BKDocumentReference.fake(getTypeLetter(data) + (nextId++).toString());
+    var ref =
+        BKDocumentReference.fake(getTypeLetter(data) + (nextId++).toString());
     var id = ref.fakeDocumentId!;
     // Store the data based on its type
-    if(T == UserModel) {
+    if (T == UserModel) {
       users[id] = (data as UserModel).copyWith(docRef: ref);
-    } else if(T == BikeModel) {
+    } else if (T == BikeModel) {
       bikes[id] = (data as BikeModel).copyWith(docRef: ref);
-    } else if(T == RideModel) {
+    } else if (T == RideModel) {
       rides[id] = (data as RideModel).copyWith(docRef: ref);
-    } else if(T == IssueModel) {
+    } else if (T == IssueModel) {
       issues[id] = (data as IssueModel).copyWith(docRef: ref);
     } else {
       assert(false, "Unknown data type");
@@ -107,16 +110,16 @@ class DummyData extends BKDB {
     issues.clear();
     nextId = 0;
     // Store initial fake data
-    // Fake users    
+    // Fake users
     var fakeUserRef = add(UserModel(
-      docRef: null,
-      uid: "FAKE_UID",
-      verified: DateTime.now(),
-      agreed: DateTime.now(),
-      banned: null,
-      points: 10,
-      owns: [],
-      rides: []));
+        docRef: null,
+        uid: "FAKE_UID",
+        verified: DateTime.now(),
+        agreed: DateTime.now(),
+        banned: null,
+        points: 10,
+        owns: [],
+        rides: []));
 
     // Fake bikes
     add(BikeModel(
@@ -443,9 +446,10 @@ class DummyData extends BKDB {
 
     // Update the references between documents
     // Populate "owns" in UserModels
-    for(var bike in bikes.values) {
+    for (var bike in bikes.values) {
       var ownerId = bike.owner.fakeDocumentId!;
-      users[ownerId] = users[ownerId]!.copyWith(owns: [...(users[ownerId]!.owns), bike.docRef!]);
+      users[ownerId] = users[ownerId]!
+          .copyWith(owns: [...(users[ownerId]!.owns), bike.docRef!]);
     }
     // TODO - update any other relationships
   }
@@ -460,13 +464,15 @@ class DummyData extends BKDB {
 
   @override
   Future<UserModel> getUserByReference(BKDocumentReference ref) {
-    return Future<UserModel>.sync(() {return users[ref.fakeDocumentId!]!;});
+    return Future<UserModel>.sync(() {
+      return users[ref.fakeDocumentId!]!;
+    });
   }
 
   @override
   Future<UserModel> getUserByUid(String uid) {
-    for(var user in users.values) {
-      if(user.uid == uid) {
+    for (var user in users.values) {
+      if (user.uid == uid) {
         return Future<UserModel>.value(user);
       }
     }
@@ -476,7 +482,11 @@ class DummyData extends BKDB {
   @override
   Future<UserModel> updateUser(UserModel user) {
     var id = user.docRef!.fakeDocumentId!;
-    return Future<UserModel>.sync(() {return users.update(id, (old) {return user;});});
+    return Future<UserModel>.sync(() {
+      return users.update(id, (old) {
+        return user;
+      });
+    });
   }
 
   @override
@@ -485,7 +495,6 @@ class DummyData extends BKDB {
     users.remove(id);
     return Future<void>.value();
   }
-
 
   // Bike CRUD operations
 
@@ -497,7 +506,9 @@ class DummyData extends BKDB {
 
   @override
   Future<BikeModel> getBikeByReference(BKDocumentReference ref) {
-    return Future<BikeModel>.sync(() {return bikes[ref.fakeDocumentId!]!;});
+    return Future<BikeModel>.sync(() {
+      return bikes[ref.fakeDocumentId!]!;
+    });
   }
 
   @override
@@ -505,10 +516,12 @@ class DummyData extends BKDB {
     const nearbyDegrees = 0.1; // About 7 miles
     return Future<List<BikeModel>>.sync(() {
       List<BikeModel> nearbyBikes = [];
-      for(var bike in bikes.values) {
-        if(bike.status == BikeStatus.available) {
-          if(((bike.locationPoint.latitude - point.latitude).abs() < nearbyDegrees) &&
-             ((bike.locationPoint.longitude - point.longitude).abs() < nearbyDegrees)) {
+      for (var bike in bikes.values) {
+        if (bike.status == BikeStatus.available) {
+          if (((bike.locationPoint.latitude - point.latitude).abs() <
+                  nearbyDegrees) &&
+              ((bike.locationPoint.longitude - point.longitude).abs() <
+                  nearbyDegrees)) {
             nearbyBikes.add(bike);
           }
         }
@@ -517,21 +530,75 @@ class DummyData extends BKDB {
     });
   }
 
+  // @override
+  // Future<List<BikeModel>> getBikesOwnedByUser(UserModel user) {
+  //   return Future<List<BikeModel>>.sync(() {
+  //     List<BikeModel> ownedBikes = [];
+  //     for(var ref in user.owns) {
+  //       ownedBikes.add(bikes[ref.fakeDocumentId!]!);
+  //     }
+  //     return ownedBikes;
+  //   });
+  // }
+
   @override
   Future<List<BikeModel>> getBikesOwnedByUser(UserModel user) {
     return Future<List<BikeModel>>.sync(() {
-      List<BikeModel> ownedBikes = [];
-      for(var ref in user.owns) {
-        ownedBikes.add(bikes[ref.fakeDocumentId!]!);
-      }
-      return ownedBikes;
+      return [
+        BikeModel(
+          docRef: BKDocumentReference.fake("B1"),
+          owner: user.docRef!,
+          name: "Trek Road Bike",
+          type: BikeType.road,
+          description: "Good road bike for cruising around town.",
+          code: "1234",
+          imageUrl: "https://example.com/trek_road_bike.jpg",
+          status: BikeStatus.available,
+          locationPoint: const BKGeoPoint(47.6062, 122.3328),
+          locationUpdated: DateTime.now(),
+          rides: [],
+          issues: [],
+        ),
+        BikeModel(
+          docRef: BKDocumentReference.fake("B2"),
+          owner: user.docRef!,
+          name: "Specialized Mountain Bike",
+          type: BikeType.mountain,
+          description: "Great mountain bike for trails.",
+          code: "5678",
+          imageUrl: "https://example.com/specialized_mountain_bike.jpg",
+          status: BikeStatus.available,
+          locationPoint: const BKGeoPoint(47.6027, 122.3128),
+          locationUpdated: DateTime.now(),
+          rides: [],
+          issues: [],
+        ),
+        BikeModel(
+          docRef: BKDocumentReference.fake("B3"),
+          owner: user.docRef!,
+          name: "Chill Beach Cruiser",
+          type: BikeType.road,
+          description: "Beach cruiser for a relaxed ride.",
+          code: "9101",
+          imageUrl: "https://example.com/chill_beach_cruiser.jpg",
+          status: BikeStatus.available,
+          locationPoint: const BKGeoPoint(47.6061, 122.3328),
+          locationUpdated: DateTime.now(),
+          rides: [],
+          issues: [],
+        ),
+      ];
     });
   }
 
   @override
   Future<BikeModel> updateBike(BikeModel bike) {
     var id = bike.docRef!.fakeDocumentId!;
-    return Future<BikeModel>.sync(() {return bikes.update(id, (old) {return bike;});});
+    return Future<BikeModel>.sync(() {
+      return bikes.update(id, (old) {
+        return bike;
+      });
+    });
   }
 
   @override
@@ -540,7 +607,6 @@ class DummyData extends BKDB {
     bikes.remove(id);
     return Future<void>.value();
   }
-
 
   // Ride CRUD operations
 
@@ -552,7 +618,9 @@ class DummyData extends BKDB {
 
   @override
   Future<RideModel> getRideByReference(BKDocumentReference ref) {
-    return Future<RideModel>.sync(() {return rides[ref.fakeDocumentId!]!;});
+    return Future<RideModel>.sync(() {
+      return rides[ref.fakeDocumentId!]!;
+    });
   }
 
   @override
@@ -560,9 +628,9 @@ class DummyData extends BKDB {
     // Note: this function assumes only one active ride
     return Future<RideModel?>.sync(() {
       RideModel? activeRide;
-      for(var ref in user.rides) {
+      for (var ref in user.rides) {
         var ride = rides[ref.fakeDocumentId!]!;
-        if(!ride.isFinished()) {
+        if (!ride.isFinished()) {
           activeRide = ride;
           break;
         }
@@ -575,7 +643,7 @@ class DummyData extends BKDB {
   Future<List<RideModel>> getRidesTakenByUser(UserModel user) {
     return Future<List<RideModel>>.sync(() {
       List<RideModel> ridesTaken = [];
-      for(var ref in user.rides) {
+      for (var ref in user.rides) {
         ridesTaken.add(rides[ref.fakeDocumentId!]!);
       }
       return ridesTaken;
@@ -585,7 +653,11 @@ class DummyData extends BKDB {
   @override
   Future<RideModel> updateRide(RideModel ride) {
     var id = ride.docRef!.fakeDocumentId!;
-    return Future<RideModel>.sync(() {return rides.update(id, (old) {return ride;});});
+    return Future<RideModel>.sync(() {
+      return rides.update(id, (old) {
+        return ride;
+      });
+    });
   }
 
   @override
@@ -594,7 +666,6 @@ class DummyData extends BKDB {
     rides.remove(id);
     return Future<void>.value();
   }
-
 
   // Issue CRUD operations
 
@@ -606,13 +677,19 @@ class DummyData extends BKDB {
 
   @override
   Future<IssueModel> getIssueByReference(BKDocumentReference ref) {
-    return Future<IssueModel>.sync(() {return issues[ref.fakeDocumentId!]!;});
+    return Future<IssueModel>.sync(() {
+      return issues[ref.fakeDocumentId!]!;
+    });
   }
 
   @override
   Future<IssueModel> updateIssue(IssueModel issue) {
     var id = issue.docRef!.fakeDocumentId!;
-    return Future<IssueModel>.sync(() {return issues.update(id, (old) {return issue;});});
+    return Future<IssueModel>.sync(() {
+      return issues.update(id, (old) {
+        return issue;
+      });
+    });
   }
 
   @override
@@ -623,11 +700,7 @@ class DummyData extends BKDB {
   }
 }
 
-
-
 // TODO - define Mocks for automated testing? Perhaps later
-
-
 
 // This database implementation interacts with the Firestore backend
 class RealFirestore extends BKDB {
@@ -663,7 +736,6 @@ class RealFirestore extends BKDB {
     throw UnimplementedError();
   }
 
-
   // Bike CRUD operations
 
   @override
@@ -702,7 +774,6 @@ class RealFirestore extends BKDB {
     throw UnimplementedError();
   }
 
-
   // Ride CRUD operations
 
   @override
@@ -740,7 +811,6 @@ class RealFirestore extends BKDB {
     // TODO: implement
     throw UnimplementedError();
   }
-
 
   // Issue CRUD operations
 

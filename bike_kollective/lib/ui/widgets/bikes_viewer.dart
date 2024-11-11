@@ -5,8 +5,10 @@ import 'package:bike_kollective/ui/widgets/bikes_map_view.dart';
 
 class BikesViewer extends StatefulWidget {
   final List<BikeModel> availableBikes;
+  final bool isMyBikes;
 
-  const BikesViewer({super.key, required this.availableBikes});
+  const BikesViewer(
+      {super.key, required this.availableBikes, required this.isMyBikes});
 
   @override
   _BikesViewerState createState() => _BikesViewerState();
@@ -22,8 +24,12 @@ class _BikesViewerState extends State<BikesViewer> {
         children: [
           Expanded(
             child: isListView
-                ? BikesListView(availableBikes: widget.availableBikes)
-                : BikesMapView(availableBikes: widget.availableBikes),
+                ? BikesListView(
+                    availableBikes: widget.availableBikes,
+                    isMyBikes: widget.isMyBikes)
+                : BikesMapView(
+                    availableBikes: widget.availableBikes,
+                    isMyBikes: widget.isMyBikes),
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),

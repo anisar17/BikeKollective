@@ -9,8 +9,8 @@ class ExploreBikesScreen extends ConsumerStatefulWidget {
   @override
   ExploreBikesScreenState createState() => ExploreBikesScreenState();
 }
-class ExploreBikesScreenState extends ConsumerState<ExploreBikesScreen> {
 
+class ExploreBikesScreenState extends ConsumerState<ExploreBikesScreen> {
   @override
   void initState() {
     super.initState();
@@ -25,7 +25,7 @@ class ExploreBikesScreenState extends ConsumerState<ExploreBikesScreen> {
     }
 
     return Center(
-      child: BikesViewer(availableBikes: bikes),
+      child: BikesViewer(availableBikes: bikes, isMyBikes: false),
     );
   }
 }

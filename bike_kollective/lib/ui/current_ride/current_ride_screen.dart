@@ -3,7 +3,7 @@ import 'package:bike_kollective/data/model/ride.dart';
 import 'package:bike_kollective/data/model/bike.dart';
 import 'package:bike_kollective/data/model/bk_document_reference.dart';
 import 'package:bike_kollective/data/model/bk_geo_point.dart';
-import 'package:bike_kollective/ui/screens/current_ride/current_ride_map.dart';
+import 'package:bike_kollective/ui/current_ride/current_ride_map.dart';
 import 'package:bike_kollective/ui/screens/ride_feedback/ride_feedback_screen.dart';
 
 class CurrentRideScreen extends StatelessWidget {
@@ -133,13 +133,14 @@ class CurrentRideScreen extends StatelessWidget {
                   onPressed: () {
                     // Implement finish ride functionality here
                     // Navigate to the RideFeedbackScreen
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => RideFeedbackScreen(ride: ride), // Pass the ride instance
-                  ),
-                );
-                },
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RideFeedbackScreen(
+                            ride: ride), // Pass the ride instance
+                      ),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,

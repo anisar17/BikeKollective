@@ -1,8 +1,8 @@
 import 'package:bike_kollective/add_bike_screen.dart';
 import 'package:flutter/material.dart';
-import 'ui/screens/explore_bikes/explore_bikes_screen.dart';
-import 'my_bikes_screen.dart';
-import 'ui/screens/current_ride/current_ride_screen.dart';
+import 'ui/explore_bikes/explore_bikes_screen.dart';
+import 'ui/my_bikes_screen/my_bikes_screen.dart';
+import 'ui/current_ride/current_ride_screen.dart';
 import 'bike_details_screen.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -49,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: 'Explore Bikes',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add),
@@ -66,6 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blueGrey[800],
+        unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),
     );
