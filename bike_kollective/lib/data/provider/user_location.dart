@@ -19,22 +19,21 @@ abstract class UserLocation {
 class DummyUserLocation extends UserLocation {
   BKGeoPoint _point;
 
-  DummyUserLocation() :  
-    _point = const BKGeoPoint(47.6, 122.3);
+  DummyUserLocation() : _point = const BKGeoPoint(44.561, -123.260);
 
   @override
   Future<BKGeoPoint> forceCurrent(BKGeoPoint point) {
     return Future<BKGeoPoint>.sync(() {
       _point = point;
       return _point;
-      });
+    });
   }
 
   @override
   Future<BKGeoPoint> getCurrent() {
     return Future<BKGeoPoint>.sync(() {
       return _point;
-      });
+    });
   }
 }
 
