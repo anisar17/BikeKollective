@@ -23,6 +23,8 @@ class _BikesListViewState extends State<BikesListView> {
   Widget build(BuildContext context) {
     final lowerCaseQuery = searchQuery.toLowerCase();
     final filteredBikes = widget.availableBikes.where((bike) {
+      print("Bike in BikesListView: ${bike.name}, Distance: ${bike.distance}");
+
       final matchesSearch = bike.name.toLowerCase().contains(lowerCaseQuery) ||
           bike.description.toLowerCase().contains(lowerCaseQuery) ||
           bike.type.toString().toLowerCase().contains(lowerCaseQuery);
@@ -153,13 +155,13 @@ class _BikesListViewState extends State<BikesListView> {
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text("123 Main Street"),
-                          trailing: const Column(
+                          trailing: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.location_on, color: Colors.blue),
                               SizedBox(height: 4),
                               Text(
-                                'XX Miles',
+                                '${bike.distance} Miles',
                                 style: TextStyle(color: Colors.blue),
                               ),
                             ],

@@ -19,6 +19,9 @@ class _BikesViewerState extends State<BikesViewer> {
 
   @override
   Widget build(BuildContext context) {
+    widget.availableBikes.forEach((bike) {
+      print("BikesViewer Bike: ${bike.name}, Distance: ${bike.distance}");
+    });
     return Scaffold(
       body: Column(
         children: [
