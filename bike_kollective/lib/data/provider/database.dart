@@ -121,7 +121,7 @@ class DummyData extends BKDB {
         owns: [],
         rides: []));
 
-    // Fake bikes
+// Fake bikes
     add(BikeModel(
       docRef: null,
       owner: fakeUserRef,
@@ -132,7 +132,7 @@ class DummyData extends BKDB {
       imageUrl:
           "https://c02.purpledshub.com/uploads/sites/39/2023/05/Trek-Emonda-AL5-02-2406262.jpg?w=1240&webp=1",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationPoint: const BKGeoPoint(44.5646, -123.2620),
       locationUpdated: DateTime.now(),
       rides: [],
       issues: [],
@@ -148,7 +148,7 @@ class DummyData extends BKDB {
       imageUrl:
           "https://bikepacking.com/wp-content/uploads/2020/05/2021-specialized-rockhopper-2-2000x1333.jpg",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6027, 122.3128),
+      locationPoint: const BKGeoPoint(44.5673, -123.2764),
       locationUpdated: DateTime.now(),
       rides: [],
       issues: [],
@@ -164,7 +164,7 @@ class DummyData extends BKDB {
       imageUrl:
           "https://www.beachbikes.net/cdn/shop/products/f_urban_m_7_black_1024x1024.jpg?v=1482298636",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationPoint: const BKGeoPoint(44.5637, -123.2794),
       locationUpdated: DateTime.now(),
       rides: [],
       issues: [],
@@ -180,7 +180,7 @@ class DummyData extends BKDB {
       imageUrl:
           "https://images.squarespace-cdn.com/content/v1/569e5cb8bfe8737de92ed0d2/1652375207957-Q54Q0YUK7TY7N8CVBEAQ/TrekT900Tandem_preview.jpg?format=750w",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationPoint: const BKGeoPoint(44.5648, -123.2620),
       locationUpdated: DateTime.now(),
       rides: [],
       issues: [],
@@ -195,7 +195,7 @@ class DummyData extends BKDB {
       imageUrl:
           "https://c02.purpledshub.com/uploads/sites/39/2023/05/Trek-Emonda-AL5-02-2406262.jpg?w=1240&webp=1",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationPoint: const BKGeoPoint(44.5632, -123.2761),
       locationUpdated: DateTime.now(),
       rides: [],
       issues: [],
@@ -211,7 +211,7 @@ class DummyData extends BKDB {
       imageUrl:
           "https://bikepacking.com/wp-content/uploads/2020/05/2021-specialized-rockhopper-2-2000x1333.jpg",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6027, 122.3128),
+      locationPoint: const BKGeoPoint(44.5638, -123.2654),
       locationUpdated: DateTime.now(),
       rides: [],
       issues: [],
@@ -227,7 +227,7 @@ class DummyData extends BKDB {
       imageUrl:
           "https://www.beachbikes.net/cdn/shop/products/f_urban_m_7_black_1024x1024.jpg?v=1482298636",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationPoint: const BKGeoPoint(44.5651, -123.2779),
       locationUpdated: DateTime.now(),
       rides: [],
       issues: [],
@@ -243,7 +243,7 @@ class DummyData extends BKDB {
       imageUrl:
           "https://images.squarespace-cdn.com/content/v1/569e5cb8bfe8737de92ed0d2/1652375207957-Q54Q0YUK7TY7N8CVBEAQ/TrekT900Tandem_preview.jpg?format=750w",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationPoint: const BKGeoPoint(44.5640, -123.2678),
       locationUpdated: DateTime.now(),
       rides: [],
       issues: [],
@@ -258,7 +258,7 @@ class DummyData extends BKDB {
       imageUrl:
           "https://c02.purpledshub.com/uploads/sites/39/2023/05/Trek-Emonda-AL5-02-2406262.jpg?w=1240&webp=1",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationPoint: const BKGeoPoint(44.5646, -123.2620),
       locationUpdated: DateTime.now(),
       rides: [],
       issues: [],
@@ -274,7 +274,7 @@ class DummyData extends BKDB {
       imageUrl:
           "https://bikepacking.com/wp-content/uploads/2020/05/2021-specialized-rockhopper-2-2000x1333.jpg",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6027, 122.3128),
+      locationPoint: const BKGeoPoint(44.5660, -123.2650),
       locationUpdated: DateTime.now(),
       rides: [],
       issues: [],
@@ -290,7 +290,7 @@ class DummyData extends BKDB {
       imageUrl:
           "https://www.beachbikes.net/cdn/shop/products/f_urban_m_7_black_1024x1024.jpg?v=1482298636",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationPoint: const BKGeoPoint(44.5634, -123.2784),
       locationUpdated: DateTime.now(),
       rides: [],
       issues: [],
@@ -306,7 +306,7 @@ class DummyData extends BKDB {
       imageUrl:
           "https://images.squarespace-cdn.com/content/v1/569e5cb8bfe8737de92ed0d2/1652375207957-Q54Q0YUK7TY7N8CVBEAQ/TrekT900Tandem_preview.jpg?format=750w",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationPoint: const BKGeoPoint(44.5645, -123.2647),
       locationUpdated: DateTime.now(),
       rides: [],
       issues: [],
@@ -321,7 +321,7 @@ class DummyData extends BKDB {
       imageUrl:
           "https://c02.purpledshub.com/uploads/sites/39/2023/05/Trek-Emonda-AL5-02-2406262.jpg?w=1240&webp=1",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationPoint: const BKGeoPoint(44.5646, -123.2620),
       locationUpdated: DateTime.now(),
       rides: [],
       issues: [],
@@ -337,7 +337,7 @@ class DummyData extends BKDB {
       imageUrl:
           "https://bikepacking.com/wp-content/uploads/2020/05/2021-specialized-rockhopper-2-2000x1333.jpg",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6027, 122.3128),
+      locationPoint: const BKGeoPoint(44.5671, -123.2630),
       locationUpdated: DateTime.now(),
       rides: [],
       issues: [],
@@ -353,7 +353,7 @@ class DummyData extends BKDB {
       imageUrl:
           "https://www.beachbikes.net/cdn/shop/products/f_urban_m_7_black_1024x1024.jpg?v=1482298636",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationPoint: const BKGeoPoint(44.5649, -123.2782),
       locationUpdated: DateTime.now(),
       rides: [],
       issues: [],
@@ -369,70 +369,7 @@ class DummyData extends BKDB {
       imageUrl:
           "https://images.squarespace-cdn.com/content/v1/569e5cb8bfe8737de92ed0d2/1652375207957-Q54Q0YUK7TY7N8CVBEAQ/TrekT900Tandem_preview.jpg?format=750w",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Trek Road Bike",
-      type: BikeType.road,
-      description: "Good road bike for cruising around town.",
-      code: "1234",
-      imageUrl:
-          "https://c02.purpledshub.com/uploads/sites/39/2023/05/Trek-Emonda-AL5-02-2406262.jpg?w=1240&webp=1",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Specialized Mountain Bike",
-      type: BikeType.mountain,
-      description:
-          "Great mountain bike for shredding trails and tearing up jumps.",
-      code: "1234",
-      imageUrl:
-          "https://bikepacking.com/wp-content/uploads/2020/05/2021-specialized-rockhopper-2-2000x1333.jpg",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6027, 122.3128),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Chill Beach Cruiser",
-      type: BikeType.road,
-      description:
-          "Beach cruiser for a leisurely ride. Great for cruising around town.",
-      code: "1234",
-      imageUrl:
-          "https://www.beachbikes.net/cdn/shop/products/f_urban_m_7_black_1024x1024.jpg?v=1482298636",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Tandem Mountain Bike",
-      type: BikeType.tandem,
-      description:
-          "Awesome tandem mountain bike for hitting the trails with a friend or just cruising around town.",
-      code: "1234",
-      imageUrl:
-          "https://images.squarespace-cdn.com/content/v1/569e5cb8bfe8737de92ed0d2/1652375207957-Q54Q0YUK7TY7N8CVBEAQ/TrekT900Tandem_preview.jpg?format=750w",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationPoint: const BKGeoPoint(44.5650, -123.2628),
       locationUpdated: DateTime.now(),
       rides: [],
       issues: [],
