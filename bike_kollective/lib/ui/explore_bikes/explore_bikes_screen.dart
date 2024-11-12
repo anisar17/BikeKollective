@@ -1,4 +1,9 @@
+import 'dart:math';
+
 import 'package:bike_kollective/data/provider/available_bikes.dart';
+import 'package:bike_kollective/data/model/bike.dart';
+import 'package:bike_kollective/data/model/bk_geo_point.dart';
+import 'package:bike_kollective/data/provider/user_location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bike_kollective/ui/widgets/bikes_viewer.dart';
@@ -19,13 +24,60 @@ class ExploreBikesScreenState extends ConsumerState<ExploreBikesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var bikes = ref.watch(availableBikesProvider);
+    final bikes = ref.watch(availableBikesProvider);
+
     if (bikes.isEmpty) {
       return const Center(child: Text('No bikes available'));
     }
 
-    return Center(
-      child: BikesViewer(availableBikes: bikes, isMyBikes: false),
+    return FutureBuilder<BKGeoPoint>(
+      future: ref.read(userLocationProvider).getCurrent(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError || !snapshot.hasData) {
+          return const Center(child: Text('Error retrieving location'));
+        }
+
+        final userLocation = snapshot.data!;
+
+        final bikesWithDistances = bikes.map((bike) {
+          final distance = _calculateDistance(userLocation, bike.locationPoint);
+          return bike.copyWith(distance: distance);
+        }).toList()
+          ..sort((a, b) => a.distance!.compareTo(b.distance!));
+
+        return Center(
+          child: BikesViewer(
+            availableBikes: bikesWithDistances,
+            isMyBikes: false,
+          ),
+        );
+      },
     );
   }
+
+  double _calculateDistance(BKGeoPoint userLocation, BKGeoPoint bikeLocation) {
+    const double earthRadiusKm = 6371;
+    const double kmToMiles = 0.621371;
+
+    final double dLat =
+        _toRadians(bikeLocation.latitude - userLocation.latitude);
+    final double dLng =
+        _toRadians(bikeLocation.longitude - userLocation.longitude);
+
+    final double a = (sin(dLat / 2) * sin(dLat / 2)) +
+        cos(_toRadians(userLocation.latitude)) *
+            cos(_toRadians(bikeLocation.latitude)) *
+            sin(dLng / 2) *
+            sin(dLng / 2);
+    final double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    final double distanceInMiles = (earthRadiusKm * c * kmToMiles);
+    return double.parse(distanceInMiles.toStringAsFixed(2));
+  }
+
+  double _toRadians(double degree) => degree * (pi / 180);
 }
