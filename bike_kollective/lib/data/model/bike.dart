@@ -1,4 +1,3 @@
-
 import 'package:bike_kollective/data/model/bk_document_reference.dart';
 import 'package:bike_kollective/data/model/bk_geo_point.dart';
 
@@ -20,6 +19,7 @@ class BikeModel {
   final DateTime locationUpdated;
   final List<BKDocumentReference> rides;
   final List<BKDocumentReference> issues;
+  final double? distance; // Optional distance property
 
   const BikeModel({
     required this.docRef,
@@ -34,6 +34,7 @@ class BikeModel {
     required this.locationUpdated,
     required this.rides,
     required this.issues,
+    this.distance,
   });
 
   factory BikeModel.newBike({
@@ -44,39 +45,38 @@ class BikeModel {
     required String code,
     required String imageLocalPath,
     required BKGeoPoint startingPoint,
-    }) {
+  }) {
     // Start the bike
     return BikeModel(
-      docRef: null,
-      owner: owner,
-      name: name,
-      type: type,
-      description: description,
-      code: code,
-      imageUrl: imageLocalPath,
-      status: BikeStatus.available,
-      locationPoint: startingPoint,
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: []
-    );
+        docRef: null,
+        owner: owner,
+        name: name,
+        type: type,
+        description: description,
+        code: code,
+        imageUrl: imageLocalPath,
+        status: BikeStatus.available,
+        locationPoint: startingPoint,
+        locationUpdated: DateTime.now(),
+        rides: [],
+        issues: []);
   }
 
-  factory BikeModel.fromMap(Map<String, dynamic> map, {required BKDocumentReference? docRef}) {
+  factory BikeModel.fromMap(Map<String, dynamic> map,
+      {required BKDocumentReference? docRef}) {
     return BikeModel(
-      docRef: docRef,
-      owner: map["owner"],
-      name: map["name"],
-      type: map["type"],
-      description: map["description"],
-      code: map["code"],
-      imageUrl: map["imageUrl"],
-      status: map["status"],
-      locationPoint: map["locationPoint"],
-      locationUpdated: map["locationUpdated"],
-      rides: map["rides"],
-      issues: map["issues"]
-    );
+        docRef: docRef,
+        owner: map["owner"],
+        name: map["name"],
+        type: map["type"],
+        description: map["description"],
+        code: map["code"],
+        imageUrl: map["imageUrl"],
+        status: map["status"],
+        locationPoint: map["locationPoint"],
+        locationUpdated: map["locationUpdated"],
+        rides: map["rides"],
+        issues: map["issues"]);
   }
 
   Map<String, dynamic> toMap() {
@@ -95,35 +95,35 @@ class BikeModel {
     };
   }
 
-  BikeModel copyWith({
-    BKDocumentReference? docRef,
-    BKDocumentReference? owner,
-    String? name,
-    BikeType? type,
-    String? description,
-    String? code,
-    String? imageUrl,
-    BikeStatus? status,
-    BKGeoPoint? locationPoint,
-    DateTime? locationUpdated,
-    List<BKDocumentReference>? rides,
-    List<BKDocumentReference>? issues
-  }) {
+  BikeModel copyWith(
+      {BKDocumentReference? docRef,
+      BKDocumentReference? owner,
+      String? name,
+      BikeType? type,
+      String? description,
+      String? code,
+      String? imageUrl,
+      BikeStatus? status,
+      BKGeoPoint? locationPoint,
+      DateTime? locationUpdated,
+      List<BKDocumentReference>? rides,
+      List<BKDocumentReference>? issues,
+      double? distance}) {
     // Make a copy with data changes
     return BikeModel(
-      docRef: docRef ?? this.docRef,
-      owner: owner ?? this.owner,
-      name: name ?? this.name,
-      type: type ?? this.type,
-      description: description ?? this.description,
-      code: code ?? this.code,
-      imageUrl: imageUrl ?? this.imageUrl,
-      status: status ?? this.status,
-      locationPoint: locationPoint ?? this.locationPoint,
-      locationUpdated: locationUpdated ?? this.locationUpdated,
-      rides: rides ?? this.rides,
-      issues: issues ?? this.issues
-    );
+        docRef: docRef ?? this.docRef,
+        owner: owner ?? this.owner,
+        name: name ?? this.name,
+        type: type ?? this.type,
+        description: description ?? this.description,
+        code: code ?? this.code,
+        imageUrl: imageUrl ?? this.imageUrl,
+        status: status ?? this.status,
+        locationPoint: locationPoint ?? this.locationPoint,
+        locationUpdated: locationUpdated ?? this.locationUpdated,
+        rides: rides ?? this.rides,
+        issues: issues ?? this.issues,
+        distance: distance ?? this.distance);
   }
 
   bool isFromDatabase() {
