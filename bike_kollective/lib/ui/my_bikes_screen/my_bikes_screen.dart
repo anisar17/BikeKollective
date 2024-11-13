@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bike_kollective/ui/widgets/bikes_viewer.dart';
 import 'package:bike_kollective/data/model/bike_with_distance.dart';
+import 'package:bike_kollective/distance_calculator.dart';
 
 class MyBikesScreen extends ConsumerStatefulWidget {
   const MyBikesScreen({super.key});
@@ -46,7 +47,7 @@ class MyBikesScreenState extends ConsumerState<MyBikesScreen> {
 
         // Convert bikes to BikeWithDistanceModel and calculate distances
         final bikesWithDistances = bikes.map((bike) {
-          final distance = _calculateDistance(userLocation, bike.locationPoint);
+          final distance = calculateDistance(userLocation, bike.locationPoint);
           return BikeWithDistanceModel(
             docRef: bike.docRef,
             owner: bike.owner,
@@ -74,27 +75,4 @@ class MyBikesScreenState extends ConsumerState<MyBikesScreen> {
       },
     );
   }
-
-  double _calculateDistance(BKGeoPoint userLocation, BKGeoPoint bikeLocation) {
-    const double earthRadiusKm = 6371; // Radius of Earth in kilometers
-    const double kmToMiles = 0.621371; // Conversion factor from km to miles
-
-    final double dLat =
-        _toRadians(bikeLocation.latitude - userLocation.latitude);
-    final double dLng =
-        _toRadians(bikeLocation.longitude - userLocation.longitude);
-
-    final double a = (sin(dLat / 2) * sin(dLat / 2)) +
-        cos(_toRadians(userLocation.latitude)) *
-            cos(_toRadians(bikeLocation.latitude)) *
-            sin(dLng / 2) *
-            sin(dLng / 2);
-    final double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-
-    // Calculate distance in kilometers, convert to miles, and round to two decimals
-    final double distanceInMiles = (earthRadiusKm * c * kmToMiles);
-    return double.parse(distanceInMiles.toStringAsFixed(2));
-  }
-
-  double _toRadians(double degree) => degree * (pi / 180);
 }
