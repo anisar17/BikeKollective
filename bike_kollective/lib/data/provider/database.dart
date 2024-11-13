@@ -369,7 +369,7 @@ class DummyData extends BKDB {
       imageUrl:
           "https://images.squarespace-cdn.com/content/v1/569e5cb8bfe8737de92ed0d2/1652375207957-Q54Q0YUK7TY7N8CVBEAQ/TrekT900Tandem_preview.jpg?format=750w",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(44.5650, -123.2628),
+      locationPoint: const BKGeoPoint(47.6086, -122.3098),
       locationUpdated: DateTime.now(),
       rides: [],
       issues: [],
