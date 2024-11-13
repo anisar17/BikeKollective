@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bike_kollective/data/model/bike.dart';
 import 'bike_details_view.dart';
+import 'package:bike_kollective/data/model/bike_with_distance.dart';
 
 // Define the BikeDetailsScreen widget
 class MyBikeDetailsScreen extends ConsumerWidget {
-  final BikeModel bike;
+  final BikeWithDistanceModel bike;
 
   const MyBikeDetailsScreen({super.key, required this.bike});
 

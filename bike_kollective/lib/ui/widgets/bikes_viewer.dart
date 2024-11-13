@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:bike_kollective/data/model/bike.dart';
 import 'package:bike_kollective/ui/widgets/bikes_list_view.dart';
 import 'package:bike_kollective/ui/widgets/bikes_map_view.dart';
+import 'package:bike_kollective/data/model/bike_with_distance.dart';
 
 class BikesViewer extends StatefulWidget {
-  final List<BikeModel> availableBikes;
+  final List<BikeWithDistanceModel> availableBikes;
   final bool isMyBikes;
 
   const BikesViewer(

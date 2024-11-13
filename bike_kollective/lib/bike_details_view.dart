@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:bike_kollective/data/model/bike.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:bike_kollective/data/model/bike_with_distance.dart';
 
 class BikeDetailsView extends StatelessWidget {
-  final BikeModel bike;
+  final BikeWithDistanceModel bike;
 
   const BikeDetailsView({Key? key, required this.bike}) : super(key: key);
 

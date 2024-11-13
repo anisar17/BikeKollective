@@ -1,12 +1,9 @@
 import 'package:bike_kollective/data/model/bk_document_reference.dart';
 import 'package:bike_kollective/data/model/bk_geo_point.dart';
-
-enum BikeStatus { available, inUse, hasIssue }
-
-enum BikeType { road, mountain, electric, tandem, kids }
+import 'package:bike_kollective/data/model/bike.dart';
 
 // Bike data, format version 1
-class BikeModel {
+class BikeWithDistanceModel {
   final BKDocumentReference? docRef;
   final BKDocumentReference owner;
   final String name;
@@ -19,8 +16,9 @@ class BikeModel {
   final DateTime locationUpdated;
   final List<BKDocumentReference> rides;
   final List<BKDocumentReference> issues;
+  final double distance; // Optional distance property
 
-  const BikeModel({
+  const BikeWithDistanceModel({
     required this.docRef,
     required this.owner,
     required this.name,
@@ -33,9 +31,10 @@ class BikeModel {
     required this.locationUpdated,
     required this.rides,
     required this.issues,
+    required this.distance,
   });
 
-  factory BikeModel.newBike({
+  factory BikeWithDistanceModel.newBike({
     required BKDocumentReference owner,
     required String name,
     required BikeType type,
@@ -45,24 +44,26 @@ class BikeModel {
     required BKGeoPoint startingPoint,
   }) {
     // Start the bike
-    return BikeModel(
-        docRef: null,
-        owner: owner,
-        name: name,
-        type: type,
-        description: description,
-        code: code,
-        imageUrl: imageLocalPath,
-        status: BikeStatus.available,
-        locationPoint: startingPoint,
-        locationUpdated: DateTime.now(),
-        rides: [],
-        issues: []);
+    return BikeWithDistanceModel(
+      docRef: null,
+      owner: owner,
+      name: name,
+      type: type,
+      description: description,
+      code: code,
+      imageUrl: imageLocalPath,
+      status: BikeStatus.available,
+      locationPoint: startingPoint,
+      locationUpdated: DateTime.now(),
+      rides: [],
+      issues: [],
+      distance: 0.0,
+    );
   }
 
-  factory BikeModel.fromMap(Map<String, dynamic> map,
+  factory BikeWithDistanceModel.fromMap(Map<String, dynamic> map,
       {required BKDocumentReference? docRef}) {
-    return BikeModel(
+    return BikeWithDistanceModel(
         docRef: docRef,
         owner: map["owner"],
         name: map["name"],
@@ -74,7 +75,8 @@ class BikeModel {
         locationPoint: map["locationPoint"],
         locationUpdated: map["locationUpdated"],
         rides: map["rides"],
-        issues: map["issues"]);
+        issues: map["issues"],
+        distance: map["distance"] ?? 0.0);
   }
 
   Map<String, dynamic> toMap() {
@@ -93,7 +95,7 @@ class BikeModel {
     };
   }
 
-  BikeModel copyWith({
+  BikeWithDistanceModel copyWith({
     BKDocumentReference? docRef,
     BKDocumentReference? owner,
     String? name,
@@ -108,7 +110,7 @@ class BikeModel {
     List<BKDocumentReference>? issues,
   }) {
     // Make a copy with data changes
-    return BikeModel(
+    return BikeWithDistanceModel(
         docRef: docRef ?? this.docRef,
         owner: owner ?? this.owner,
         name: name ?? this.name,
@@ -120,7 +122,8 @@ class BikeModel {
         locationPoint: locationPoint ?? this.locationPoint,
         locationUpdated: locationUpdated ?? this.locationUpdated,
         rides: rides ?? this.rides,
-        issues: issues ?? this.issues);
+        issues: issues ?? this.issues,
+        distance: distance);
   }
 
   bool isFromDatabase() {
