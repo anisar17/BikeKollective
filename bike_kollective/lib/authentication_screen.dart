@@ -7,11 +7,13 @@ import 'package:bike_kollective/data/provider/active_user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:bike_kollective/home_screen.dart';
 
-class AuthenticationScreen extends StatelessWidget {
-  const AuthenticationScreen({super.key});
+class AuthenticationScreen extends ConsumerWidget {
+  final UserModel user;
+
+  const AuthenticationScreen({super.key, required this.user});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -55,7 +57,7 @@ class AuthenticationScreen extends StatelessWidget {
                   const SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: () {
-                      signInWithGoogle(context);
+                      signInWithGoogle(context, user);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueAccent.shade700,
@@ -84,7 +86,7 @@ class AuthenticationScreen extends StatelessWidget {
     );
   }
 
-  signInWithGoogle(context) async {
+  signInWithGoogle(BuildContext context, UserModel user) async {
     GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
@@ -93,7 +95,9 @@ class AuthenticationScreen extends StatelessWidget {
       idToken: googleAuth?.idToken
     );
     UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credentials);
+    String? uid = userCredential.user?.uid;
     print(userCredential.user?.displayName);
+    print(uid);
 
     if (userCredential.user != null) {
       Navigator.pushReplacementNamed(context, '/home');
