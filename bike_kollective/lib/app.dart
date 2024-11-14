@@ -23,23 +23,8 @@ class MyApp extends StatelessWidget {
         '/': (context) => const LandingScreen(),
         '/waiver': (context) => WaiverScreen(),
         '/home': (context) => const MyHomePage(),
-        '/auth': (context) {
-          final args = ModalRoute.of(context)?.settings.arguments as UserModel?;
-          return AuthenticationScreen(
-            user: args ??
-              UserModel(
-                docRef: null,
-                uid: '',
-                verified: null,
-                agreed: null,
-                banned: null,
-                points: 0,
-                owns: [],
-                rides: [],
-              ),
-            );
-          }
-        },
+        '/auth': (context) => AuthenticationScreen(),
+      }
     );
   }
 }
