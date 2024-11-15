@@ -1,5 +1,7 @@
 import 'package:bike_kollective/data/model/user.dart';
 import 'package:bike_kollective/data/provider/database.dart';
+import 'package:bike_kollective/data/model/app_error.dart';
+import 'package:bike_kollective/data/provider/reported_app_errors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -7,54 +9,33 @@ import 'package:google_sign_in/google_sign_in.dart';
 // Provides updates about the user account that is logged in (if any)
 final activeUserProvider = StateNotifierProvider<ActiveUserNotifier, UserModel?>((ref) {
   final dbAccess = ref.watch(databaseProvider);
-  return ActiveUserNotifier(dbAccess);
+  final errorNotifier = ref.watch(errorProvider.notifier);
+  return ActiveUserNotifier(dbAccess, errorNotifier);
 });
 
 // The logged-in user is determined by this class
 class ActiveUserNotifier extends StateNotifier<UserModel?> {
   final BKDB dbAccess;
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: [
-      'email',
-      'https://www.googleapis.com/auth/userinfo.profile',
-    ],
-  );
-
-  ActiveUserNotifier(this.dbAccess) : super(null);
+  final ErrorNotifier error;
+  ActiveUserNotifier(this.dbAccess, this.error) : super(null);
 
   void signOut() {
     // Log out of the current user's account
-    _googleSignIn.signOut();
     state = null;
   }
 
-  Future<void> signIn() async {
+  Future<void> signIn(uid) async {
     try {
-      // Initiate the Google sign-in flow
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) {
-        // The user canceled the sign-in
-        state = null;
-        return;
-      }
-
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final String? idToken = googleAuth.idToken;
-
-      if (idToken != null) {
-        // Fetch user from the database or use dummy data for testing
-        final user = await dbAccess.getUserByUid(googleUser.id);
-        
-        // If user is null, create a dummy user for testing
-        state = user ?? UserModel.newUser(uid: googleUser.id);
-      } else {
+      // Sign in to users account using UID
+      state = await dbAccess.getUserByUid(uid);
+      } catch(e) {
+        error.report(AppError(
+          category: ErrorCategory.user,
+          displayMessage: "Could not get user UID",
+          logMessage: "Could not get user by UID"));
         state = null;
       }
-    } catch (error) {
-      // Handle any other errors in the sign-in process
-      state = null;
     }
-  }
 
   Future<void> signUp(String uid) async {
     // Respond to account creation with the given authentication UID
@@ -62,7 +43,10 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
     try {
       state = await dbAccess.addUser(UserModel.newUser(uid: uid));
     } catch(e) {
-      // TODO - send sign up error notification to error notifier
+      error.report(AppError(
+        category: ErrorCategory.user,
+        displayMessage: "Could not create new user.",
+        logMessage: "Failed to add a new user."));
       state = null;
     }
   }
@@ -71,10 +55,14 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
     // Mark the active user as verified
     // Note: this function expects there is an active user
     // TODO - future, move to backend function that monitors email verification?
+    // We do not have connection to email verification so this isn't implemented yet
     try {
       state = await dbAccess.updateUser(state!.copyWith(verified: DateTime.now()));
     } catch(e) {
-      // TODO - send sign up error notification to error notifier
+      error.report(AppError(
+        category: ErrorCategory.user,
+        displayMessage: "Email has not been verified.",
+        logMessage: "User has not verified email."));
       state = null;
     }
   }
@@ -85,7 +73,10 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
     try {
       state = await dbAccess.updateUser(state!.copyWith(agreed: DateTime.now()));
     } catch(e) {
-      // TODO - send error notification to error notifier
+      error.report(AppError(
+        category: ErrorCategory.user,
+        displayMessage: "You have not signed the agreement.",
+        logMessage: "User has not signed the waiver yet."));
       state = null;
     }
   }
@@ -97,7 +88,9 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
     try {
       state = await dbAccess.updateUser(state!.copyWith(banned: DateTime.now()));
     } catch(e) {
-      // TODO - send error notification to error notifier
+      error.report(AppError(
+        category: ErrorCategory.user,
+        logMessage: "User is not banned."));
       state = null;
     }
   }
