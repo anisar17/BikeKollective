@@ -18,8 +18,6 @@ class BikeModel {
   final BikeStatus status;
   final BKGeoPoint locationPoint;
   final DateTime locationUpdated;
-  final List<BKDocumentReference> rides;
-  final List<BKDocumentReference> issues;
 
   const BikeModel({
     required this.docRef,
@@ -31,9 +29,7 @@ class BikeModel {
     required this.imageUrl,
     required this.status,
     required this.locationPoint,
-    required this.locationUpdated,
-    required this.rides,
-    required this.issues,
+    required this.locationUpdated
   });
 
   factory BikeModel.newBike({
@@ -56,9 +52,7 @@ class BikeModel {
       imageUrl: imageLocalPath,
       status: BikeStatus.available,
       locationPoint: startingPoint,
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: []
+      locationUpdated: DateTime.now()
     );
   }
 
@@ -73,9 +67,7 @@ class BikeModel {
       imageUrl: map["imageUrl"],
       status: map["status"],
       locationPoint: map["locationPoint"],
-      locationUpdated: map["locationUpdated"],
-      rides: map["rides"],
-      issues: map["issues"]
+      locationUpdated: map["locationUpdated"]
     );
   }
 
@@ -89,9 +81,7 @@ class BikeModel {
       "imageUrl": imageUrl,
       "status": status,
       "locationPoint": locationPoint,
-      "locationUpdated": locationUpdated,
-      "rides": rides,
-      "issues": issues
+      "locationUpdated": locationUpdated
     };
   }
 
@@ -105,9 +95,7 @@ class BikeModel {
     String? imageUrl,
     BikeStatus? status,
     BKGeoPoint? locationPoint,
-    DateTime? locationUpdated,
-    List<BKDocumentReference>? rides,
-    List<BKDocumentReference>? issues
+    DateTime? locationUpdated
   }) {
     // Make a copy with data changes
     return BikeModel(
@@ -120,9 +108,7 @@ class BikeModel {
       imageUrl: imageUrl ?? this.imageUrl,
       status: status ?? this.status,
       locationPoint: locationPoint ?? this.locationPoint,
-      locationUpdated: locationUpdated ?? this.locationUpdated,
-      rides: rides ?? this.rides,
-      issues: issues ?? this.issues
+      locationUpdated: locationUpdated ?? this.locationUpdated
     );
   }
 

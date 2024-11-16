@@ -41,7 +41,7 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
     // Respond to account creation with the given authentication UID
     // Note: call this in AuthStateChangeAction<UserCreated> callback
     try {
-      state = await dbAccess.addUser(UserModel.newUser(uid: uid));
+      state = await dbAccess.addUser(uid);
     } catch(e) {
       error.report(AppError(
         category: ErrorCategory.user,

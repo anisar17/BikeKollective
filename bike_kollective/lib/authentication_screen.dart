@@ -137,9 +137,7 @@ class AuthenticationScreen extends ConsumerWidget {
           verified: null,
           agreed: null,
           banned: null,
-          points: 0,
-          owns: [],
-          rides: [],
+          points: 0
         );
 
         // Update the user provider with the new user model
