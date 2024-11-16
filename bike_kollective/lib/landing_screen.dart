@@ -84,9 +84,7 @@ class LandingScreen extends StatelessWidget {
                         verified: null, 
                         agreed: null, 
                         banned: null, 
-                        points: 0, 
-                        owns: [], 
-                        rides: [],
+                        points: 0
                       );
                       Navigator.pushReplacementNamed(
                         context, 

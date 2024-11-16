@@ -9,8 +9,6 @@ class UserModel {
   final DateTime? agreed;
   final DateTime? banned;
   final int points;
-  final List<BKDocumentReference> owns;
-  final List<BKDocumentReference> rides;
 
   const UserModel({
     required this.docRef,
@@ -18,9 +16,7 @@ class UserModel {
     required this.verified,
     required this.agreed,
     required this.banned,
-    required this.points,
-    required this.owns,
-    required this.rides,
+    required this.points
   });
 
   factory UserModel.newUser({
@@ -33,9 +29,7 @@ class UserModel {
       verified: null,
       agreed: null,
       banned: null,
-      points: 0,
-      owns: [],
-      rides: [],
+      points: 0
     );
   }
 
@@ -46,9 +40,7 @@ class UserModel {
       verified: map["verified"],
       agreed: map["agreed"],
       banned: map["banned"],
-      points: map["points"],
-      owns: map["owns"],
-      rides: map["rides"],
+      points: map["points"]
     );
   }
 
@@ -58,9 +50,7 @@ class UserModel {
       "verified": verified,
       "agreed": agreed,
       "banned": banned,
-      "points": points,
-      "owns": owns,
-      "rides": rides,
+      "points": points
     };
   }
 
@@ -70,9 +60,7 @@ class UserModel {
     DateTime? verified,
     DateTime? agreed,
     DateTime? banned,
-    int? points,
-    List<BKDocumentReference>? owns,
-    List<BKDocumentReference>? rides
+    int? points
   }) {
     // Make a copy with data changes
     // Note: this function only allows setting verified/agreed/banned
@@ -83,9 +71,7 @@ class UserModel {
       verified: verified ?? this.verified,
       agreed: agreed ?? this.agreed,
       banned: banned ?? this.banned,
-      points: points ?? this.points,
-      owns: owns ?? this.owns,
-      rides: rides ?? this.rides
+      points: points ?? this.points
     );
   }
 

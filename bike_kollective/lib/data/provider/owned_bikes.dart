@@ -45,8 +45,6 @@ class OwnedBikesNotifier extends StateNotifier<List<BikeModel>> {
             status: BikeStatus.available,
             locationPoint: const BKGeoPoint(47.6062, 122.3328),
             locationUpdated: DateTime.now(),
-            rides: [],
-            issues: [],
           ),
           BikeModel(
             docRef: BKDocumentReference.fake("B2"),
@@ -60,8 +58,6 @@ class OwnedBikesNotifier extends StateNotifier<List<BikeModel>> {
             status: BikeStatus.available,
             locationPoint: const BKGeoPoint(47.6027, 122.3128),
             locationUpdated: DateTime.now(),
-            rides: [],
-            issues: [],
           ),
           BikeModel(
             docRef: BKDocumentReference.fake("B3"),
@@ -75,8 +71,6 @@ class OwnedBikesNotifier extends StateNotifier<List<BikeModel>> {
             status: BikeStatus.available,
             locationPoint: const BKGeoPoint(47.6061, 122.3328),
             locationUpdated: DateTime.now(),
-            rides: [],
-            issues: [],
           ),
         ];
       } else {

@@ -27,8 +27,6 @@ void main() {
       status: BikeStatus.available,
       locationPoint: const BKGeoPoint(47.6061, 122.3328),
       locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
     )
     ];
     final fakeUser = UserModel(
@@ -37,9 +35,7 @@ void main() {
       verified: DateTime.now(),
       agreed: DateTime.now(),
       banned: null,
-      points: 0,
-      owns: [fakeBikeRef],
-      rides: []);
+      points: 0);
     final mdb = MockBKDB();
     final mau = MockActiveUserNotifier(fakeUser);
     when(() => mdb.getBikesOwnedByUser(fakeUser)).thenAnswer((_) => Future<List<BikeModel>>.delayed(Duration(milliseconds: 10), () {return fakeBikes;}));
