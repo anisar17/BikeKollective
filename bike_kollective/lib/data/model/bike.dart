@@ -18,6 +18,8 @@ class BikeModel {
   final BikeStatus status;
   final BKGeoPoint locationPoint;
   final DateTime locationUpdated;
+  final int totalStars;
+  final int totalReviews;
 
   const BikeModel({
     required this.docRef,
@@ -29,7 +31,9 @@ class BikeModel {
     required this.imageUrl,
     required this.status,
     required this.locationPoint,
-    required this.locationUpdated
+    required this.locationUpdated,
+    required this.totalStars,
+    required this.totalReviews,
   });
 
   factory BikeModel.newBike({
@@ -52,7 +56,9 @@ class BikeModel {
       imageUrl: imageLocalPath,
       status: BikeStatus.available,
       locationPoint: startingPoint,
-      locationUpdated: DateTime.now()
+      locationUpdated: DateTime.now(),
+      totalStars: 0,
+      totalReviews: 0,
     );
   }
 
@@ -61,13 +67,15 @@ class BikeModel {
       docRef: docRef,
       owner: map["owner"],
       name: map["name"],
-      type: map["type"],
+      type: BikeType.values.byName(map["type"]),
       description: map["description"],
       code: map["code"],
       imageUrl: map["imageUrl"],
-      status: map["status"],
+      status: BikeStatus.values.byName(map["status"]),
       locationPoint: map["locationPoint"],
-      locationUpdated: map["locationUpdated"]
+      locationUpdated: map["locationUpdated"],
+      totalStars: map["totalStars"],
+      totalReviews: map["totalReviews"],
     );
   }
 
@@ -75,13 +83,15 @@ class BikeModel {
     return {
       "owner": owner,
       "name": name,
-      "type": type,
+      "type": type.name,
       "description": description,
       "code": code,
       "imageUrl": imageUrl,
-      "status": status,
+      "status": status.name,
       "locationPoint": locationPoint,
-      "locationUpdated": locationUpdated
+      "locationUpdated": locationUpdated,
+      "totalStars": totalStars,
+      "totalReviews": totalReviews,
     };
   }
 
@@ -95,7 +105,9 @@ class BikeModel {
     String? imageUrl,
     BikeStatus? status,
     BKGeoPoint? locationPoint,
-    DateTime? locationUpdated
+    DateTime? locationUpdated,
+    int? totalStars,
+    int? totalReviews,
   }) {
     // Make a copy with data changes
     return BikeModel(
@@ -108,11 +120,18 @@ class BikeModel {
       imageUrl: imageUrl ?? this.imageUrl,
       status: status ?? this.status,
       locationPoint: locationPoint ?? this.locationPoint,
-      locationUpdated: locationUpdated ?? this.locationUpdated
+      locationUpdated: locationUpdated ?? this.locationUpdated,
+      totalStars: totalStars ?? this.totalStars,
+      totalReviews: totalReviews ?? this.totalReviews
     );
   }
 
   bool isFromDatabase() {
     return (docRef != null);
+  }
+
+  double? getRating() {
+    // Returns the aggregate star rating, null if no ratings
+    return (totalReviews > 0) ? (totalStars / totalReviews) : null;
   }
 }

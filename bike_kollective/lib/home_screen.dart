@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'ui/explore_bikes/explore_bikes_screen.dart';
 import 'ui/my_bikes_screen/my_bikes_screen.dart';
 import 'ui/current_ride/current_ride_screen.dart';
-import 'bike_details_screen.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});

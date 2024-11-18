@@ -2,9 +2,7 @@ import 'package:bike_kollective/data/model/user.dart';
 import 'package:bike_kollective/data/provider/database.dart';
 import 'package:bike_kollective/data/model/app_error.dart';
 import 'package:bike_kollective/data/provider/reported_app_errors.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 // Provides updates about the user account that is logged in (if any)
 final activeUserProvider = StateNotifierProvider<ActiveUserNotifier, UserModel?>((ref) {
@@ -24,7 +22,7 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
     state = null;
   }
 
-  Future<void> signIn(uid) async {
+  Future<void> signIn(String uid) async {
     try {
       // Sign in to users account using UID
       state = await dbAccess.getUserByUid(uid);

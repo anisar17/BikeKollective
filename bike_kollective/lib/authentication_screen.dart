@@ -7,8 +7,6 @@ import 'package:bike_kollective/data/provider/active_user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:bike_kollective/home_screen.dart';
 
-final userProvider = StateProvider<UserModel?>((ref) => null);
-
 class AuthenticationScreen extends ConsumerWidget {
 
   const AuthenticationScreen({super.key});
@@ -129,19 +127,9 @@ class AuthenticationScreen extends ConsumerWidget {
       print(userCredential.user?.uid);
 
       if (uid != null) {
-        // Create a new UserModel instance
-        // Might have to delete the instances on landing_screen
-        final userModel = UserModel(
-          docRef: null,
-          uid: uid,
-          verified: null,
-          agreed: null,
-          banned: null,
-          points: 0
-        );
 
         // Update the user provider with the new user model
-        ref.read(userProvider.notifier).state = userModel;
+        ref.read(activeUserProvider.notifier).signUp(uid);
 
         // Navigate to home screen
         Navigator.pushReplacementNamed(context, '/waiver');
