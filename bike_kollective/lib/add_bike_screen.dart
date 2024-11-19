@@ -1,64 +1,78 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:bike_kollective/data/provider/owned_bikes.dart';
+import 'package:bike_kollective/data/model/bk_document_reference.dart';
+import 'package:bike_kollective/data/model/bk_geo_point.dart';
+import 'package:bike_kollective/data/model/bike.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
-// Bike model
-class Bike {
-  final String name;
-  final String type;
-  final String description;
-  final String code;
-
-  Bike({
-    required this.name,
-    required this.type,
-    required this.description,
-    required this.code,
-  });
-}
-
-// State management class using ChangeNotifier
 class BikeNotifier extends ChangeNotifier {
-  String? _name;
-  String? _type;
-  String? _description;
-  String? _code;
+  late TextEditingController nameController;
+  late TextEditingController descriptionController; // Add separate controller
+  late TextEditingController lockCodeController; // Add separate controller
+  BikeType? _type;
+  File? _image; // Change this to the notifier to retain state
 
-  List<String> bikeTypes = ['Road Bike', 'Mountain Bike', 'E-bike'];
-
-  void setName(String name) {
-    _name = name;
-    notifyListeners();
+  BikeNotifier() {
+    nameController = TextEditingController();
+    descriptionController = TextEditingController(); // Initialize the description controller
+    lockCodeController = TextEditingController(); // Initialize the lock code controller
   }
 
-  void setType(String type) {
+  void setType(BikeType type) {
     _type = type;
     notifyListeners();
   }
 
   void setDescription(String description) {
-    _description = description;
+    descriptionController.text = description; // Update the description controller
     notifyListeners();
   }
 
   void setLockCode(String lockCode) {
-    _code = lockCode;
+    lockCodeController.text = lockCode; // Update the lock code controller
     notifyListeners();
   }
 
-  Bike? get bike {
-    if (_name != null && _type != null && _description != null && _code != null) {
-      return Bike(name: _name!, type: _type!, description: _description!, code: _code!);
+  void setImage(File image) {
+    _image = image; // Set selected image
+    notifyListeners(); // Notify listeners to update UI
+  }
+
+  BikeModel? get bike {
+    if (nameController.text.isNotEmpty && _type != null && descriptionController.text.isNotEmpty && lockCodeController.text.isNotEmpty) {
+      return BikeModel.newBike(
+        owner: BKDocumentReference.fake("ownerRef"),
+        name: nameController.text,
+        type: _type!,
+        description: descriptionController.text, // Get description from its controller
+        code: lockCodeController.text, // Get lock code from its controller
+        imageLocalPath: '', // Use the imageLocalPath here if applicable
+        startingPoint: BKGeoPoint(0, 0),
+      );
     }
     return null;
   }
 
+  File? get image => _image; // Getter for the image
+
   void clear() {
-    _name = null;
+    nameController.clear();
+    descriptionController.clear(); // Clear the description field
+    lockCodeController.clear(); // Clear the lock code field
     _type = null;
-    _description = null;
-    _code = null;
+    _image = null; // Reset the image
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    descriptionController.dispose(); // Dispose the description controller
+    lockCodeController.dispose(); // Dispose the lock code controller
+    super.dispose();
   }
 }
 
@@ -66,15 +80,17 @@ final bikeProvider = ChangeNotifierProvider<BikeNotifier>((ref) {
   return BikeNotifier();
 });
 
+// Update the AddBikeScreen as follows:
 class AddBikeScreen extends ConsumerWidget {
   const AddBikeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notifier = ref.watch(bikeProvider);
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+    final bikeNotifier = ref.watch(bikeProvider);
+    final _formKey = GlobalKey<FormState>();
 
     return Scaffold(
+      appBar: AppBar(title: Text('Add Bike')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -86,27 +102,25 @@ class AddBikeScreen extends ConsumerWidget {
               _buildLabeledTextField(
                 label: 'Name',
                 hint: 'Enter your bike name',
+                controller: bikeNotifier.nameController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a name';
                   }
                   return null;
                 },
-                onSaved: (value) {
-                  if (value != null) notifier.setName(value);
-                },
               ),
-              SizedBox(height: 16.0), // Spacing between fields
+              SizedBox(height: 16.0),
 
               // Type Field
               _buildLabeledDropdownField(
                 label: 'Type',
                 hint: 'Select bike type',
-                value: notifier._type,
-                items: notifier.bikeTypes,
+                value: bikeNotifier._type?.toString().split('.').last,
+                items: BikeType.values.map((e) => e.toString().split('.').last).toList(),
                 onChanged: (value) {
                   if (value != null) {
-                    notifier.setType(value);
+                    bikeNotifier.setType(BikeType.values.firstWhere((e) => e.toString().split('.').last == value));
                   }
                 },
                 validator: (value) {
@@ -116,7 +130,7 @@ class AddBikeScreen extends ConsumerWidget {
                   return null;
                 },
               ),
-              SizedBox(height: 16.0), // Spacing between fields
+              SizedBox(height: 16.0),
 
               // Description Field
               _buildLabeledTextField(
@@ -124,143 +138,171 @@ class AddBikeScreen extends ConsumerWidget {
                 hint: 'Enter bike description',
                 minLines: 6,
                 maxLines: 6,
+                controller: bikeNotifier.descriptionController, // Use the description controller
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a description';
                   }
                   return null;
                 },
-                onSaved: (value) {
-                  if (value != null) notifier.setDescription(value);
-                },
               ),
-              SizedBox(height: 16.0), // Spacing between fields
+              SizedBox(height: 16.0),
 
               // Lock Code Field
               _buildLabeledTextField(
                 label: 'Lock Code',
                 hint: 'Enter lock code',
+                controller: bikeNotifier.lockCodeController, // Use the lock code controller
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a lock code';
                   }
                   return null;
                 },
-                onSaved: (value) {
-                  if (value != null) notifier.setLockCode(value);
-                },
               ),
-              SizedBox(height: 16.0), // Add some spacing
+              SizedBox(height: 16.0),
 
-              // Centered Upload Image Button
-// Centered Upload Image Button
-Center(
-  child: ElevatedButton(
-    onPressed: () async {
-      // Logic to upload image goes here
-      print('Upload Image Button Pressed');
-    },
-    style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.grey, // Set to grey
-      foregroundColor: Colors.white,
-      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20), // Increase padding for larger button
-      textStyle: TextStyle(fontSize: 20), // Increase font size
-    ),
-    child: Text('Upload Image'), // Button Label
-  ),
-),
-SizedBox(height: 20), // Add some spacing between the Upload Image button and the next buttons
+              // Image Preview Box
+              Center(
+                child: Container(
+                  width: 80, 
+                  height: 80, 
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(color: Colors.grey), 
+                  ),
+                  child: bikeNotifier.image == null
+                      ? Center(child: Text('No image selected.'))
+                      : kIsWeb
+                          ? Image.network(
+                              bikeNotifier.image!.path,
+                              fit: BoxFit.cover,
+                            )
+                          : ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: Image.file(
+                                bikeNotifier.image!,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                ),
+              ),
+              SizedBox(height: 16.0),
 
-// Row for Cancel and Add Bike buttons next to each other
-Row(
-  mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Align buttons evenly within the Row
-  children: [
-    // Cancel Button - Navigates back to home screen
-    ElevatedButton(
-      onPressed: () {
-        Navigator.pushReplacementNamed(context, '/home'); // Go back to the home screen
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red,
-        foregroundColor: Colors.white,
-        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15), // Adjust padding as needed
-      ),
-      child: Text('Cancel'), // Button Label
-    ),
-    // Add Bike Button
-    ElevatedButton(
-      onPressed: () async {
-        if (_formKey.currentState!.validate()) {
-          _formKey.currentState!.save();
-          // Save bike to Firestore
-          final bike = notifier.bike;
-          if (bike != null) {
-            final bikeData = {
-              'name': bike.name,
-              'type': bike.type,
-              'description': bike.description,
-              'lockCode': bike.code,
-            };
-            await FirebaseFirestore.instance
-                .collection('bikes')
-                .add(bikeData);
+              // Upload Image Button
+              Center(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    File? image = await pickImage();
+                    if (image != null) {
+                      bikeNotifier.setImage(image); 
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                    textStyle: TextStyle(fontSize: 20),
+                  ),
+                  child: const Text('Upload Image'),
+                ),
+              ),
+              SizedBox(height: 20),
 
-            notifier.clear(); // Clear the fields after submission
-
-            // Show a confirmation dialog
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: Text('Bike Added'),
-                  content: Text(
-                      'Bike Name: ${bike.name}\nType: ${bike.type}\nDescription: ${bike.description}\nLock Code: ${bike.code}'),
-                  actions: <Widget>[
-                    ElevatedButton(
-                      child: Text('OK'),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
+              // Button Row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(context, '/home');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
                     ),
-                  ],
-                );
-              },
-            );
-          }
-        }
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
-        padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15), // Adjust padding as needed
-      ),
-      child: Text('Add Bike'), // Button Label
-    ),
-  ],
-),
+                    child: const Text('Cancel'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        final bike = bikeNotifier.bike;
+                        if (bike != null) {
+                          ref.read(ownedBikesProvider.notifier).addBike(
+                            name: bike.name,
+                            type: bike.type,
+                            description: bike.description,
+                            code: bike.code,
+                            imageLocalPath: bike.imageUrl,
+                          );
+
+                          bikeNotifier.clear(); // Clear after success
+
+                          // Show confirmation dialog
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Bike Added'),
+                              content: Text(
+                                'Bike Name: ${bike.name}\nType: ${bike.type.toString().split('.').last}\nDescription: ${bike.description}\nLock Code: ${bike.code}',
+                              ),
+                              actions: <Widget>[
+                                ElevatedButton(
+                                  child: const Text('OK'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Add Bike'),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
       ),
     );
-  }  
+  }
+
+  Future<File?> pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      return File(image.path); // Convert to File
+    }
+    return null; // Return null if no image is picked
+  }
 
   Widget _buildLabeledTextField({
     required String label,
     required String hint,
+    TextEditingController? controller,
     int? minLines,
     int? maxLines,
     FormFieldValidator<String>? validator,
     FormFieldSetter<String>? onSaved,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start, // Aligns label to the left
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         TextFormField(
+          controller: controller,
           minLines: minLines,
           maxLines: maxLines,
           decoration: InputDecoration(
@@ -295,7 +337,7 @@ Row(
     FormFieldValidator<String>? validator,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start, // Aligns label to the left
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
