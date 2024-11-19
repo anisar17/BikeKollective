@@ -28,6 +28,24 @@ class RideReview {
     required this.comment,
     required this.submitted,
   });
+
+  factory RideReview.fromMap(Map<String, dynamic> map) {
+    return RideReview(
+      stars: map["stars"],
+      tags: map["tags"].map((name) => RideReviewTag.values.byName(name)).toList(),
+      comment: map["startPoint"],
+      submitted: map["startTime"],
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "stars": stars,
+      "tags": tags.map((tag) => tag.name).toList(),
+      "comment": comment,
+      "submitted": submitted,
+    };
+  }
 }
 
 // Ride data, format version 1
@@ -78,7 +96,7 @@ class RideModel {
       startTime: map["startTime"],
       finishPoint: map["finishPoint"],
       finishTime: map["finishTime"],
-      review: map["review"]
+      review: (map["review"] != null) ? RideReview.fromMap(map["review"]) : null
     );
   }
 
@@ -90,7 +108,7 @@ class RideModel {
       "startTime": startTime,
       "finishPoint": finishPoint,
       "finishTime": finishTime,
-      "review": review
+      "review": review?.toMap()
     };
   }
 

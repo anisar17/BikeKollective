@@ -27,6 +27,8 @@ void main() {
       status: BikeStatus.available,
       locationPoint: const BKGeoPoint(47.6061, 122.3328),
       locationUpdated: DateTime.now(),
+      totalStars: 5,
+      totalReviews: 1
     )
     ];
     final fakeUser = UserModel(

@@ -51,7 +51,11 @@ class AvailableBikesNotifier extends StateNotifier<List<BikeModel>> {
     // Report an issue with a bike that isn't being ridden
     try {
       await dbAccess.addIssue(issue);
-      // Remove the reported bike from the available list
+      // Change the bike status to has issue, so it no longer appears in the
+      // available list for other users.
+      var bike = state.firstWhere((b) {return b.docRef == issue.bike;});
+      await dbAccess.updateBike(bike.copyWith(status: BikeStatus.hasIssue));
+      // Remove the reported bike from the available list locally.
       state = [...state.where((b) {return b.docRef != issue.bike;})];
     } catch(e) {
       errorNotifier.report(AppError(
