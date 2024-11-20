@@ -3,6 +3,7 @@ import 'package:bike_kollective/ui/waiver_screen/waiver_screen.dart';
 import 'package:flutter/material.dart';
 import 'landing_screen.dart';
 import 'home_screen.dart';
+import 'package:bike_kollective/ui/verify_email/verify_email_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
         '/waiver': (context) => WaiverScreen(),
         '/home': (context) => const MyHomePage(),
         '/auth': (context) => AuthenticationScreen(),
+        '/verify': (context) => VerifyEmailScreen(),
       }
     );
   }
