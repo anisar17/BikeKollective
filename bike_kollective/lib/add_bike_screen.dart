@@ -45,10 +45,13 @@ class BikeNotifier extends ChangeNotifier {
     if (nameController.text.isNotEmpty && _type != null && descriptionController.text.isNotEmpty && lockCodeController.text.isNotEmpty) {
       return BikeModel.newBike(
         owner: BKDocumentReference.fake("ownerRef"),
+        // TODO: Temporary place holder
         name: nameController.text,
         type: _type!,
+        // TODO: Temporary place holder
         description: descriptionController.text, // Get description from its controller
         code: lockCodeController.text, // Get lock code from its controller
+        // TODO: Define image storage path
         imageLocalPath: '', // Use the imageLocalPath here if applicable
         startingPoint: BKGeoPoint(0, 0),
       );
