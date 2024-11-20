@@ -5,6 +5,7 @@ import 'package:bike_kollective/data/model/bk_document_reference.dart';
 import 'package:bike_kollective/data/model/bk_geo_point.dart';
 import 'package:bike_kollective/ui/current_ride/current_ride_map.dart';
 import 'package:bike_kollective/ui/screens/ride_feedback/ride_feedback_screen.dart';
+import 'package:bike_kollective/report_issue_dialog.dart';
 
 class CurrentRideScreen extends StatelessWidget {
   // Dummy data for the ride
@@ -33,7 +34,7 @@ class CurrentRideScreen extends StatelessWidget {
     locationPoint: const BKGeoPoint(34.4208, -119.6982),
     locationUpdated: DateTime.now(),
     totalStars: 5,
-    totalReviews: 1
+    totalReviews: 1,
   );
 
   Duration getRemainingTime() {
@@ -48,17 +49,20 @@ class CurrentRideScreen extends StatelessWidget {
     final remainingTime = getRemainingTime();
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Current Ride'),
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Left-aligned Bike name
           Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Text(
               bike.name,
               style: const TextStyle(
                 fontSize: 24,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -113,38 +117,38 @@ class CurrentRideScreen extends StatelessWidget {
             ),
           ),
           Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    // Implement report issue functionality here
+                    // Show the report issue dialog
+                    reportIssue(context);
                   },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 40, vertical: 15)),
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  ),
                   child: const Text("Report an Issue"),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    // Implement finish ride functionality here
                     // Navigate to the RideFeedbackScreen
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => RideFeedbackScreen(
-                            ride: ride), // Pass the ride instance
+                          ride: ride, // Pass the ride instance
+                        ),
                       ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                   ),
                   child: const Text("Finish Ride"),
                 ),

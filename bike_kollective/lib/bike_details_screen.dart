@@ -35,7 +35,7 @@ class BikeDetailsScreen extends ConsumerWidget {
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
                   ),
-                  child: Text(
+                  child: const Text(
                     'Report issue',
                     style: TextStyle(fontSize: 16),
                   ),
@@ -48,7 +48,7 @@ class BikeDetailsScreen extends ConsumerWidget {
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
                   ),
-                  child: Text(
+                  child: const Text(
                     'Check out bike',
                     style: TextStyle(fontSize: 16),
                   ),
@@ -67,7 +67,8 @@ void reportIssue(BuildContext context) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return ReportIssueDialog();
+      return ReportIssueDialog(
+      );
     },
   );
 }
@@ -78,7 +79,7 @@ void checkOutBike(BuildContext context, BikeModel bike) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Center(
+        title: const Center(
             child: Text(
           'Enjoy your ride!',
           textAlign: TextAlign.center,
@@ -88,16 +89,16 @@ void checkOutBike(BuildContext context, BikeModel bike) {
           // Allow content to scroll
           child: Column(
             children: [
-              Text(
+              const Text(
                 'The lock combination is:',
                 textAlign: TextAlign.center, // Center align text
               ),
               Text(
                 ' ${bike.code}',
                 textAlign: TextAlign.center, // Center align text
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
-              Text(
+              const Text(
                 'You have 8 hours to return the bike',
                 textAlign: TextAlign.center, // Center align text
               ),
@@ -111,7 +112,7 @@ void checkOutBike(BuildContext context, BikeModel bike) {
               onPressed: () {
                 Navigator.of(context).pop(); // Close the pop-out dialog box
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ),
         ],
