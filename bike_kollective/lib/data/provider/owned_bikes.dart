@@ -81,11 +81,12 @@ class OwnedBikesNotifier extends StateNotifier<List<BikeModel>> {
       String? newImageLocalPath}) async {
     try {
       var updatedBike = await dbAccess.updateBike(bike.copyWith(
-          name: newName,
-          type: newType,
-          description: newDescription,
-          code: newCode,
-          imageUrl: newImageLocalPath));
+        name: newName,
+        type: newType,
+        description: newDescription,
+        code: newCode,
+        imageUrl: newImageLocalPath,
+      ));
       // Update the bike in the list (force state update)
       state = state.map((b) {
         if (b.docRef == updatedBike.docRef) {

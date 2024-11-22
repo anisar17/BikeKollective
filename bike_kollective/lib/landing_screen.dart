@@ -1,8 +1,6 @@
 import 'package:bike_kollective/data/model/user.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:bike_kollective/authentication_screen.dart';
 
 class LandingScreen extends StatelessWidget {
   const LandingScreen({super.key});

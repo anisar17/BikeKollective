@@ -1,11 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:bike_kollective/data/model/user.dart';
-import 'package:bike_kollective/data/provider/database.dart';
 import 'package:bike_kollective/data/provider/active_user.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:bike_kollective/home_screen.dart';
 
 class AuthenticationScreen extends ConsumerWidget {
 

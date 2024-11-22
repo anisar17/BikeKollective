@@ -254,7 +254,8 @@ class AddBikeScreen extends ConsumerWidget {
                                 ElevatedButton(
                                   child: const Text('OK'),
                                   onPressed: () {
-                                    Navigator.of(context).pop();
+                                    // Navigate back to home screen
+                                    Navigator.pushReplacementNamed(context, '/home');
                                   },
                                 ),
                               ],

@@ -1,4 +1,3 @@
-
 import 'package:bike_kollective/data/model/bk_document_reference.dart';
 import 'package:bike_kollective/data/model/bk_geo_point.dart';
 
@@ -44,7 +43,7 @@ class BikeModel {
     required String code,
     required String imageLocalPath,
     required BKGeoPoint startingPoint,
-    }) {
+  }) {
     // Start the bike
     return BikeModel(
       docRef: null,
@@ -62,7 +61,8 @@ class BikeModel {
     );
   }
 
-  factory BikeModel.fromMap(Map<String, dynamic> map, {required BKDocumentReference? docRef}) {
+  factory BikeModel.fromMap(Map<String, dynamic> map,
+      {required BKDocumentReference? docRef}) {
     return BikeModel(
       docRef: docRef,
       owner: map["owner"],
