@@ -49,25 +49,26 @@ class _CurrentRideScreenState extends State<CurrentRideScreen> {
         : Duration.zero;
   }
 
-void reportIssue(BuildContext context) {
-  setState(() {
-    isDialogOpen = true; // Set the dialog open state to true
-  });
+  void reportIssue(BuildContext context) {
+    setState(() {
+      isDialogOpen = true; // Set the dialog open state to true
+    });
 
-  // Use the reportIssue method from the updated dialog
-  showDialog(
-    context: context,
-    builder: (context) {
-      return ReportIssueDialog(
-        onClose: () {
-          setState(() {
-            isDialogOpen = false; // Close the dialog and update state
-          });
-        },
-      );
-    },
-  );
-}
+    // Use the reportIssue method from the updated dialog
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ReportIssueDialog(
+          onClose: () {
+            setState(() {
+              isDialogOpen = false; // Close the dialog and update state
+            });
+            Navigator.of(context).pop(); // Close the dialog
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
