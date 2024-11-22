@@ -8,7 +8,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Report Issue Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -21,19 +20,15 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Report Issue Example'),
-      ),
       body: Center(
         child: ElevatedButton(
           onPressed: () => reportIssue(context),
-          child: Text('Report an Issue'),
+          child: Text("Report an Issue"),
         ),
       ),
     );
   }
 }
-
 void reportIssue(BuildContext context) {
   showDialog(
     context: context,
@@ -46,7 +41,7 @@ void reportIssue(BuildContext context) {
 }
 
 class ReportIssueDialog extends StatefulWidget {
-  final VoidCallback onClose; // Add the onClose callback
+  final VoidCallback onClose;
 
   ReportIssueDialog({Key? key, required this.onClose}) : super(key: key);
 
@@ -56,7 +51,7 @@ class ReportIssueDialog extends StatefulWidget {
 
 class _ReportIssueDialogState extends State<ReportIssueDialog> {
   final TextEditingController feedbackController = TextEditingController();
-  String selectedIssueType = "Select an Issue";
+  String selectedIssueType = "";
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -70,7 +65,7 @@ class _ReportIssueDialogState extends State<ReportIssueDialog> {
     return AlertDialog(
       title: const Center(
         child: Text(
-          'Report an Issue',
+          "Report an Issue",
           textAlign: TextAlign.center,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
@@ -84,37 +79,39 @@ class _ReportIssueDialogState extends State<ReportIssueDialog> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _issueButton('STOLEN'),
-                  _issueButton('NOT IN WORKING CONDITION'),
+                  _issueButton("STOLEN"),
+                  _issueButton("NOT IN WORKING CONDITION"),
                 ],
               ),
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _issueButton('LOCK WON\'T WORK'),
-                  _issueButton('LOCK MISSING'),
+                  _issueButton("LOCK WON'T WORK"),
+                  _issueButton("LOCK MISSING"),
                 ],
               ),
               const SizedBox(height: 20),
               Text(
-                selectedIssueType,
+                selectedIssueType.isNotEmpty ? selectedIssueType : "Please select an issue",
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               TextFormField(
                 controller: feedbackController,
                 decoration: const InputDecoration(
-                  hintText: "Type your feedback here...",
+                  hintText: "Type your feedback here (optional)...",
                   hintStyle: TextStyle(color: Colors.grey),
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 5,
+                // Make feedback optional, so remove the validator:
+                // You can add a comment to acknowledge an empty feedback
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your feedback';
+                  if (selectedIssueType.isEmpty) {
+                    return "Please select an issue type";
                   }
-                  return null;
+                  return null; // Allow empty feedback
                 },
               ),
             ],
@@ -128,14 +125,14 @@ class _ReportIssueDialogState extends State<ReportIssueDialog> {
               if (_formKey.currentState!.validate()) {
                 String feedbackText = feedbackController.text;
                 print("Feedback for $selectedIssueType: $feedbackText");
-                widget.onClose(); // Invoke the onClose callback
+                widget.onClose(); // Close the dialog after "Submit" is pressed
               }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
               foregroundColor: Colors.white,
             ),
-            child: const Text('SUBMIT'),
+            child: const Text("SUBMIT"),
           ),
         ),
       ],
