@@ -29,12 +29,13 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+
 void reportIssue(BuildContext context) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return ReportIssueDialog(onClose: () {
-        Navigator.of(context).pop(); // Closes the dialog
+        Navigator.of(context).pop();  // Close the dialog from the callback
       });
     },
   );
@@ -105,8 +106,6 @@ class _ReportIssueDialogState extends State<ReportIssueDialog> {
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 5,
-                // Make feedback optional, so remove the validator:
-                // You can add a comment to acknowledge an empty feedback
                 validator: (value) {
                   if (selectedIssueType.isEmpty) {
                     return "Please select an issue type";
@@ -125,7 +124,7 @@ class _ReportIssueDialogState extends State<ReportIssueDialog> {
               if (_formKey.currentState!.validate()) {
                 String feedbackText = feedbackController.text;
                 print("Feedback for $selectedIssueType: $feedbackText");
-                widget.onClose(); // Close the dialog after "Submit" is pressed
+                widget.onClose(); // Call the onClose callback to close the dialog
               }
             },
             style: ElevatedButton.styleFrom(
