@@ -18,6 +18,16 @@ final activeRideProvider = StateNotifierProvider<ActiveRideNotifier, RideModel?>
   return ActiveRideNotifier(dbAccess, locAccess, errorNotifier, activeUser); 
 });
 
+int getPointsForRider() {
+  // Each ride earns the bike rider 10 points
+  return 10;
+}
+
+int getPointsForOwner(RideReview review) {
+  // Each ride earns the bike owner 10 points for each star above 1
+  return (review.stars > 1) ? 10 * review.stars - 1 : 0;
+}
+
 // The active ride is handled by this class
 // Note: there can only be one active ride at a time for a given user
 class ActiveRideNotifier extends StateNotifier<RideModel?> {
@@ -58,17 +68,90 @@ class ActiveRideNotifier extends StateNotifier<RideModel?> {
         logMessage: "Can only have one active ride at a time"));
     }
     else {
-      // TODO - implement
+      try {
+        state = await dbAccess.addRide(RideModel.newRide(rider: activeUser!, bike: bike));
+        // Change the bike status to in use, so it no longer appears in the available list
+        await dbAccess.updateBike(bike.copyWith(status: BikeStatus.inUse));
+      } catch(e) {
+        errorNotifier.report(AppError(
+          category: ErrorCategory.database,
+          displayMessage: "Could not start ride",
+          logMessage: "Could not start ride: $e"));
+      }
     }
   }
 
-  Future<void> finishRide() async {
-    // End a ride normally
-    // TODO - implement
+  Future<void> finishRide(RideReview review) async {
+    if(state == null) {
+      errorNotifier.report(AppError(
+        category: ErrorCategory.state,
+        displayMessage: null,
+        logMessage: "Can only finish an active ride"));
+    }
+    else {
+      try {
+        var point = await locAccess.getCurrent();
+        try {
+          var time = DateTime.now();
+          await dbAccess.updateRide(state!.copyWith(finishPoint: point, finishTime: time, review: review));
+          // Update bike status to available, the bike location statistics,
+          // and the bike rating statistics.
+          var bike = await dbAccess.getBikeByReference(state!.bike);
+          await dbAccess.updateBike(bike.copyWith(
+            status: BikeStatus.available,
+            locationPoint: point,
+            locationUpdated: time,
+            totalStars: bike.totalStars + review.stars,
+            totalReviews: bike.totalReviews + 1));
+          // Reward the bike rider (the current user) points
+          await dbAccess.updateUser(activeUser!.copyWith(points: activeUser!.points + getPointsForRider()));
+          // Reward the bike owner points
+          var owner = await dbAccess.getUserByReference(bike.owner);
+          await dbAccess.updateUser(owner.copyWith(points: owner.points + getPointsForOwner(review)));
+          // Ending a ride makes it no longer active
+          state = null;
+        } catch(e) {
+          errorNotifier.report(AppError(
+            category: ErrorCategory.database,
+            displayMessage: "Could not finish ride",
+            logMessage: "Could not finish ride: $e"));
+        }
+      } catch(e) {
+        errorNotifier.report(AppError(
+          category: ErrorCategory.location,
+          displayMessage: "Could not get user location",
+          logMessage: "Could not get user location: $e"));
+      }
+    }
   }
 
   Future<void> reportIssue(IssueModel issue) async {
     // End a ride because of an issue reported mid-ride
-    // TODO - implement
+    if(state == null) {
+      errorNotifier.report(AppError(
+        category: ErrorCategory.state,
+        displayMessage: null,
+        logMessage: "Can only report a ride issue for an active ride"));
+    }
+    else {
+      try {
+        var point = await locAccess.getCurrent();
+        try {
+          await dbAccess.updateRide(state!.copyWith(finishPoint: point, finishTime: DateTime.now()));
+          // Ending a ride makes it no longer active
+          state = null;
+        } catch(e) {
+          errorNotifier.report(AppError(
+            category: ErrorCategory.database,
+            displayMessage: "Could not finish ride",
+            logMessage: "Could not finish ride: $e"));
+        }
+      } catch(e) {
+        errorNotifier.report(AppError(
+          category: ErrorCategory.location,
+          displayMessage: "Could not get user location",
+          logMessage: "Could not get user location: $e"));
+      }
+    }
   }
 }

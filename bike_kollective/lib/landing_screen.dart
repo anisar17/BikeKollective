@@ -1,3 +1,4 @@
+import 'package:bike_kollective/data/model/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -77,7 +78,19 @@ class LandingScreen extends StatelessWidget {
                   const SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/auth');
+                      final userModelInstance = UserModel(
+                        docRef: null, 
+                        uid: '', 
+                        verified: null, 
+                        agreed: null, 
+                        banned: null, 
+                        points: 0
+                      );
+                      Navigator.pushReplacementNamed(
+                        context, 
+                        '/auth',
+                        arguments: userModelInstance,
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueAccent.shade700,

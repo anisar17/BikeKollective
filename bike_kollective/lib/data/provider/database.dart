@@ -12,18 +12,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Note: all accesses to database interface should be made through this provider
 // so that we can hide the implementation details and allow for test mocks
 final databaseProvider = Provider<BKDB>((ref) {
-  return DummyData(); // Uncomment to work with dummy data instead of real backend
+  //return DummyData(); // Uncomment to work with dummy data instead of real backend
   return RealFirestore();
 });
 
 // Interface for Bike Kollective database (implementations are below)
 abstract class BKDB {
   // User CRUD operations
-  Future<UserModel> addUser(UserModel user);
+  Future<UserModel> addUser(String uid) ;
   Future<UserModel> getUserByReference(BKDocumentReference ref);
   Future<UserModel> getUserByUid(String uid);
   Future<UserModel> updateUser(UserModel user);
-  Future<void> deleteUser(UserModel user);
+  // deleteUser not needed yet
 
   // Bike CRUD operations
   Future<BikeModel> addBike(BikeModel bike);
@@ -39,13 +39,13 @@ abstract class BKDB {
   Future<RideModel?> getActiveRideForUser(UserModel user);
   Future<List<RideModel>> getRidesTakenByUser(UserModel user);
   Future<RideModel> updateRide(RideModel ride);
-  Future<void> deleteRide(RideModel ride);
+  // deleteRide not needed yet
 
   // Issue CRUD operations
   Future<IssueModel> addIssue(IssueModel issue);
   Future<IssueModel> getIssueByReference(BKDocumentReference ref);
   Future<IssueModel> updateIssue(IssueModel issue);
-  Future<void> deleteIssue(IssueModel issue);
+  // deleteIssue not needed yet
 }
 
 // This database implementation can be used by developers while developing the UI
@@ -109,22 +109,29 @@ class DummyData extends BKDB {
     rides.clear();
     issues.clear();
     nextId = 0;
+
     // Store initial fake data
+
     // Fake users
-    var fakeUserRef = add(UserModel(
-        docRef: null,
-        uid: "FAKE_UID",
-        verified: DateTime.now(),
-        agreed: DateTime.now(),
-        banned: null,
-        points: 10,
-        owns: [],
-        rides: []));
+    var fakeUserRef1 = add(UserModel(
+      docRef: null,
+      uid: "FAKE_UID1",
+      verified: DateTime.now(),
+      agreed: DateTime.now(),
+      banned: null,
+      points: 10));
+    var fakeUserRef2 = add(UserModel(
+      docRef: null,
+      uid: "FAKE_UID2",
+      verified: DateTime.now(),
+      agreed: DateTime.now(),
+      banned: null,
+      points: 20));
 
     // Fake bikes
     add(BikeModel(
       docRef: null,
-      owner: fakeUserRef,
+      owner: fakeUserRef1,
       name: "Trek Road Bike",
       type: BikeType.road,
       description: "Good road bike for cruising around town.",
@@ -132,14 +139,14 @@ class DummyData extends BKDB {
       imageUrl:
           "https://c02.purpledshub.com/uploads/sites/39/2023/05/Trek-Emonda-AL5-02-2406262.jpg?w=1240&webp=1",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationPoint: const BKGeoPoint(44.5646, -123.2620),
       locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
+      totalStars: 0,
+      totalReviews: 0
     ));
     add(BikeModel(
       docRef: null,
-      owner: fakeUserRef,
+      owner: fakeUserRef1,
       name: "Specialized Mountain Bike",
       type: BikeType.mountain,
       description:
@@ -148,14 +155,14 @@ class DummyData extends BKDB {
       imageUrl:
           "https://bikepacking.com/wp-content/uploads/2020/05/2021-specialized-rockhopper-2-2000x1333.jpg",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6027, 122.3128),
+      locationPoint: const BKGeoPoint(44.5671, -123.2630),
       locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
+      totalStars: 5,
+      totalReviews: 1
     ));
     add(BikeModel(
       docRef: null,
-      owner: fakeUserRef,
+      owner: fakeUserRef1,
       name: "Chill Beach Cruiser",
       type: BikeType.road,
       description:
@@ -164,14 +171,14 @@ class DummyData extends BKDB {
       imageUrl:
           "https://www.beachbikes.net/cdn/shop/products/f_urban_m_7_black_1024x1024.jpg?v=1482298636",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationPoint: const BKGeoPoint(44.5649, -123.2782),
       locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
+      totalStars: 7,
+      totalReviews: 2
     ));
     add(BikeModel(
       docRef: null,
-      owner: fakeUserRef,
+      owner: fakeUserRef2,
       name: "Tandem Mountain Bike",
       type: BikeType.tandem,
       description:
@@ -180,262 +187,10 @@ class DummyData extends BKDB {
       imageUrl:
           "https://images.squarespace-cdn.com/content/v1/569e5cb8bfe8737de92ed0d2/1652375207957-Q54Q0YUK7TY7N8CVBEAQ/TrekT900Tandem_preview.jpg?format=750w",
       status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
+      locationPoint: const BKGeoPoint(47.6086, -122.3098),
       locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Trek Road Bike",
-      type: BikeType.road,
-      description: "Good road bike for cruising around town.",
-      code: "1234",
-      imageUrl:
-          "https://c02.purpledshub.com/uploads/sites/39/2023/05/Trek-Emonda-AL5-02-2406262.jpg?w=1240&webp=1",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Specialized Mountain Bike",
-      type: BikeType.mountain,
-      description:
-          "Great mountain bike for shredding trails and tearing up jumps.",
-      code: "1234",
-      imageUrl:
-          "https://bikepacking.com/wp-content/uploads/2020/05/2021-specialized-rockhopper-2-2000x1333.jpg",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6027, 122.3128),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Chill Beach Cruiser",
-      type: BikeType.road,
-      description:
-          "Beach cruiser for a leisurely ride. Great for cruising around town.",
-      code: "1234",
-      imageUrl:
-          "https://www.beachbikes.net/cdn/shop/products/f_urban_m_7_black_1024x1024.jpg?v=1482298636",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Tandem Mountain Bike",
-      type: BikeType.tandem,
-      description:
-          "Awesome tandem mountain bike for hitting the trails with a friend or just cruising around town.",
-      code: "1234",
-      imageUrl:
-          "https://images.squarespace-cdn.com/content/v1/569e5cb8bfe8737de92ed0d2/1652375207957-Q54Q0YUK7TY7N8CVBEAQ/TrekT900Tandem_preview.jpg?format=750w",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Trek Road Bike",
-      type: BikeType.road,
-      description: "Good road bike for cruising around town.",
-      code: "1234",
-      imageUrl:
-          "https://c02.purpledshub.com/uploads/sites/39/2023/05/Trek-Emonda-AL5-02-2406262.jpg?w=1240&webp=1",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Specialized Mountain Bike",
-      type: BikeType.mountain,
-      description:
-          "Great mountain bike for shredding trails and tearing up jumps.",
-      code: "1234",
-      imageUrl:
-          "https://bikepacking.com/wp-content/uploads/2020/05/2021-specialized-rockhopper-2-2000x1333.jpg",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6027, 122.3128),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Chill Beach Cruiser",
-      type: BikeType.road,
-      description:
-          "Beach cruiser for a leisurely ride. Great for cruising around town.",
-      code: "1234",
-      imageUrl:
-          "https://www.beachbikes.net/cdn/shop/products/f_urban_m_7_black_1024x1024.jpg?v=1482298636",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Tandem Mountain Bike",
-      type: BikeType.tandem,
-      description:
-          "Awesome tandem mountain bike for hitting the trails with a friend or just cruising around town.",
-      code: "1234",
-      imageUrl:
-          "https://images.squarespace-cdn.com/content/v1/569e5cb8bfe8737de92ed0d2/1652375207957-Q54Q0YUK7TY7N8CVBEAQ/TrekT900Tandem_preview.jpg?format=750w",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Trek Road Bike",
-      type: BikeType.road,
-      description: "Good road bike for cruising around town.",
-      code: "1234",
-      imageUrl:
-          "https://c02.purpledshub.com/uploads/sites/39/2023/05/Trek-Emonda-AL5-02-2406262.jpg?w=1240&webp=1",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Specialized Mountain Bike",
-      type: BikeType.mountain,
-      description:
-          "Great mountain bike for shredding trails and tearing up jumps.",
-      code: "1234",
-      imageUrl:
-          "https://bikepacking.com/wp-content/uploads/2020/05/2021-specialized-rockhopper-2-2000x1333.jpg",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6027, 122.3128),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Chill Beach Cruiser",
-      type: BikeType.road,
-      description:
-          "Beach cruiser for a leisurely ride. Great for cruising around town.",
-      code: "1234",
-      imageUrl:
-          "https://www.beachbikes.net/cdn/shop/products/f_urban_m_7_black_1024x1024.jpg?v=1482298636",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Tandem Mountain Bike",
-      type: BikeType.tandem,
-      description:
-          "Awesome tandem mountain bike for hitting the trails with a friend or just cruising around town.",
-      code: "1234",
-      imageUrl:
-          "https://images.squarespace-cdn.com/content/v1/569e5cb8bfe8737de92ed0d2/1652375207957-Q54Q0YUK7TY7N8CVBEAQ/TrekT900Tandem_preview.jpg?format=750w",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Trek Road Bike",
-      type: BikeType.road,
-      description: "Good road bike for cruising around town.",
-      code: "1234",
-      imageUrl:
-          "https://c02.purpledshub.com/uploads/sites/39/2023/05/Trek-Emonda-AL5-02-2406262.jpg?w=1240&webp=1",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Specialized Mountain Bike",
-      type: BikeType.mountain,
-      description:
-          "Great mountain bike for shredding trails and tearing up jumps.",
-      code: "1234",
-      imageUrl:
-          "https://bikepacking.com/wp-content/uploads/2020/05/2021-specialized-rockhopper-2-2000x1333.jpg",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6027, 122.3128),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Chill Beach Cruiser",
-      type: BikeType.road,
-      description:
-          "Beach cruiser for a leisurely ride. Great for cruising around town.",
-      code: "1234",
-      imageUrl:
-          "https://www.beachbikes.net/cdn/shop/products/f_urban_m_7_black_1024x1024.jpg?v=1482298636",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
-    ));
-    add(BikeModel(
-      docRef: null,
-      owner: fakeUserRef,
-      name: "Tandem Mountain Bike",
-      type: BikeType.tandem,
-      description:
-          "Awesome tandem mountain bike for hitting the trails with a friend or just cruising around town.",
-      code: "1234",
-      imageUrl:
-          "https://images.squarespace-cdn.com/content/v1/569e5cb8bfe8737de92ed0d2/1652375207957-Q54Q0YUK7TY7N8CVBEAQ/TrekT900Tandem_preview.jpg?format=750w",
-      status: BikeStatus.available,
-      locationPoint: const BKGeoPoint(47.6061, 122.3328),
-      locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
+      totalStars: 12,
+      totalReviews: 3
     ));
 
     // Fake rides
@@ -443,398 +198,375 @@ class DummyData extends BKDB {
 
     // Fake issues
     // TODO - add more fake issues
-
-    // Update the references between documents
-    // Populate "owns" in UserModels
-    for (var bike in bikes.values) {
-      var ownerId = bike.owner.fakeDocumentId!;
-      users[ownerId] = users[ownerId]!
-          .copyWith(owns: [...(users[ownerId]!.owns), bike.docRef!]);
-    }
-    // TODO - update any other relationships
   }
 
   // User CRUD operations
 
   @override
-  Future<UserModel> addUser(UserModel user) {
-    var ref = add(user);
+  Future<UserModel> addUser(String uid) async {
+    var ref = add(UserModel.newUser(uid: uid));
     return getUserByReference(ref);
   }
 
   @override
-  Future<UserModel> getUserByReference(BKDocumentReference ref) {
-    return Future<UserModel>.sync(() {
-      return users[ref.fakeDocumentId!]!;
-    });
+  Future<UserModel> getUserByReference(BKDocumentReference ref) async {
+    return users[ref.fakeDocumentId!]!;
   }
 
   @override
-  Future<UserModel> getUserByUid(String uid) {
+  Future<UserModel> getUserByUid(String uid) async {
     for (var user in users.values) {
       if (user.uid == uid) {
-        return Future<UserModel>.value(user);
+        return user;
       }
     }
-    return Future<UserModel>.error(Exception("User not found"));
+    throw Exception("User not found");
   }
 
   @override
-  Future<UserModel> updateUser(UserModel user) {
+  Future<UserModel> updateUser(UserModel user) async {
     var id = user.docRef!.fakeDocumentId!;
-    return Future<UserModel>.sync(() {
-      return users.update(id, (old) {
-        return user;
-      });
-    });
-  }
-
-  @override
-  Future<void> deleteUser(UserModel user) {
-    var id = user.docRef!.fakeDocumentId!;
-    users.remove(id);
-    return Future<void>.value();
+    return users.update(id, (old) {return user;});
   }
 
   // Bike CRUD operations
 
   @override
-  Future<BikeModel> addBike(BikeModel bike) {
+  Future<BikeModel> addBike(BikeModel bike) async {
     var ref = add(bike);
     return getBikeByReference(ref);
   }
 
   @override
-  Future<BikeModel> getBikeByReference(BKDocumentReference ref) {
-    return Future<BikeModel>.sync(() {
-      return bikes[ref.fakeDocumentId!]!;
-    });
+  Future<BikeModel> getBikeByReference(BKDocumentReference ref) async {
+    return bikes[ref.fakeDocumentId!]!;
   }
 
   @override
-  Future<List<BikeModel>> getAvailableBikesNearPoint(BKGeoPoint point) {
+  Future<List<BikeModel>> getAvailableBikesNearPoint(BKGeoPoint point) async {
     const nearbyDegrees = 0.1; // About 7 miles
-    return Future<List<BikeModel>>.sync(() {
-      List<BikeModel> nearbyBikes = [];
-      for (var bike in bikes.values) {
-        if (bike.status == BikeStatus.available) {
-          if (((bike.locationPoint.latitude - point.latitude).abs() <
-                  nearbyDegrees) &&
-              ((bike.locationPoint.longitude - point.longitude).abs() <
-                  nearbyDegrees)) {
-            nearbyBikes.add(bike);
-          }
+    List<BikeModel> nearbyBikes = [];
+    for (var bike in bikes.values) {
+      if (bike.status == BikeStatus.available) {
+        if (((bike.locationPoint.latitude - point.latitude).abs() <
+                nearbyDegrees) &&
+            ((bike.locationPoint.longitude - point.longitude).abs() <
+                nearbyDegrees)) {
+          nearbyBikes.add(bike);
         }
       }
-      return nearbyBikes;
-    });
-  }
-
-  // @override
-  // Future<List<BikeModel>> getBikesOwnedByUser(UserModel user) {
-  //   return Future<List<BikeModel>>.sync(() {
-  //     List<BikeModel> ownedBikes = [];
-  //     for(var ref in user.owns) {
-  //       ownedBikes.add(bikes[ref.fakeDocumentId!]!);
-  //     }
-  //     return ownedBikes;
-  //   });
-  // }
-
-  @override
-  Future<List<BikeModel>> getBikesOwnedByUser(UserModel user) {
-    return Future<List<BikeModel>>.sync(() {
-      return [
-        BikeModel(
-          docRef: BKDocumentReference.fake("B1"),
-          owner: user.docRef!,
-          name: "Trek Road Bike",
-          type: BikeType.road,
-          description: "Good road bike for cruising around town.",
-          code: "1234",
-          imageUrl: "https://example.com/trek_road_bike.jpg",
-          status: BikeStatus.available,
-          locationPoint: const BKGeoPoint(47.6062, 122.3328),
-          locationUpdated: DateTime.now(),
-          rides: [],
-          issues: [],
-        ),
-        BikeModel(
-          docRef: BKDocumentReference.fake("B2"),
-          owner: user.docRef!,
-          name: "Specialized Mountain Bike",
-          type: BikeType.mountain,
-          description: "Great mountain bike for trails.",
-          code: "5678",
-          imageUrl: "https://example.com/specialized_mountain_bike.jpg",
-          status: BikeStatus.available,
-          locationPoint: const BKGeoPoint(47.6027, 122.3128),
-          locationUpdated: DateTime.now(),
-          rides: [],
-          issues: [],
-        ),
-        BikeModel(
-          docRef: BKDocumentReference.fake("B3"),
-          owner: user.docRef!,
-          name: "Chill Beach Cruiser",
-          type: BikeType.road,
-          description: "Beach cruiser for a relaxed ride.",
-          code: "9101",
-          imageUrl: "https://example.com/chill_beach_cruiser.jpg",
-          status: BikeStatus.available,
-          locationPoint: const BKGeoPoint(47.6061, 122.3328),
-          locationUpdated: DateTime.now(),
-          rides: [],
-          issues: [],
-        ),
-      ];
-    });
+    }
+    return nearbyBikes;
   }
 
   @override
-  Future<BikeModel> updateBike(BikeModel bike) {
+  Future<List<BikeModel>> getBikesOwnedByUser(UserModel user) async {
+    List<BikeModel> ownedBikes = [];
+    for (var bike in bikes.values) {
+      if(bike.owner == user.docRef) {
+        ownedBikes.add(bike);
+      }
+    }
+    return ownedBikes;
+  }
+
+  @override
+  Future<BikeModel> updateBike(BikeModel bike) async {
     var id = bike.docRef!.fakeDocumentId!;
-    return Future<BikeModel>.sync(() {
-      return bikes.update(id, (old) {
-        return bike;
-      });
-    });
+    return bikes.update(id, (_) {return bike;});
   }
 
   @override
-  Future<void> deleteBike(BikeModel bike) {
+  Future<void> deleteBike(BikeModel bike) async {
     var id = bike.docRef!.fakeDocumentId!;
     bikes.remove(id);
-    return Future<void>.value();
   }
 
   // Ride CRUD operations
 
   @override
-  Future<RideModel> addRide(RideModel ride) {
+  Future<RideModel> addRide(RideModel ride) async {
     var ref = add(ride);
     return getRideByReference(ref);
   }
 
   @override
-  Future<RideModel> getRideByReference(BKDocumentReference ref) {
-    return Future<RideModel>.sync(() {
-      return rides[ref.fakeDocumentId!]!;
-    });
+  Future<RideModel> getRideByReference(BKDocumentReference ref) async {
+    return rides[ref.fakeDocumentId!]!;
   }
 
   @override
-  Future<RideModel?> getActiveRideForUser(UserModel user) {
+  Future<RideModel?> getActiveRideForUser(UserModel user) async {
     // Note: this function assumes only one active ride
-    return Future<RideModel?>.sync(() {
-      RideModel? activeRide;
-      for (var ref in user.rides) {
-        var ride = rides[ref.fakeDocumentId!]!;
-        if (!ride.isFinished()) {
-          activeRide = ride;
-          break;
-        }
+    RideModel? activeRide;
+    for (var ride in rides.values) {
+      if(ride.rider == user.docRef && !ride.isFinished()) {
+        activeRide = ride;
+        break;
       }
-      return activeRide;
-    });
+    }
+    return activeRide;
   }
 
   @override
-  Future<List<RideModel>> getRidesTakenByUser(UserModel user) {
-    return Future<List<RideModel>>.sync(() {
-      List<RideModel> ridesTaken = [];
-      for (var ref in user.rides) {
-        ridesTaken.add(rides[ref.fakeDocumentId!]!);
+  Future<List<RideModel>> getRidesTakenByUser(UserModel user) async {
+    List<RideModel> ridesTaken = [];
+    for (var ride in rides.values) {
+      if(ride.rider == user.docRef) {
+        ridesTaken.add(ride);
       }
-      return ridesTaken;
-    });
+    }
+    return ridesTaken;
   }
 
   @override
-  Future<RideModel> updateRide(RideModel ride) {
+  Future<RideModel> updateRide(RideModel ride) async {
     var id = ride.docRef!.fakeDocumentId!;
-    return Future<RideModel>.sync(() {
-      return rides.update(id, (old) {
-        return ride;
-      });
-    });
-  }
-
-  @override
-  Future<void> deleteRide(RideModel ride) {
-    var id = ride.docRef!.fakeDocumentId!;
-    rides.remove(id);
-    return Future<void>.value();
+    return rides.update(id, (old) {return ride;});
   }
 
   // Issue CRUD operations
 
   @override
-  Future<IssueModel> addIssue(IssueModel issue) {
+  Future<IssueModel> addIssue(IssueModel issue) async {
     var ref = add(issue);
     return getIssueByReference(ref);
   }
 
   @override
-  Future<IssueModel> getIssueByReference(BKDocumentReference ref) {
-    return Future<IssueModel>.sync(() {
-      return issues[ref.fakeDocumentId!]!;
-    });
+  Future<IssueModel> getIssueByReference(BKDocumentReference ref) async {
+    return issues[ref.fakeDocumentId!]!;
   }
 
   @override
-  Future<IssueModel> updateIssue(IssueModel issue) {
+  Future<IssueModel> updateIssue(IssueModel issue) async {
     var id = issue.docRef!.fakeDocumentId!;
-    return Future<IssueModel>.sync(() {
-      return issues.update(id, (old) {
-        return issue;
-      });
-    });
-  }
-
-  @override
-  Future<void> deleteIssue(IssueModel issue) {
-    var id = issue.docRef!.fakeDocumentId!;
-    issues.remove(id);
-    return Future<void>.value();
+    return issues.update(id, (_) {return issue;});
   }
 }
 
-// TODO - define Mocks for automated testing? Perhaps later
-
 // This database implementation interacts with the Firestore backend
 class RealFirestore extends BKDB {
+
+  // Helper functions
+
+  void _applyWrappers(Map<String, dynamic> data) {
+    // Wrap the Firestore types
+    data.updateAll((_, value) {
+      if(value is DocumentReference<Map<String, dynamic>>) {
+        return BKDocumentReference.firestore(value);
+      } else if(value is GeoPoint) {
+        return BKGeoPoint.fromGeoPoint(value);
+      } else if(value is GeoPoint?) {
+        return value != null ? BKGeoPoint.fromGeoPoint(value) : null;
+      } else {
+        return value;
+      }
+    });
+  }
+
+  void _removeWrappers(Map<String, dynamic> data) {
+    data.updateAll((_, value) {
+      // Extract the Firestore types
+      if(value is BKDocumentReference) {
+        return value.firestoreDocumentReference!;
+      } else if(value is BKGeoPoint) {
+        return value.toGeoPoint();
+      } else if(value is BKGeoPoint?) {
+        return value?.toGeoPoint();
+      } else {
+        return value;
+      }
+    });
+  }
+
+  UserModel _userFromFirestore(Map<String, dynamic> data, DocumentReference<Map<String, dynamic>> ref) {
+    _applyWrappers(data);
+    return UserModel.fromMap(data, docRef: BKDocumentReference.firestore(ref));
+  }
+
+  BikeModel _bikeFromFirestore(Map<String, dynamic> data, DocumentReference<Map<String, dynamic>> ref) {
+    _applyWrappers(data);
+    return BikeModel.fromMap(data, docRef: BKDocumentReference.firestore(ref));
+  }
+
+  RideModel _rideFromFirestore(Map<String, dynamic> data, DocumentReference<Map<String, dynamic>> ref) {
+    _applyWrappers(data);
+    return RideModel.fromMap(data, docRef: BKDocumentReference.firestore(ref));
+  }
+
+  IssueModel _issueFromFirestore(Map<String, dynamic> data, DocumentReference<Map<String, dynamic>> ref) {
+    _applyWrappers(data);
+    return IssueModel.fromMap(data, docRef: BKDocumentReference.firestore(ref));
+  }
+
+  Map<String, dynamic> _toFirestore<T>(T model) {
+    // Helper to convert a model class to a Firestore data map, removing type wrappers
+    var data = <String, dynamic>{};
+    if (T == UserModel) {
+      data = (model as UserModel).toMap();
+    } else if (T == BikeModel) {
+      data = (model as BikeModel).toMap();
+    } else if (T == RideModel) {
+      data = (model as RideModel).toMap();
+    } else if (T == IssueModel) {
+      data = (model as IssueModel).toMap();
+    } else {
+      assert(false, "Unknown data type");
+    }
+    _removeWrappers(data);
+    return data;
+  }
+
   // User CRUD operations
 
   @override
-  Future<UserModel> addUser(UserModel user) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<UserModel> addUser(String uid) async {
+    var data = _toFirestore(UserModel.newUser(uid: uid));
+    var ref = await FirebaseFirestore.instance.collection("users").add(data);
+    return _userFromFirestore(data, ref);
   }
 
   @override
-  Future<UserModel> getUserByReference(BKDocumentReference ref) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<UserModel> getUserByReference(BKDocumentReference ref) async {
+    var snapshot = await ref.firestoreDocumentReference!.get();
+    var data = snapshot.data()!;
+    return _userFromFirestore(data, snapshot.reference);
   }
 
   @override
-  Future<UserModel> getUserByUid(String uid) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<UserModel> getUserByUid(String uid) async {
+    var snapshot = await FirebaseFirestore.instance.collection("users")
+      .where("uid", isEqualTo: uid)
+      .get();
+    var data = snapshot.docs[0].data();
+    return _userFromFirestore(data, snapshot.docs[0].reference);
   }
 
   @override
-  Future<UserModel> updateUser(UserModel user) {
-    // TODO: implement
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> deleteUser(UserModel user) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<UserModel> updateUser(UserModel user) async {
+    var data = _toFirestore(user);
+    await user.docRef!.firestoreDocumentReference!.set(data);
+    return user;
   }
 
   // Bike CRUD operations
 
   @override
-  Future<BikeModel> addBike(BikeModel bike) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<BikeModel> addBike(BikeModel bike) async {
+    var data = _toFirestore(bike);
+    var ref = await FirebaseFirestore.instance.collection("bikes").add(data);
+    return _bikeFromFirestore(data, ref);
   }
 
   @override
-  Future<BikeModel> getBikeByReference(BKDocumentReference ref) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<BikeModel> getBikeByReference(BKDocumentReference ref) async {
+    var snapshot = await ref.firestoreDocumentReference!.get();
+    var data = snapshot.data()!;
+    return _bikeFromFirestore(data, snapshot.reference);
   }
 
   @override
-  Future<List<BikeModel>> getAvailableBikesNearPoint(BKGeoPoint point) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<List<BikeModel>> getAvailableBikesNearPoint(BKGeoPoint point) async {
+    const nearbyDegrees = 0.1; // About 7 miles
+    var lesserPoint = GeoPoint(point.latitude - nearbyDegrees, point.longitude - nearbyDegrees);
+    var greaterPoint = GeoPoint(point.latitude + nearbyDegrees, point.longitude + nearbyDegrees);
+    var snapshot = await FirebaseFirestore.instance.collection("bikes")
+      .where("locationPoint", isGreaterThan: lesserPoint)
+      .where("locationPoint", isLessThan: greaterPoint)
+      .where("status", isEqualTo: "available")
+      .get();
+    return snapshot.docs.map((doc) => _bikeFromFirestore(doc.data(), doc.reference)).toList();
   }
 
   @override
-  Future<List<BikeModel>> getBikesOwnedByUser(UserModel user) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<List<BikeModel>> getBikesOwnedByUser(UserModel user) async {
+    var snapshot = await FirebaseFirestore.instance.collection("bikes")
+      .where("owner", isEqualTo: user.docRef!)
+      .orderBy("locationUpdated", descending: true)
+      .get();
+    return snapshot.docs.map((doc) => _bikeFromFirestore(doc.data(), doc.reference)).toList();
   }
 
   @override
-  Future<BikeModel> updateBike(BikeModel bike) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<BikeModel> updateBike(BikeModel bike) async {
+    var data = _toFirestore(bike);
+    await bike.docRef!.firestoreDocumentReference!.set(data);
+    return bike;
   }
 
   @override
-  Future<void> deleteBike(BikeModel bike) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<void> deleteBike(BikeModel bike) async {
+    await bike.docRef!.firestoreDocumentReference!.delete();
   }
 
   // Ride CRUD operations
 
   @override
-  Future<RideModel> addRide(RideModel ride) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<RideModel> addRide(RideModel ride) async {
+    var data = _toFirestore(ride);
+    var ref = await FirebaseFirestore.instance.collection("rides").add(data);
+    return _rideFromFirestore(data, ref);
   }
 
   @override
-  Future<RideModel> getRideByReference(BKDocumentReference ref) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<RideModel> getRideByReference(BKDocumentReference ref) async {
+    var snapshot = await ref.firestoreDocumentReference!.get();
+    var data = snapshot.data()!;
+    return _rideFromFirestore(data, snapshot.reference);
   }
 
   @override
-  Future<RideModel?> getActiveRideForUser(UserModel user) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<RideModel?> getActiveRideForUser(UserModel user) async {
+    var snapshot = await FirebaseFirestore.instance.collection("rides")
+      .where("rider", isEqualTo: user.docRef!)
+      .where("finishTime", isNull: true)
+      .orderBy("startTime", descending: true)
+      .get();
+    if(snapshot.docs.isEmpty) {
+      return null;
+    } else {
+      var doc = snapshot.docs[0];
+      return _rideFromFirestore(doc.data(), doc.reference);
+    }
   }
 
   @override
-  Future<List<RideModel>> getRidesTakenByUser(UserModel user) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<List<RideModel>> getRidesTakenByUser(UserModel user) async {
+    var snapshot = await FirebaseFirestore.instance.collection("rides")
+      .where("rider", isEqualTo: user.docRef!)
+      .orderBy("startTime", descending: true)
+      .get();
+    return snapshot.docs.map((doc) => _rideFromFirestore(doc.data(), doc.reference)).toList();
   }
 
   @override
-  Future<RideModel> updateRide(RideModel ride) {
-    // TODO: implement
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> deleteRide(RideModel ride) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<RideModel> updateRide(RideModel ride) async {
+    var data = _toFirestore(ride);
+    await ride.docRef!.firestoreDocumentReference!.set(data);
+    return ride;
   }
 
   // Issue CRUD operations
 
   @override
-  Future<IssueModel> addIssue(IssueModel issue) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<IssueModel> addIssue(IssueModel issue) async {
+    var data = _toFirestore(issue);
+    var ref = await FirebaseFirestore.instance.collection("issues").add(data);
+    return _issueFromFirestore(data, ref);
   }
 
   @override
-  Future<IssueModel> getIssueByReference(BKDocumentReference ref) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<IssueModel> getIssueByReference(BKDocumentReference ref) async {
+    var snapshot = await ref.firestoreDocumentReference!.get();
+    var data = snapshot.data()!;
+    return _issueFromFirestore(data, snapshot.reference);
   }
 
   @override
-  Future<IssueModel> updateIssue(IssueModel issue) {
-    // TODO: implement
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> deleteIssue(IssueModel issue) {
-    // TODO: implement
-    throw UnimplementedError();
+  Future<IssueModel> updateIssue(IssueModel issue) async {
+    var data = _toFirestore(issue);
+    await issue.docRef!.firestoreDocumentReference!.set(data);
+    return issue;
   }
 }

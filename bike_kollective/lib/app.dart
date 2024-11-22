@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         '/waiver': (context) => WaiverScreen(),
         '/home': (context) => const MyHomePage(),
         '/auth': (context) => AuthenticationScreen(),
-      },
+      }
     );
   }
 }

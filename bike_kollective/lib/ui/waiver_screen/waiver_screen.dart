@@ -1,12 +1,14 @@
 import 'package:bike_kollective/ui/waiver_screen/logo.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:bike_kollective/data/provider/active_user.dart';
 
-class WaiverScreen extends StatefulWidget {
+class WaiverScreen extends ConsumerStatefulWidget {
   @override
   _WaiverScreenState createState() => _WaiverScreenState();
 }
 
-class _WaiverScreenState extends State<WaiverScreen> {
+class _WaiverScreenState extends ConsumerState<WaiverScreen> {
   bool isAgreed = false;
 
   @override
@@ -98,7 +100,8 @@ class _WaiverScreenState extends State<WaiverScreen> {
             ),
             ElevatedButton(
               onPressed: isAgreed
-                  ? () {
+                  ? () async {
+                      await ref.read(activeUserProvider.notifier).setAgreed();
                       Navigator.pushReplacementNamed(context, '/home');
                     }
                   : null,

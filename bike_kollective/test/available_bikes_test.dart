@@ -28,8 +28,8 @@ void main() {
       status: BikeStatus.available,
       locationPoint: const BKGeoPoint(47.6061, 122.3328),
       locationUpdated: DateTime.now(),
-      rides: [],
-      issues: [],
+      totalStars: 5,
+      totalReviews: 1
     )
     ];
     when(() => mul.getCurrent()).thenAnswer((_) => Future<BKGeoPoint>.delayed(Duration(milliseconds: 5), () {return fakeLoc;}));

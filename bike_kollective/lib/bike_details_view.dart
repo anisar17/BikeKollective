@@ -38,10 +38,6 @@ class BikeDetailsView extends StatelessWidget {
         Text('Type: ${bike.type}'),
         Text('Status: ${bike.status}'),
         Text('Location: ${bike.locationPoint}'),
-        Text('Rides: ${bike.rides}'),
-        if (bike.issues.isNotEmpty) ...[
-          Text('Issues: ${bike.issues.join(", ")}'),
-        ],
       ],
     );
   }

@@ -17,8 +17,8 @@ class BikeModel {
   final BikeStatus status;
   final BKGeoPoint locationPoint;
   final DateTime locationUpdated;
-  final List<BKDocumentReference> rides;
-  final List<BKDocumentReference> issues;
+  final int totalStars;
+  final int totalReviews;
 
   const BikeModel({
     required this.docRef,
@@ -31,8 +31,8 @@ class BikeModel {
     required this.status,
     required this.locationPoint,
     required this.locationUpdated,
-    required this.rides,
-    required this.issues,
+    required this.totalStars,
+    required this.totalReviews,
   });
 
   factory BikeModel.newBike({
@@ -46,50 +46,52 @@ class BikeModel {
   }) {
     // Start the bike
     return BikeModel(
-        docRef: null,
-        owner: owner,
-        name: name,
-        type: type,
-        description: description,
-        code: code,
-        imageUrl: imageLocalPath,
-        status: BikeStatus.available,
-        locationPoint: startingPoint,
-        locationUpdated: DateTime.now(),
-        rides: [],
-        issues: []);
+      docRef: null,
+      owner: owner,
+      name: name,
+      type: type,
+      description: description,
+      code: code,
+      imageUrl: imageLocalPath,
+      status: BikeStatus.available,
+      locationPoint: startingPoint,
+      locationUpdated: DateTime.now(),
+      totalStars: 0,
+      totalReviews: 0,
+    );
   }
 
   factory BikeModel.fromMap(Map<String, dynamic> map,
       {required BKDocumentReference? docRef}) {
     return BikeModel(
-        docRef: docRef,
-        owner: map["owner"],
-        name: map["name"],
-        type: map["type"],
-        description: map["description"],
-        code: map["code"],
-        imageUrl: map["imageUrl"],
-        status: map["status"],
-        locationPoint: map["locationPoint"],
-        locationUpdated: map["locationUpdated"],
-        rides: map["rides"],
-        issues: map["issues"]);
+      docRef: docRef,
+      owner: map["owner"],
+      name: map["name"],
+      type: BikeType.values.byName(map["type"]),
+      description: map["description"],
+      code: map["code"],
+      imageUrl: map["imageUrl"],
+      status: BikeStatus.values.byName(map["status"]),
+      locationPoint: map["locationPoint"],
+      locationUpdated: map["locationUpdated"],
+      totalStars: map["totalStars"],
+      totalReviews: map["totalReviews"],
+    );
   }
 
   Map<String, dynamic> toMap() {
     return {
       "owner": owner,
       "name": name,
-      "type": type,
+      "type": type.name,
       "description": description,
       "code": code,
       "imageUrl": imageUrl,
-      "status": status,
+      "status": status.name,
       "locationPoint": locationPoint,
       "locationUpdated": locationUpdated,
-      "rides": rides,
-      "issues": issues
+      "totalStars": totalStars,
+      "totalReviews": totalReviews,
     };
   }
 
@@ -104,26 +106,32 @@ class BikeModel {
     BikeStatus? status,
     BKGeoPoint? locationPoint,
     DateTime? locationUpdated,
-    List<BKDocumentReference>? rides,
-    List<BKDocumentReference>? issues,
+    int? totalStars,
+    int? totalReviews,
   }) {
     // Make a copy with data changes
     return BikeModel(
-        docRef: docRef ?? this.docRef,
-        owner: owner ?? this.owner,
-        name: name ?? this.name,
-        type: type ?? this.type,
-        description: description ?? this.description,
-        code: code ?? this.code,
-        imageUrl: imageUrl ?? this.imageUrl,
-        status: status ?? this.status,
-        locationPoint: locationPoint ?? this.locationPoint,
-        locationUpdated: locationUpdated ?? this.locationUpdated,
-        rides: rides ?? this.rides,
-        issues: issues ?? this.issues);
+      docRef: docRef ?? this.docRef,
+      owner: owner ?? this.owner,
+      name: name ?? this.name,
+      type: type ?? this.type,
+      description: description ?? this.description,
+      code: code ?? this.code,
+      imageUrl: imageUrl ?? this.imageUrl,
+      status: status ?? this.status,
+      locationPoint: locationPoint ?? this.locationPoint,
+      locationUpdated: locationUpdated ?? this.locationUpdated,
+      totalStars: totalStars ?? this.totalStars,
+      totalReviews: totalReviews ?? this.totalReviews
+    );
   }
 
   bool isFromDatabase() {
     return (docRef != null);
+  }
+
+  double? getRating() {
+    // Returns the aggregate star rating, null if no ratings
+    return (totalReviews > 0) ? (totalStars / totalReviews) : null;
   }
 }

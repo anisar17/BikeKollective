@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'ui/explore_bikes/explore_bikes_screen.dart';
 import 'ui/my_bikes_screen/my_bikes_screen.dart';
 import 'ui/current_ride/current_ride_screen.dart';
-import 'bike_details_screen.dart';
+import 'ui/user_account/user_account_screen.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -20,6 +20,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const AddBikeScreen(),
     const MyBikesScreen(),
     CurrentRideScreen(),
+    const UserAccountScreen(),
   ];
 
   final List<String> _titles = [
@@ -39,12 +40,44 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          _titles[_selectedIndex],
-          style: const TextStyle(fontSize: 20),
+        title: const Text(
+          'Bike Kollective',
+          style: TextStyle(fontSize: 28, color: Colors.white),
         ),
+        backgroundColor: Colors.blueAccent,
+        iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.account_circle),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const UserAccountScreen(),
+                ),
+              );
+            },
+          )
+        ],
       ),
-      body: _pages[_selectedIndex],
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              _titles[_selectedIndex],
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Expanded(
+            child: _pages[_selectedIndex],
+          ),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(

@@ -32,8 +32,8 @@ class CurrentRideScreen extends StatelessWidget {
     status: BikeStatus.available,
     locationPoint: const BKGeoPoint(34.4208, -119.6982),
     locationUpdated: DateTime.now(),
-    rides: [],
-    issues: [],
+    totalStars: 5,
+    totalReviews: 1
   );
 
   Duration getRemainingTime() {

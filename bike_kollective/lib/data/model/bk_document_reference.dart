@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 // Note: only the database implementations should know the contents of this
 // class, everyone else should treat this as an opaque type.
 class BKDocumentReference {
-  final DocumentReference? firestoreDocumentReference;
+  final DocumentReference<Map<String, dynamic>>? firestoreDocumentReference;
   final String? fakeDocumentId;
 
   const BKDocumentReference({
@@ -12,7 +12,7 @@ class BKDocumentReference {
     this.fakeDocumentId,
   });
 
-  factory BKDocumentReference.firestore(DocumentReference ref) {
+  factory BKDocumentReference.firestore(DocumentReference<Map<String, dynamic>> ref) {
     return BKDocumentReference(firestoreDocumentReference: ref);
   }
 
