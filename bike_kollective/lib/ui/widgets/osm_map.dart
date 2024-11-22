@@ -3,10 +3,9 @@ import 'package:bike_kollective/my_bike_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:bike_kollective/data/model/bike.dart';
-import 'package:bike_kollective/data/model/bike_with_distance.dart';
 
 class OSMMapWithMarkers extends StatefulWidget {
-  final List<BikeWithDistanceModel> bikes;
+  final List<BikeModel> bikes;
   final bool isMyBikes;
 
   const OSMMapWithMarkers(
@@ -29,7 +28,7 @@ class _OSMMapWithMarkersState extends State<OSMMapWithMarkers> {
     );
   }
 
-  void navigateToBikeDetails(BikeWithDistanceModel bike) {
+  void navigateToBikeDetails(BikeModel bike) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -52,7 +51,7 @@ class _OSMMapWithMarkersState extends State<OSMMapWithMarkers> {
         },
         onGeoPointClicked: (GeoPoint point) {
           try {
-            BikeWithDistanceModel selectedBike = widget.bikes.firstWhere(
+            BikeModel selectedBike = widget.bikes.firstWhere(
               (bike) =>
                   bike.locationPoint.latitude == point.latitude &&
                   bike.locationPoint.longitude == point.longitude,

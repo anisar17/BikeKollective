@@ -1,15 +1,19 @@
+import 'package:bike_kollective/data/model/bk_geo_point.dart';
 import 'package:flutter/material.dart';
 import 'package:bike_kollective/data/model/bike.dart';
 import 'package:bike_kollective/ui/widgets/bikes_list_view.dart';
 import 'package:bike_kollective/ui/widgets/bikes_map_view.dart';
-import 'package:bike_kollective/data/model/bike_with_distance.dart';
 
 class BikesViewer extends StatefulWidget {
-  final List<BikeWithDistanceModel> availableBikes;
+  final BKGeoPoint userLocation;
+  final List<BikeModel> availableBikes;
   final bool isMyBikes;
 
-  const BikesViewer(
-      {super.key, required this.availableBikes, required this.isMyBikes});
+  const BikesViewer({
+    super.key,
+    required this.userLocation,
+    required this.availableBikes,
+    required this.isMyBikes});
 
   @override
   _BikesViewerState createState() => _BikesViewerState();
@@ -20,15 +24,13 @@ class _BikesViewerState extends State<BikesViewer> {
 
   @override
   Widget build(BuildContext context) {
-    widget.availableBikes.forEach((bike) {
-      print("BikesViewer Bike: ${bike.name}, Distance: ${bike.distance}");
-    });
     return Scaffold(
       body: Column(
         children: [
           Expanded(
             child: isListView
                 ? BikesListView(
+                    userLocation: widget.userLocation,
                     availableBikes: widget.availableBikes,
                     isMyBikes: widget.isMyBikes)
                 : BikesMapView(

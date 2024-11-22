@@ -3,11 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bike_kollective/data/model/bike.dart';
 import 'bike_details_view.dart';
 import 'report_issue_dialog.dart';
-import 'package:bike_kollective/data/model/bike_with_distance.dart';
 
 // Define the BikeDetailsScreen widget
 class BikeDetailsScreen extends ConsumerWidget {
-  final BikeWithDistanceModel bike;
+  final BikeModel bike;
 
   const BikeDetailsScreen({super.key, required this.bike});
 
@@ -74,7 +73,7 @@ void reportIssue(BuildContext context) {
 }
 
 // Show a pop-out with lock code
-void checkOutBike(BuildContext context, BikeWithDistanceModel bike) {
+void checkOutBike(BuildContext context, BikeModel bike) {
   showDialog(
     context: context,
     builder: (BuildContext context) {

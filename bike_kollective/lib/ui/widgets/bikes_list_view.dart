@@ -1,16 +1,20 @@
+import 'package:bike_kollective/data/model/bk_geo_point.dart';
+import 'package:bike_kollective/distance_calculator.dart';
 import 'package:bike_kollective/my_bike_details_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:bike_kollective/data/model/bike.dart';
 import 'package:bike_kollective/bike_details_screen.dart';
-import 'package:bike_kollective/data/model/bike_with_distance.dart';
 
 class BikesListView extends StatefulWidget {
-  final List<BikeWithDistanceModel> availableBikes;
+  final BKGeoPoint userLocation;
+  final List<BikeModel> availableBikes;
   final bool isMyBikes;
 
-  const BikesListView(
-      {super.key, required this.availableBikes, required this.isMyBikes});
+  const BikesListView({
+    super.key,
+    required this.userLocation,
+    required this.availableBikes,
+    required this.isMyBikes});
 
   @override
   _BikesListViewState createState() => _BikesListViewState();
@@ -24,8 +28,6 @@ class _BikesListViewState extends State<BikesListView> {
   Widget build(BuildContext context) {
     final lowerCaseQuery = searchQuery.toLowerCase();
     final filteredBikes = widget.availableBikes.where((bike) {
-      print("Bike in BikesListView: ${bike.name}, Distance: ${bike.distance}");
-
       final matchesSearch = bike.name.toLowerCase().contains(lowerCaseQuery) ||
           bike.description.toLowerCase().contains(lowerCaseQuery) ||
           bike.type.toString().toLowerCase().contains(lowerCaseQuery);
@@ -120,6 +122,7 @@ class _BikesListViewState extends State<BikesListView> {
               itemCount: filteredBikes.length,
               itemBuilder: (context, index) {
                 final bike = filteredBikes[index];
+                final distance = calculateDistance(widget.userLocation, bike.locationPoint);
                 return Padding(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 16.0, vertical: 8.0),
@@ -162,7 +165,7 @@ class _BikesListViewState extends State<BikesListView> {
                               Icon(Icons.location_on, color: Colors.blue),
                               SizedBox(height: 4),
                               Text(
-                                '${bike.distance} Miles',
+                                '${distance} Miles',
                                 style: TextStyle(color: Colors.blue),
                               ),
                             ],
