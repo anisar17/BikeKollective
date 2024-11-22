@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class UserAccountScreen extends StatelessWidget {
   const UserAccountScreen({Key? key}) : super(key: key);

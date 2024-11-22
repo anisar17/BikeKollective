@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bike_kollective/data/model/ride.dart';
-import 'package:bike_kollective/data/model/bk_document_reference.dart';
 
 class RideFeedbackScreen extends StatefulWidget {
   final RideModel ride;
@@ -64,8 +61,6 @@ class _RideFeedbackScreenState extends State<RideFeedbackScreen> {
       // await Firestore.instance.collection('rides').document(widget.ride.docRef.id).update({
       //   'review': review.toMap(),
       // });
-      // print('Feedback submitted: ${review.toMap()}');
-      print('Feedback submitted');
       
    // Navigate back after submission
       Navigator.pop(context);

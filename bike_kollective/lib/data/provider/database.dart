@@ -351,7 +351,7 @@ class RealFirestore extends BKDB {
   // Helper functions
 
   void _applyWrappers(Map<String, dynamic> data) {
-    // Wrap the Firestore types
+    // Wrap the Firestore types and convert as needed
     data.updateAll((_, value) {
       if(value is DocumentReference<Map<String, dynamic>>) {
         return BKDocumentReference.firestore(value);
@@ -359,6 +359,8 @@ class RealFirestore extends BKDB {
         return BKGeoPoint.fromGeoPoint(value);
       } else if(value is GeoPoint?) {
         return value != null ? BKGeoPoint.fromGeoPoint(value) : null;
+      } else if(value is Timestamp) {
+        return value.toDate();
       } else {
         return value;
       }
@@ -367,7 +369,7 @@ class RealFirestore extends BKDB {
 
   void _removeWrappers(Map<String, dynamic> data) {
     data.updateAll((_, value) {
-      // Extract the Firestore types
+      // Extract the Firestore types and convert as needed
       if(value is BKDocumentReference) {
         return value.firestoreDocumentReference!;
       } else if(value is BKGeoPoint) {
@@ -482,7 +484,7 @@ class RealFirestore extends BKDB {
   @override
   Future<List<BikeModel>> getBikesOwnedByUser(UserModel user) async {
     var snapshot = await FirebaseFirestore.instance.collection("bikes")
-      .where("owner", isEqualTo: user.docRef!)
+      .where("owner", isEqualTo: user.docRef!.firestoreDocumentReference!)
       .orderBy("locationUpdated", descending: true)
       .get();
     return snapshot.docs.map((doc) => _bikeFromFirestore(doc.data(), doc.reference)).toList();
@@ -519,7 +521,7 @@ class RealFirestore extends BKDB {
   @override
   Future<RideModel?> getActiveRideForUser(UserModel user) async {
     var snapshot = await FirebaseFirestore.instance.collection("rides")
-      .where("rider", isEqualTo: user.docRef!)
+      .where("rider", isEqualTo: user.docRef!.firestoreDocumentReference!)
       .where("finishTime", isNull: true)
       .orderBy("startTime", descending: true)
       .get();
@@ -534,7 +536,7 @@ class RealFirestore extends BKDB {
   @override
   Future<List<RideModel>> getRidesTakenByUser(UserModel user) async {
     var snapshot = await FirebaseFirestore.instance.collection("rides")
-      .where("rider", isEqualTo: user.docRef!)
+      .where("rider", isEqualTo: user.docRef!.firestoreDocumentReference!)
       .orderBy("startTime", descending: true)
       .get();
     return snapshot.docs.map((doc) => _rideFromFirestore(doc.data(), doc.reference)).toList();
