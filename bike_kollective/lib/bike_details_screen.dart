@@ -4,7 +4,6 @@ import 'package:bike_kollective/data/model/bike.dart';
 import 'bike_details_view.dart';
 import 'report_issue_dialog.dart';
 
-// Define the BikeDetailsScreen widget
 class BikeDetailsScreen extends ConsumerWidget {
   final BikeModel bike;
 
@@ -21,8 +20,7 @@ class BikeDetailsScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BikeDetailsView(
-                bike: bike), // Include the BikeDetailsView component
+            BikeDetailsView(bike: bike),
             Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -66,8 +64,12 @@ class BikeDetailsScreen extends ConsumerWidget {
 void reportIssue(BuildContext context) {
   showDialog(
     context: context,
-    builder: (BuildContext context) {
+    builder: (BuildContext dialogContext) {
       return ReportIssueDialog(
+        onClose: () {
+          // Any logic you want to execute when the dialog is closed
+          print("Report Issue dialog closed");
+        },
       );
     },
   );
@@ -84,33 +86,31 @@ void checkOutBike(BuildContext context, BikeModel bike) {
           'Enjoy your ride!',
           textAlign: TextAlign.center,
           style: TextStyle(fontWeight: FontWeight.bold),
-        )), // Center the title
+        )),
         content: SingleChildScrollView(
-          // Allow content to scroll
           child: Column(
             children: [
               const Text(
                 'The lock combination is:',
-                textAlign: TextAlign.center, // Center align text
+                textAlign: TextAlign.center,
               ),
               Text(
                 ' ${bike.code}',
-                textAlign: TextAlign.center, // Center align text
+                textAlign: TextAlign.center,
                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
               const Text(
                 'You have 8 hours to return the bike',
-                textAlign: TextAlign.center, // Center align text
+                textAlign: TextAlign.center,
               ),
             ],
           ),
         ),
         actions: [
           Center(
-            // Center the buttons
             child: TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the pop-out dialog box
+                Navigator.of(context).pop();
               },
               child: const Text('OK'),
             ),
