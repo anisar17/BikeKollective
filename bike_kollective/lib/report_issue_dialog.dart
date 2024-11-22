@@ -1,11 +1,45 @@
 import 'package:flutter/material.dart';
 
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Report Issue Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: HomeScreen(),
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Report Issue Example'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () => reportIssue(context),
+          child: Text('Report an Issue'),
+        ),
+      ),
+    );
+  }
+}
+
 void reportIssue(BuildContext context) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return ReportIssueDialog(onClose: () {
-        Navigator.of(context).pop(); // This will close the dialog
+        Navigator.of(context).pop(); // Closes the dialog
       });
     },
   );
@@ -47,8 +81,27 @@ class _ReportIssueDialogState extends State<ReportIssueDialog> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Your buttons and other UI elements...
-              // Existing button code...
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _issueButton('STOLEN'),
+                  _issueButton('NOT IN WORKING CONDITION'),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _issueButton('LOCK WON\'T WORK'),
+                  _issueButton('LOCK MISSING'),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Text(
+                selectedIssueType,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: feedbackController,
                 decoration: const InputDecoration(
@@ -86,6 +139,21 @@ class _ReportIssueDialogState extends State<ReportIssueDialog> {
           ),
         ),
       ],
+    );
+  }
+
+  ElevatedButton _issueButton(String type) {
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          selectedIssueType = type;
+        });
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: selectedIssueType == type ? Colors.blue : const Color.fromARGB(255, 239, 242, 243),
+        foregroundColor: selectedIssueType == type ? Colors.white : const Color.fromARGB(255, 2, 138, 250),
+      ),
+      child: Text(type, style: const TextStyle(fontSize: 12)),
     );
   }
 }
