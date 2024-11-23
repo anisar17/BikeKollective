@@ -34,7 +34,7 @@ class _OSMMapWithMarkersState extends State<OSMMapWithMarkers> {
       MaterialPageRoute(
         builder: (context) => widget.isMyBikes
             ? MyBikeDetailsScreen(bike: bike) // Use your alternative screen
-            : BikeDetailsScreen(bike: bike),
+            : MyBikeDetailsScreen(bike: bike),
       ),
     );
   }
