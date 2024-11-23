@@ -37,6 +37,7 @@ class AvailableBikesNotifier extends StateNotifier<List<BikeModel>> {
           displayMessage: "Could not get available bikes",
           logMessage: "Could not get available bikes: $e"));
         state = [];
+        rethrow;
       }
     } catch(e) {
       errorNotifier.report(AppError(
@@ -44,6 +45,7 @@ class AvailableBikesNotifier extends StateNotifier<List<BikeModel>> {
         displayMessage: "Could not get user location",
         logMessage: "Could not get user location: $e"));
       state = [];
+      rethrow;
     }
   }
 
@@ -62,6 +64,7 @@ class AvailableBikesNotifier extends StateNotifier<List<BikeModel>> {
         category: ErrorCategory.database,
         displayMessage: "Could not report issue",
         logMessage: "Could not report issue: $e"));
+      rethrow;
     }
   }
 

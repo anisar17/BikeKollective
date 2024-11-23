@@ -55,6 +55,7 @@ class UserAccountScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 // Save button logic (to be implemented later)
+                // TODO
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
@@ -65,6 +66,7 @@ class UserAccountScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 // Sign-out button logic (to be implemented later)
+                // TODO
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
@@ -75,6 +77,7 @@ class UserAccountScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 // Delete account button logic (to be implemented later)
+                // TODO
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,

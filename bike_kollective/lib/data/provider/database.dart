@@ -21,7 +21,7 @@ abstract class BKDB {
   // User CRUD operations
   Future<UserModel> addUser(String uid) ;
   Future<UserModel> getUserByReference(BKDocumentReference ref);
-  Future<UserModel> getUserByUid(String uid);
+  Future<UserModel?> getUserByUid(String uid);
   Future<UserModel> updateUser(UserModel user);
   // deleteUser not needed yet
 
@@ -214,13 +214,13 @@ class DummyData extends BKDB {
   }
 
   @override
-  Future<UserModel> getUserByUid(String uid) async {
+  Future<UserModel?> getUserByUid(String uid) async {
     for (var user in users.values) {
       if (user.uid == uid) {
         return user;
       }
     }
-    throw Exception("User not found");
+    return null;
   }
 
   @override
@@ -437,12 +437,15 @@ class RealFirestore extends BKDB {
   }
 
   @override
-  Future<UserModel> getUserByUid(String uid) async {
+  Future<UserModel?> getUserByUid(String uid) async {
     var snapshot = await FirebaseFirestore.instance.collection("users")
       .where("uid", isEqualTo: uid)
       .get();
-    var data = snapshot.docs[0].data();
-    return _userFromFirestore(data, snapshot.docs[0].reference);
+    if(snapshot.size > 0) {
+      return _userFromFirestore(snapshot.docs[0].data(), snapshot.docs[0].reference);
+    } else {
+      return null;
+    }
   }
 
   @override

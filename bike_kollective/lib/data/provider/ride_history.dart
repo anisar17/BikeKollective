@@ -35,6 +35,7 @@ class RideHistoryNotifier extends StateNotifier<List<RideModel>> {
           displayMessage: "Could not get active ride",
           logMessage: "Could not get active ride: $e"));
         state = [];
+        rethrow;
       }
     }
   }

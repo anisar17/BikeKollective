@@ -1,4 +1,4 @@
-import 'package:bike_kollective/add_bike_screen.dart';
+import 'package:bike_kollective/edit_bike_screen.dart';
 import 'package:flutter/material.dart';
 import 'ui/explore_bikes/explore_bikes_screen.dart';
 import 'ui/my_bikes_screen/my_bikes_screen.dart';
@@ -17,7 +17,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Widget> _pages = [
     const ExploreBikesScreen(),
-    const AddBikeScreen(),
+    const EditBikeScreen(),
     const MyBikesScreen(),
     CurrentRideScreen(),
     const UserAccountScreen(),

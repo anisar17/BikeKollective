@@ -13,6 +13,11 @@ class _WaiverScreenState extends ConsumerState<WaiverScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var user = ref.watch(activeUserProvider);
+    if(user!.isAgreed()) {
+      // The user already agreed, so no need to show the waiver
+      Navigator.pushReplacementNamed(context, '/home');
+    }
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(32.0),
