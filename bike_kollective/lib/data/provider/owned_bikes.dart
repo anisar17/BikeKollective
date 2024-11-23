@@ -36,6 +36,7 @@ class OwnedBikesNotifier extends StateNotifier<List<BikeModel>> {
           displayMessage: "Could not get owned bikes",
           logMessage: "Could not get owned bikes: $e"));
       state = [];
+      rethrow;
     }
   }
 
@@ -64,12 +65,14 @@ class OwnedBikesNotifier extends StateNotifier<List<BikeModel>> {
             category: ErrorCategory.database,
             displayMessage: "Could not add bike",
             logMessage: "Could not add bike: $e"));
+        rethrow;
       }
     } catch (e) {
       errorNotifier.report(AppError(
           category: ErrorCategory.location,
           displayMessage: "Could not get user location",
           logMessage: "Could not get user location: $e"));
+      rethrow;
     }
   }
 
@@ -99,6 +102,7 @@ class OwnedBikesNotifier extends StateNotifier<List<BikeModel>> {
           category: ErrorCategory.database,
           displayMessage: "Could not update bike",
           logMessage: "Could not update bike: $e"));
+      rethrow;
     }
   }
 
@@ -117,6 +121,7 @@ class OwnedBikesNotifier extends StateNotifier<List<BikeModel>> {
           category: ErrorCategory.database,
           displayMessage: "Could not delete bike",
           logMessage: "Could not delete bike: $e"));
+      rethrow;
     }
   }
 }

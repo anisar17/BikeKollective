@@ -50,6 +50,7 @@ class ActiveRideNotifier extends StateNotifier<RideModel?> {
           displayMessage: "Could not get active ride",
           logMessage: "Could not get active ride: $e"));
         state = null;
+        rethrow;
       }
     }
   }
@@ -59,7 +60,7 @@ class ActiveRideNotifier extends StateNotifier<RideModel?> {
       errorNotifier.report(AppError(
         category: ErrorCategory.state,
         displayMessage: null,
-        logMessage: "Can't start a ride without a logged in rider"));
+        logMessage: "Can't start a ride without a signed in rider"));
     }
     else if(state != null) {
       errorNotifier.report(AppError(
@@ -77,6 +78,7 @@ class ActiveRideNotifier extends StateNotifier<RideModel?> {
           category: ErrorCategory.database,
           displayMessage: "Could not start ride",
           logMessage: "Could not start ride: $e"));
+        rethrow;
       }
     }
   }
@@ -115,12 +117,14 @@ class ActiveRideNotifier extends StateNotifier<RideModel?> {
             category: ErrorCategory.database,
             displayMessage: "Could not finish ride",
             logMessage: "Could not finish ride: $e"));
+          rethrow;
         }
       } catch(e) {
         errorNotifier.report(AppError(
           category: ErrorCategory.location,
           displayMessage: "Could not get user location",
           logMessage: "Could not get user location: $e"));
+        rethrow;
       }
     }
   }
@@ -145,12 +149,14 @@ class ActiveRideNotifier extends StateNotifier<RideModel?> {
             category: ErrorCategory.database,
             displayMessage: "Could not finish ride",
             logMessage: "Could not finish ride: $e"));
+          rethrow;
         }
       } catch(e) {
         errorNotifier.report(AppError(
           category: ErrorCategory.location,
           displayMessage: "Could not get user location",
           logMessage: "Could not get user location: $e"));
+        rethrow;
       }
     }
   }

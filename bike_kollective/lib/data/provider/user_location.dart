@@ -20,23 +20,19 @@ class LocationException implements Exception {
 }
 
 // This implementation can be used by developers to create fake data
-// Note: be sure to return DummyUserLocation in the databaseProvider above
+// Note: be sure to return DummyUserLocation in the userLocationProvider above
 class DummyUserLocation extends UserLocation {
-  BKGeoPoint _point;
+  final BKGeoPoint _point;
 
   DummyUserLocation() : _point = const BKGeoPoint(44.564, -123.2618);
 
   @override
-  Future<BKGeoPoint> getCurrent() {
-    return Future<BKGeoPoint>.sync(() {
-      return _point;
-    });
+  Future<BKGeoPoint> getCurrent() async {
+    return _point;
   }
 }
 
 // This implementation requests GPS coordinates from the phone or browser
-// TODO - fill in with handling for getting user location, including app permissions
-// TODO - consider caching GPS data to save battery?
 class RealUserLocation extends UserLocation {
   @override
   Future<BKGeoPoint> getCurrent() async {

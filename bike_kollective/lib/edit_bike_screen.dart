@@ -59,6 +59,20 @@ class BikeNotifier extends ChangeNotifier {
     return null;
   }
 
+  set bike(BikeModel? b) {
+    if(b == null) {
+      clear();
+    } else {
+      // Set everything based on the given model
+      nameController.text = b.name;
+      descriptionController.text = b.description;
+      lockCodeController.text = b.code;
+      _type = b.type;
+      _image = null; // TODO: set image
+      notifyListeners();
+    }
+  }
+
   File? get image => _image; // Getter for the image
 
   void clear() {
@@ -83,17 +97,40 @@ final bikeProvider = ChangeNotifierProvider<BikeNotifier>((ref) {
   return BikeNotifier();
 });
 
-// Update the AddBikeScreen as follows:
-class AddBikeScreen extends ConsumerWidget {
-  const AddBikeScreen({Key? key}) : super(key: key);
+// Screen for adding a new bike or editing an existing bike
+class EditBikeScreen extends ConsumerStatefulWidget {
+  // The pre-existing bike data, null if this is a new bike
+  final BikeModel? oldBike;
+
+  const EditBikeScreen({super.key, this.oldBike});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  EditBikeScreenState createState() => EditBikeScreenState();
+}
+
+class EditBikeScreenState extends ConsumerState<EditBikeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    if(widget.oldBike != null) {
+      // If we are editing an existing bike, initialize the fields
+      // to show the old bike's details
+      ref.read(bikeProvider).bike = widget.oldBike!;
+    }
+  }
+
+  bool _isNew() {
+    // True if adding a new bike, False if editing an existing bike
+    return (widget.oldBike == null);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final bikeNotifier = ref.watch(bikeProvider);
     final _formKey = GlobalKey<FormState>();
 
     return Scaffold(
-      appBar: AppBar(title: Text('Add Bike')),
+      appBar: AppBar(title: _isNew() ? const Text('Add Bike') : const Text('Edit Bike')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -232,13 +269,24 @@ class AddBikeScreen extends ConsumerWidget {
                       if (_formKey.currentState!.validate()) {
                         final bike = bikeNotifier.bike;
                         if (bike != null) {
-                          ref.read(ownedBikesProvider.notifier).addBike(
-                            name: bike.name,
-                            type: bike.type,
-                            description: bike.description,
-                            code: bike.code,
-                            imageLocalPath: bike.imageUrl,
-                          );
+                          if(_isNew()) {
+                            await ref.read(ownedBikesProvider.notifier).addBike(
+                              name: bike.name,
+                              type: bike.type,
+                              description: bike.description,
+                              code: bike.code,
+                              imageLocalPath: bike.imageUrl,
+                            );
+                          } else {
+                            await ref.read(ownedBikesProvider.notifier).updateBikeDetails(
+                              widget.oldBike!,
+                              newName: bike.name,
+                              newType: bike.type,
+                              newDescription: bike.description,
+                              newCode: bike.code,
+                              newImageLocalPath: bike.imageUrl,
+                            );
+                          }
 
                           bikeNotifier.clear(); // Clear after success
 
@@ -246,7 +294,7 @@ class AddBikeScreen extends ConsumerWidget {
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              title: const Text('Bike Added'),
+                              title:  _isNew() ? const Text('Bike Added') : const Text('Bike Updated'),
                               content: Text(
                                 'Bike Name: ${bike.name}\nType: ${bike.type.toString().split('.').last}\nDescription: ${bike.description}\nLock Code: ${bike.code}',
                               ),
@@ -268,7 +316,7 @@ class AddBikeScreen extends ConsumerWidget {
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
                     ),
-                    child: const Text('Add Bike'),
+                    child: _isNew() ? const Text('Add Bike') : const Text('Update Bike'),
                   ),
                 ],
               ),
