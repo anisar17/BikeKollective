@@ -35,11 +35,11 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
       }
     }
 
-  Future<void> signUp(String uid) async {
+  Future<void> signUp(String uid, String email) async {
     // Respond to account creation with the given authentication UID
     // Note: call this in AuthStateChangeAction<UserCreated> callback
     try {
-      state = await dbAccess.addUser(uid);
+      state = await dbAccess.addUser(uid, email);
     } catch(e) {
       error.report(AppError(
         category: ErrorCategory.user,

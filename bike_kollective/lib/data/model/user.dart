@@ -5,6 +5,7 @@ import 'package:bike_kollective/data/model/bk_document_reference.dart';
 class UserModel {
   final BKDocumentReference? docRef;
   final String uid;
+  final String email;
   final DateTime? verified;
   final DateTime? agreed;
   final DateTime? banned;
@@ -13,6 +14,7 @@ class UserModel {
   const UserModel({
     required this.docRef,
     required this.uid,
+    required this.email,
     required this.verified,
     required this.agreed,
     required this.banned,
@@ -20,12 +22,14 @@ class UserModel {
   });
 
   factory UserModel.newUser({
-    required String uid
+    required String uid,
+    required String email
     }) {
     // Start the user as needing verification and agreement
     return UserModel(
       docRef: null,
       uid: uid,
+      email: email,
       verified: null,
       agreed: null,
       banned: null,
@@ -37,6 +41,7 @@ class UserModel {
     return UserModel(
       docRef: docRef,
       uid: map["uid"],
+      email: map["email"],
       verified: map["verified"],
       agreed: map["agreed"],
       banned: map["banned"],
@@ -47,6 +52,7 @@ class UserModel {
   Map<String, dynamic> toMap() {
     return {
       "uid": uid,
+      "email": email,
       "verified": verified,
       "agreed": agreed,
       "banned": banned,
@@ -57,6 +63,7 @@ class UserModel {
   UserModel copyWith({
     BKDocumentReference? docRef,
     String? uid,
+    String? email,
     DateTime? verified,
     DateTime? agreed,
     DateTime? banned,
@@ -68,6 +75,7 @@ class UserModel {
     return UserModel(
       docRef: docRef ?? this.docRef,
       uid: uid ?? this.uid,
+      email: email ?? this.email,
       verified: verified ?? this.verified,
       agreed: agreed ?? this.agreed,
       banned: banned ?? this.banned,

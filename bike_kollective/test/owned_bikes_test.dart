@@ -34,6 +34,7 @@ void main() {
     final fakeUser = UserModel(
       docRef: fakeUserRef,
       uid: "FAKEUID",
+      email: "FAKEEMAIL",
       verified: DateTime.now(),
       agreed: DateTime.now(),
       banned: null,

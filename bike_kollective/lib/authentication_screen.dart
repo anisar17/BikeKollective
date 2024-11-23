@@ -123,13 +123,14 @@ class AuthenticationScreen extends ConsumerWidget {
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credentials);
       String? uid = userCredential.user?.uid;
+      String? email = userCredential.user?.email;
       print(userCredential.user?.displayName);
       print(userCredential.user?.uid);
 
       if (uid != null) {
 
         // Update the user provider with the new user model
-        ref.read(activeUserProvider.notifier).signUp(uid);
+        ref.read(activeUserProvider.notifier).signUp(uid, email!);
 
         // Navigate to home screen
         Navigator.pushReplacementNamed(context, '/waiver');
