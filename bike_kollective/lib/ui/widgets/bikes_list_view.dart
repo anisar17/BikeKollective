@@ -135,7 +135,7 @@ class _BikesListViewState extends State<BikesListView> {
                           MaterialPageRoute(
                             builder: (context) => widget.isMyBikes
                                 ? MyBikeDetailsScreen(bike: bike)
-                                : BikeDetailsScreen(bike: bike),
+                                : MyBikeDetailsScreen(bike: bike),
                           ),
                         );
                       },

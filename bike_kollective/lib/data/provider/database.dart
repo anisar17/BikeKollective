@@ -116,6 +116,7 @@ class DummyData extends BKDB {
     var fakeUserRef1 = add(UserModel(
       docRef: null,
       uid: "FAKE_UID1",
+      email: "email1@gmail.com",
       verified: DateTime.now(),
       agreed: DateTime.now(),
       banned: null,
@@ -123,6 +124,7 @@ class DummyData extends BKDB {
     var fakeUserRef2 = add(UserModel(
       docRef: null,
       uid: "FAKE_UID2",
+      email: "email2@gmail.com",
       verified: DateTime.now(),
       agreed: DateTime.now(),
       banned: null,
@@ -203,8 +205,8 @@ class DummyData extends BKDB {
   // User CRUD operations
 
   @override
-  Future<UserModel> addUser(String uid) async {
-    var ref = add(UserModel.newUser(uid: uid));
+  Future<UserModel> addUser(String uid, String email) async {
+    var ref = add(UserModel.newUser(uid: uid, email: email));
     return getUserByReference(ref);
   }
 
