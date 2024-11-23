@@ -1,8 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:bike_kollective/data/model/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bike_kollective/data/provider/active_user.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthenticationScreen extends ConsumerWidget {
 
@@ -77,8 +76,29 @@ class AuthenticationScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 30),
                     ElevatedButton(
-                      onPressed: () {
-                        signInWithGoogle(context, ref);
+                      onPressed: () async {
+                        // Currently, we only support login using Google credentials.
+                        UserModel user = await ref.read(activeUserProvider.notifier).signIn(SignInMethod.google);
+                        // Show the user the next screen depending on the state of their account.
+                        if(user.isBanned()) {
+                          // The user has been banned, show them a screen that
+                          // lets them know and prevents them from using the app.
+                          // TODO: navigate to a banned screen
+                          throw UnimplementedError("Missing handling for banned users");
+                        } else if(!user.isAgreed()) {
+                          // The user has not yet signed an agreement, or 
+                          // needs to sign a new one. We need to show that
+                          // before they can use the app.
+                          Navigator.pushReplacementNamed(context, '/waiver');
+                        } else if(!user.isVerified()) {
+                          // The user has not yet verified their email.
+                          // TODO: handle verification step
+                          // TODO: remove below, for now allow unverified users
+                          Navigator.pushReplacementNamed(context, '/home');
+                        } else {
+                          // The user is ready, go to the main screen.
+                          Navigator.pushReplacementNamed(context, '/home');
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent.shade700,
@@ -106,33 +126,5 @@ class AuthenticationScreen extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  Future<void> signInWithGoogle(BuildContext context, WidgetRef ref) async {
-    try {
-      GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-
-      AuthCredential credentials = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credentials);
-      String? uid = userCredential.user?.uid;
-      print(userCredential.user?.displayName);
-      print(userCredential.user?.uid);
-
-      if (uid != null) {
-
-        // Update the user provider with the new user model
-        ref.read(activeUserProvider.notifier).signUp(uid);
-
-        // Navigate to home screen
-        Navigator.pushReplacementNamed(context, '/waiver');
-      }
-    } catch (e) {
-     print('Error siging in with Google: $e');
-    }
   }
 }
