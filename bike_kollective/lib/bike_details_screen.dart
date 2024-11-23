@@ -1,121 +1,160 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:bike_kollective/data/model/bike.dart';
-import 'bike_details_view.dart';
-import 'report_issue_dialog.dart';
 
-// Define the BikeDetailsScreen widget
-class BikeDetailsScreen extends ConsumerWidget {
-  final BikeModel bike;
+class ReportIssueDialog extends StatefulWidget {
+  final VoidCallback onClose; // Callback for closing the dialog
 
-  const BikeDetailsScreen({super.key, required this.bike});
+  const ReportIssueDialog({Key? key, required this.onClose}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(bike.name),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            BikeDetailsView(
-                bike: bike), // Include the BikeDetailsView component
-            Spacer(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    reportIssue(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: Text(
-                    'Report issue',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    checkOutBike(context, bike);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: Text(
-                    'Check out bike',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+  _ReportIssueDialogState createState() => _ReportIssueDialogState();
+}
+
+class _ReportIssueDialogState extends State<ReportIssueDialog> {
+  final TextEditingController feedbackController = TextEditingController();
+  String selectedIssueType = "Select an Issue"; // Default selection
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    feedbackController.dispose();
+    super.dispose();
   }
-}
 
-// Show a pop-out dialog to report an issue
-void reportIssue(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return ReportIssueDialog();
-    },
-  );
-}
-
-// Show a pop-out with lock code
-void checkOutBike(BuildContext context, BikeModel bike) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Center(
-            child: Text(
-          'Enjoy your ride!',
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Center(
+        child: Text(
+          'Report an Issue',
           textAlign: TextAlign.center,
           style: TextStyle(fontWeight: FontWeight.bold),
-        )), // Center the title
-        content: SingleChildScrollView(
-          // Allow content to scroll
+        ),
+      ),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                'The lock combination is:',
-                textAlign: TextAlign.center, // Center align text
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedIssueType = "STOLEN"; // Set the selected issue type
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: selectedIssueType == "STOLEN"
+                          ? Colors.blue
+                          : const Color.fromARGB(255, 239, 242, 243),
+                      foregroundColor: selectedIssueType == "STOLEN"
+                          ? Colors.white
+                          : const Color.fromARGB(255, 2, 138, 250),
+                    ),
+                    child: const Text('STOLEN', style: TextStyle(fontSize: 12)),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedIssueType = "NOT IN WORKING CONDITION"; // Set the selected issue type
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: selectedIssueType == "NOT IN WORKING CONDITION"
+                          ? Colors.blue
+                          : const Color.fromARGB(255, 239, 242, 243),
+                      foregroundColor: selectedIssueType == "NOT IN WORKING CONDITION"
+                          ? Colors.white
+                          : const Color.fromARGB(255, 2, 138, 250),
+                    ),
+                    child: const Text('NOT IN WORKING CONDITION',
+                        style: TextStyle(fontSize: 12)),
+                  ),
+                ],
               ),
-              Text(
-                ' ${bike.code}',
-                textAlign: TextAlign.center, // Center align text
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedIssueType = "LOCK WON'T WORK"; // Set the selected issue type
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: selectedIssueType == "LOCK WON'T WORK"
+                          ? Colors.blue
+                          : const Color.fromARGB(255, 239, 242, 243),
+                      foregroundColor: selectedIssueType == "LOCK WON'T WORK"
+                          ? Colors.white
+                          : const Color.fromARGB(255, 2, 138, 250),
+                    ),
+                    child: const Text('LOCK WON\'T WORK', style: TextStyle(fontSize: 12)),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedIssueType = "LOCK MISSING"; // Set the selected issue type
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: selectedIssueType == "LOCK MISSING"
+                          ? Colors.blue
+                          : const Color.fromARGB(255, 239, 242, 243),
+                      foregroundColor: selectedIssueType == "LOCK MISSING"
+                          ? Colors.white
+                          : const Color.fromARGB(255, 2, 138, 250),
+                    ),
+                    child: const Text('LOCK MISSING', style: TextStyle(fontSize: 12)),
+                  ),
+                ],
               ),
+              const SizedBox(height: 20),
               Text(
-                'You have 8 hours to return the bike',
-                textAlign: TextAlign.center, // Center align text
+                selectedIssueType,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: feedbackController, // Feedback text field
+                decoration: const InputDecoration(
+                  hintText: "Type your feedback here...",
+                  hintStyle: TextStyle(color: Colors.grey),
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 5,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your feedback'; // Input validation message
+                  }
+                  return null;
+                },
               ),
             ],
           ),
         ),
-        actions: [
-          Center(
-            // Center the buttons
-            child: TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the pop-out dialog box
-              },
-              child: Text('OK'),
+      ),
+      actions: [
+        Center(
+          child: ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) { // Validate the form
+                String feedbackText = feedbackController.text;
+                print("Feedback for $selectedIssueType: $feedbackText"); // Log the feedback
+                widget.onClose(); // Call the onClose callback
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
             ),
+            child: const Text('SUBMIT'),
           ),
-        ],
-      );
-    },
-  );
+        ),
+      ],
+    );
+  }
 }

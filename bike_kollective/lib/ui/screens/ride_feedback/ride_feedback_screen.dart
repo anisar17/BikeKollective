@@ -1,22 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:bike_kollective/data/model/ride.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:bike_kollective/data/provider/active_ride.dart';
 
-class RideFeedbackScreen extends StatefulWidget {
-  final RideModel ride;
+class RideFeedbackScreen extends ConsumerWidget {
+  final RideModel ride; // Named parameter for the ride
 
+  // Constructor using a named parameter
   const RideFeedbackScreen({Key? key, required this.ride}) : super(key: key);
 
   @override
-  _RideFeedbackScreenState createState() => _RideFeedbackScreenState();
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Ride Feedback'),
+      ),
+      body: _RideFeedbackForm(ride: ride, ref: ref), // Pass ref to the form
+    );
+  }
 }
 
-class _RideFeedbackScreenState extends State<RideFeedbackScreen> {
-  int? selectedStars;
-  List<RideReviewTag> likedTags = []; // Tags for positive feedback
-  List<RideReviewTag> improvementTags = []; // Tags for improvement suggestions
-  TextEditingController commentController = TextEditingController();
+class _RideFeedbackForm extends StatefulWidget {
+  final RideModel ride;
+  final WidgetRef ref; // Pass WidgetRef to the form
 
-  // Custom tag display names
+  const _RideFeedbackForm({Key? key, required this.ride, required this.ref}) : super(key: key);
+
+  @override
+  _RideFeedbackFormState createState() => _RideFeedbackFormState();
+}
+
+class _RideFeedbackFormState extends State<_RideFeedbackForm> {
+  // Initialize selectedStars and lists
+  int? selectedStars;
+  List<RideReviewTag> likedTags = [];
+  List<RideReviewTag> improvementTags = [];
+  TextEditingController commentController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
   final Map<RideReviewTag, String> tagDisplayNames = {
     RideReviewTag.funToRide: 'Fun to Ride',
     RideReviewTag.wellMaintained: 'Well Maintained',
@@ -47,30 +68,39 @@ class _RideFeedbackScreenState extends State<RideFeedbackScreen> {
     });
   }
 
-  void submitFeedback() {
-    if (selectedStars != null) {
+  Future<void> submitFeedback() async {
+    if (_formKey.currentState!.validate() && selectedStars != null) {
       final review = RideReview(
         stars: selectedStars!,
-        tags: likedTags + improvementTags, // Combine the tags
+        tags: likedTags + improvementTags,
         comment: commentController.text,
         submitted: DateTime.now(),
       );
 
+      final activeRideNotifier = widget.ref.read(activeRideProvider.notifier); // Use passed ref
 
-      // TODO: Implement logic to save the review to database
-      // await Firestore.instance.collection('rides').document(widget.ride.docRef.id).update({
-      //   'review': review.toMap(),
-      // });
-      
-   // Navigate back after submission
-      Navigator.pop(context);
+      try {
+        await activeRideNotifier.finishRide(review);
+        Navigator.pop(context); // Navigate back after submission
+      } catch (e) {
+        print('Error submitting feedback: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error submitting feedback. Please try again.')),
+        );
+      }
     } else {
-      // Show a message to select stars
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please select a star rating.')),
+        const SnackBar(content: Text('Please select a star rating.')),
       );
     }
   }
+
+  @override
+  void dispose() {
+    commentController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final positiveTags = [
@@ -88,87 +118,88 @@ class _RideFeedbackScreenState extends State<RideFeedbackScreen> {
       RideReviewTag.tooSlow,
     ];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ride Feedback'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Rate your ride:', style: TextStyle(fontSize: 20)),
-            Row(
-              children: List.generate(5, (index) {
-                return IconButton(
-                  icon: Icon(
-                    index < (selectedStars ?? 0) ? Icons.star : Icons.star_border,
-                    color: Colors.blue,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      selectedStars = index + 1;
-                    });
-                  },
-                );
-              }),
-            ),
-            const SizedBox(height: 20),
-
-            // Positive Feedback Section
-            const Text('What did you like about it?', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            Wrap(
-              spacing: 8.0,
-              children: positiveTags.map((tag) {
-                return FilterChip(
-                  label: Text(tagDisplayNames[tag]!),
-                  selected: likedTags.contains(tag),
-                  selectedColor: Colors.blue, // Set the color when selected
-                  labelStyle: TextStyle(
-                    color: likedTags.contains(tag) ? Colors.white : Colors.black, // Change text color based on selection
-                  ),
-                  onSelected: (isSelected) {
-                    toggleTag(tag);
-                  },
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 20),
-
-            // Improvement Suggestions Section
-            const Text('What could be improved?', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            Wrap(
-              spacing: 8.0,
-              children: improvementTagsCategory.map((tag) {
-                return FilterChip(
-                  label: Text(tagDisplayNames[tag]!),
-                  selected: improvementTags.contains(tag),
-                  selectedColor: Colors.blue, // Set the color when selected
-                  labelStyle: TextStyle(
-                    color: improvementTags.contains(tag) ? Colors.white : Colors.black, // Change text color based on selection
-                  ),
-                  onSelected: (isSelected) {
-                    toggleTag(tag, isImprovement: true);
-                  },
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 20),
-
-            const Text('Comments:', style: TextStyle(fontSize: 20)),
-            TextField(
-              controller: commentController,
-              maxLines: 5,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Write your comments here...',
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Rate your ride:', style: TextStyle(fontSize: 20)),
+              Row(
+                children: List.generate(5, (index) {
+                  return IconButton(
+                    icon: Icon(
+                      index < (selectedStars ?? 0) ? Icons.star : Icons.star_border,
+                      color: Colors.blue,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        selectedStars = index + 1;
+                      });
+                    },
+                  );
+                }),
               ),
-            ),
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            // Centering the Submit Button and changing its color to blue
-            Center(
-              child: ElevatedButton(
+              const Text('What did you like about it?', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              Wrap(
+                spacing: 8.0,
+                children: positiveTags.map((tag) {
+                  return FilterChip(
+                    label: Text(tagDisplayNames[tag]!),
+                    selected: likedTags.contains(tag),
+                    selectedColor: Colors.blue,
+                    labelStyle: TextStyle(
+                      color: likedTags.contains(tag) ? Colors.white : Colors.black,
+                    ),
+                    onSelected: (isSelected) {
+                      toggleTag(tag);
+                    },
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 20),
+
+              const Text('What could be improved?', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              Wrap(
+                spacing: 8.0,
+                children: improvementTagsCategory.map((tag) {
+                  return FilterChip(
+                    label: Text(tagDisplayNames[tag]!),
+                    selected: improvementTags.contains(tag),
+                    selectedColor: Colors.blue,
+                    labelStyle: TextStyle(
+                      color: improvementTags.contains(tag) ? Colors.white : Colors.black,
+                    ),
+                    onSelected: (isSelected) {
+                      toggleTag(tag, isImprovement: true);
+                    },
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 20),
+
+              const Text('Comments:', style: TextStyle(fontSize: 20)),
+              TextFormField(
+                controller: commentController,
+                maxLines: 5,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Write your comments here...',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your comments';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+
+              ElevatedButton(
                 onPressed: submitFeedback,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
@@ -176,8 +207,8 @@ class _RideFeedbackScreenState extends State<RideFeedbackScreen> {
                 ),
                 child: const Text('Submit Feedback'),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
