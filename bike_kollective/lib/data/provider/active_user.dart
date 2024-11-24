@@ -31,13 +31,15 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
   Future<UserModel> signIn(SignInMethod method) async {
     // Sign in and sign up handling
     Uid uid;
-    Email email;
+    Email? email;
     UserModel? user;
 
     try {
       // Get the UID from the authentication service
       if(method == SignInMethod.google) {
-        uid = await authAccess.signInWithGoogle();
+        final authResult = await authAccess.signInWithGoogle();
+        uid = authResult.uid;
+        email = authResult.email;
       } else {
         throw UnimplementedError("Missing handling for ${method.name} sign in method");
       }
@@ -63,6 +65,15 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
     }
 
     if(user == null) {
+      // email must be given
+      if (email == null) {
+        error.report(AppError(
+          category: ErrorCategory.user,
+          displayMessage: "Could not create your account",
+          logMessage: "Email is required to create new account but was not provided",
+        ));
+        throw Exception("email is missing for new user creation.");
+      }
       // Create a new account if one doesn't exist yet
       try {
         user = await dbAccess.addUser(uid, email);
