@@ -19,7 +19,7 @@ final databaseProvider = Provider<BKDB>((ref) {
 // Interface for Bike Kollective database (implementations are below)
 abstract class BKDB {
   // User CRUD operations
-  Future<UserModel> addUser(String uid) ;
+  Future<UserModel> addUser(String uid, String email) ;
   Future<UserModel> getUserByReference(BKDocumentReference ref);
   Future<UserModel?> getUserByUid(String uid);
   Future<UserModel> updateUser(UserModel user);
@@ -425,8 +425,8 @@ class RealFirestore extends BKDB {
   // User CRUD operations
 
   @override
-  Future<UserModel> addUser(String uid) async {
-    var data = _toFirestore(UserModel.newUser(uid: uid));
+  Future<UserModel> addUser(String uid, String email) async {
+    var data = _toFirestore(UserModel.newUser(uid: uid, email: email));
     var ref = await FirebaseFirestore.instance.collection("users").add(data);
     return _userFromFirestore(data, ref);
   }

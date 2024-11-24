@@ -79,6 +79,7 @@ class LandingScreen extends StatelessWidget {
                       final userModelInstance = UserModel(
                         docRef: null, 
                         uid: '', 
+                        email: '',
                         verified: null, 
                         agreed: null, 
                         banned: null, 

@@ -31,6 +31,7 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
   Future<UserModel> signIn(SignInMethod method) async {
     // Sign in and sign up handling
     Uid uid;
+    Email email;
     UserModel? user;
 
     try {
@@ -64,7 +65,7 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
     if(user == null) {
       // Create a new account if one doesn't exist yet
       try {
-        user = await dbAccess.addUser(uid);
+        user = await dbAccess.addUser(uid, email);
       } catch(e) {
         error.report(AppError(
           category: ErrorCategory.user,
