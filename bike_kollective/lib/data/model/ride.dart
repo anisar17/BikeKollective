@@ -32,7 +32,7 @@ class RideReview {
   factory RideReview.fromMap(Map<String, dynamic> map) {
     return RideReview(
       stars: map["stars"],
-      tags: map["tags"].map((name) => RideReviewTag.values.byName(name)).toList(),
+      tags: map["tags"].map<RideReviewTag>((name) => RideReviewTag.values.byName(name)).toList(),
       comment: map["startPoint"],
       submitted: map["startTime"],
     );

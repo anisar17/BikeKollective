@@ -40,6 +40,8 @@ class BikeDetailsScreen extends ConsumerWidget {
                         bike: bike.docRef!,
                         tags: [issue],
                         comment: comment));
+                      // Leave this bike and go back to the list of available bikes
+                      Navigator.pushReplacementNamed(context, '/home');
                     });
                   },
                   style: ElevatedButton.styleFrom(

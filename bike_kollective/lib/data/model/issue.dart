@@ -46,7 +46,7 @@ class IssueModel {
       docRef: docRef,
       reporter: map["reporter"],
       bike: map["bike"],
-      tags: map["tags"].map((name) => IssueTag.values.byName(name)).toList(),
+      tags: map["tags"].map<IssueTag>((name) => IssueTag.values.byName(name)).toList(),
       comment: map["comment"],
       submitted: map["submitted"],
       resolved: map["resolved"],

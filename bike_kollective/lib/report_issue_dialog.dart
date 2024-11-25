@@ -53,32 +53,14 @@ class _ReportIssueDialogState extends State<ReportIssueDialog> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _issueButton(IssueTag.stolen),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
                   _issueButton(IssueTag.broken),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
                   _issueButton(IssueTag.lockBroken),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
                   _issueButton(IssueTag.lockMissing),
                 ],
               ),
               const SizedBox(height: 20),
               Text(
-                (selectedIssueType != null) ? selectedIssueType!.name : "Please select an issue",
+                (selectedIssueType != null) ? "" : "Please select an issue",
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
@@ -121,6 +103,12 @@ class _ReportIssueDialogState extends State<ReportIssueDialog> {
   }
 
   ElevatedButton _issueButton(IssueTag tag) {
+    final Map<IssueTag, String> tagDisplayNames = {
+      IssueTag.stolen: 'Stolen',
+      IssueTag.broken: 'Broken',
+      IssueTag.lockBroken: 'Lock Broken',
+      IssueTag.lockMissing: 'Lock Missing',
+    };
     return ElevatedButton(
       onPressed: () {
         setState(() {
@@ -131,7 +119,7 @@ class _ReportIssueDialogState extends State<ReportIssueDialog> {
         backgroundColor: selectedIssueType == tag ? Colors.blue : const Color.fromARGB(255, 239, 242, 243),
         foregroundColor: selectedIssueType == tag ? Colors.white : const Color.fromARGB(255, 2, 138, 250),
       ),
-      child: Text(tag.name, style: const TextStyle(fontSize: 12)),
+      child: Text(tagDisplayNames[tag]!, style: const TextStyle(fontSize: 12)),
     );
   }
 }

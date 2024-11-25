@@ -44,6 +44,8 @@ class _CurrentRideScreenState extends ConsumerState<CurrentRideScreen> {
               setState(() {
                 isDialogOpen = false; // Close dialog and return to main screen
               });
+              // Leave this bike and go back to the list of available bikes
+              Navigator.pushReplacementNamed(context, '/home');
             },
           ),
         ),

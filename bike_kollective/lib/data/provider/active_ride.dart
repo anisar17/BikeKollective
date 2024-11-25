@@ -157,6 +157,8 @@ class ActiveRideNotifier extends StateNotifier<RideModel?> {
         var point = await locAccess.getCurrent();
         try {
           await dbAccess.updateRide(state!.copyWith(finishPoint: point, finishTime: DateTime.now()));
+          await dbAccess.addIssue(issue);
+          await dbAccess.updateBike(bike!.copyWith(status: BikeStatus.hasIssue));
           // Ending a ride makes it no longer active
           bike = null;
           state = null;
