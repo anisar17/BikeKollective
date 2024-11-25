@@ -76,9 +76,7 @@ class _RideFeedbackFormState extends State<_RideFeedbackForm> {
         comment: commentController.text,
         submitted: DateTime.now(),
       );
-
       final activeRideNotifier = widget.ref.read(activeRideProvider.notifier); // Use passed ref
-
       try {
         await activeRideNotifier.finishRide(review);
         Navigator.pop(context); // Navigate back after submission

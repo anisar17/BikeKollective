@@ -1,6 +1,4 @@
-import 'package:bike_kollective/data/model/bike.dart';
 import 'package:bike_kollective/data/model/bk_document_reference.dart';
-import 'package:bike_kollective/data/model/user.dart';
 
 enum IssueTag { 
   stolen, broken, lockBroken, lockMissing
@@ -27,15 +25,15 @@ class IssueModel {
   });
 
   factory IssueModel.newIssue({
-    required UserModel reporter,
-    required BikeModel bike,
+    required BKDocumentReference reporter,
+    required BKDocumentReference bike,
     required List<IssueTag> tags,
     required String comment
     }) {
     return IssueModel(
       docRef: null,
-      reporter: reporter.docRef!,
-      bike: bike.docRef!,
+      reporter: reporter,
+      bike: bike,
       tags: tags,
       comment: comment,
       submitted: DateTime.now(),
@@ -48,7 +46,7 @@ class IssueModel {
       docRef: docRef,
       reporter: map["reporter"],
       bike: map["bike"],
-      tags: map["tags"].map((name) => IssueTag.values.byName(name)).toList(),
+      tags: map["tags"].map<IssueTag>((name) => IssueTag.values.byName(name)).toList(),
       comment: map["comment"],
       submitted: map["submitted"],
       resolved: map["resolved"],
