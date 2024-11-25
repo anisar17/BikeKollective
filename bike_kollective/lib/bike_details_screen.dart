@@ -2,6 +2,7 @@ import 'package:bike_kollective/data/model/issue.dart';
 import 'package:bike_kollective/data/provider/active_ride.dart';
 import 'package:bike_kollective/data/provider/active_user.dart';
 import 'package:bike_kollective/data/provider/available_bikes.dart';
+import 'package:bike_kollective/ui/current_ride/current_ride_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bike_kollective/data/model/bike.dart';
@@ -114,6 +115,10 @@ void checkOutBike(BuildContext context, BikeModel bike) {
             child: TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the pop-out dialog box
+                // Navigate back to CurrentRideScreen
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => CurrentRideScreen()),
+                );
               },
               child: Text('OK'),
             ),
