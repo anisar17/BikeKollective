@@ -10,10 +10,10 @@ enum RideReviewTag {
 
 // The user should finish the ride before 8 hours have passed
 // to avoid a warning message
-const lateMinutes = 8 * 60;
+const lateDuration = Duration(hours: 8);
 // The user MUST finish the ride before 24 hours have passed
 // to avoid violating the agreement
-const violationMinutes = 24 * 60;
+const violationDuration = Duration(hours: 24);
 
 // Review data for ride, Ride format version 1
 class RideReview {
@@ -143,20 +143,31 @@ class RideModel {
     return (finishTime != null);
   }
 
-  int getDurationInMinutes() {
+  Duration getDuration() {
     if(isFinished()) {
-      return finishTime!.difference(startTime).inMinutes;
+      return finishTime!.difference(startTime);
     } else {
-      return DateTime.now().difference(startTime).inMinutes;
+      return DateTime.now().difference(startTime);
+    }
+  }
+
+  Duration getRemaining() {
+    var duration = getDuration();
+    if(duration >= lateDuration) {
+      // No time remaining
+      return const Duration();
+    } else {
+      // Some time remaining
+      return lateDuration - duration;
     }
   }
 
   bool isLate() {
-    return getDurationInMinutes() > lateMinutes;
+    return getDuration() > lateDuration;
   }
 
   bool isViolation() {
-    return getDurationInMinutes() > violationMinutes;
+    return getDuration() > violationDuration;
   }
 
   bool isReviewed() {

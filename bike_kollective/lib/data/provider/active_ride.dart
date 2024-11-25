@@ -25,7 +25,7 @@ int getPointsForRider() {
 
 int getPointsForOwner(RideReview review) {
   // Each ride earns the bike owner 10 points for each star above 1
-  return (review.stars > 1) ? 10 * review.stars - 1 : 0;
+  return (review.stars > 1) ? 10 * (review.stars - 1) : 0;
 }
 
 // The active ride is handled by this class
@@ -35,7 +35,12 @@ class ActiveRideNotifier extends StateNotifier<RideModel?> {
   final UserLocation locAccess;
   final ErrorNotifier errorNotifier;
   final UserModel? activeUser;
+  BikeModel? bike;
   ActiveRideNotifier(this.dbAccess, this.locAccess, this.errorNotifier, this.activeUser) : super(null);
+
+  BikeModel? getBike() {
+    return bike;
+  }
 
   Future<void> refresh() async {
     // Update the local active ride with any active ride from the database
@@ -43,7 +48,11 @@ class ActiveRideNotifier extends StateNotifier<RideModel?> {
       state = null;
     } else {
       try {
-        state = await dbAccess.getActiveRideForUser(activeUser!);
+        var ride = await dbAccess.getActiveRideForUser(activeUser!);
+        if(ride != null) {
+          bike = await dbAccess.getBikeByReference(ride.bike);
+        }
+        state = ride;
       } catch(e) {
         errorNotifier.report(AppError(
           category: ErrorCategory.database,
@@ -61,18 +70,21 @@ class ActiveRideNotifier extends StateNotifier<RideModel?> {
         category: ErrorCategory.state,
         displayMessage: null,
         logMessage: "Can't start a ride without a signed in rider"));
+      // TODO throw exception
     }
     else if(state != null) {
       errorNotifier.report(AppError(
         category: ErrorCategory.state,
         displayMessage: null,
         logMessage: "Can only have one active ride at a time"));
+      // TODO throw exception
     }
     else {
       try {
         state = await dbAccess.addRide(RideModel.newRide(rider: activeUser!, bike: bike));
         // Change the bike status to in use, so it no longer appears in the available list
         await dbAccess.updateBike(bike.copyWith(status: BikeStatus.inUse));
+        this.bike = bike;
       } catch(e) {
         errorNotifier.report(AppError(
           category: ErrorCategory.database,
@@ -89,6 +101,7 @@ class ActiveRideNotifier extends StateNotifier<RideModel?> {
         category: ErrorCategory.state,
         displayMessage: null,
         logMessage: "Can only finish an active ride"));
+      // TODO throw exception
     }
     else {
       try {
@@ -98,19 +111,20 @@ class ActiveRideNotifier extends StateNotifier<RideModel?> {
           await dbAccess.updateRide(state!.copyWith(finishPoint: point, finishTime: time, review: review));
           // Update bike status to available, the bike location statistics,
           // and the bike rating statistics.
-          var bike = await dbAccess.getBikeByReference(state!.bike);
-          await dbAccess.updateBike(bike.copyWith(
+          bike = await dbAccess.getBikeByReference(state!.bike);
+          await dbAccess.updateBike(bike!.copyWith(
             status: BikeStatus.available,
             locationPoint: point,
             locationUpdated: time,
-            totalStars: bike.totalStars + review.stars,
-            totalReviews: bike.totalReviews + 1));
+            totalStars: bike!.totalStars + review.stars,
+            totalReviews: bike!.totalReviews + 1));
           // Reward the bike rider (the current user) points
           await dbAccess.updateUser(activeUser!.copyWith(points: activeUser!.points + getPointsForRider()));
           // Reward the bike owner points
-          var owner = await dbAccess.getUserByReference(bike.owner);
+          var owner = await dbAccess.getUserByReference(bike!.owner);
           await dbAccess.updateUser(owner.copyWith(points: owner.points + getPointsForOwner(review)));
           // Ending a ride makes it no longer active
+          bike = null;
           state = null;
         } catch(e) {
           errorNotifier.report(AppError(
@@ -136,6 +150,7 @@ class ActiveRideNotifier extends StateNotifier<RideModel?> {
         category: ErrorCategory.state,
         displayMessage: null,
         logMessage: "Can only report a ride issue for an active ride"));
+      // TODO throw exception
     }
     else {
       try {
@@ -143,6 +158,7 @@ class ActiveRideNotifier extends StateNotifier<RideModel?> {
         try {
           await dbAccess.updateRide(state!.copyWith(finishPoint: point, finishTime: DateTime.now()));
           // Ending a ride makes it no longer active
+          bike = null;
           state = null;
         } catch(e) {
           errorNotifier.report(AppError(

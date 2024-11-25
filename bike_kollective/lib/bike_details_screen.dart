@@ -1,3 +1,7 @@
+import 'package:bike_kollective/data/model/issue.dart';
+import 'package:bike_kollective/data/provider/active_ride.dart';
+import 'package:bike_kollective/data/provider/active_user.dart';
+import 'package:bike_kollective/data/provider/available_bikes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bike_kollective/data/model/bike.dart';
@@ -12,6 +16,7 @@ class BikeDetailsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    var activeUser = ref.watch(activeUserProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text(bike.name),
@@ -29,19 +34,26 @@ class BikeDetailsScreen extends ConsumerWidget {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    reportIssue(context);
+                    showReportIssueDialog(context, (IssueTag issue, String comment) async {
+                      await ref.read(availableBikesProvider.notifier).reportBike(IssueModel.newIssue(
+                        reporter: activeUser!.docRef!,
+                        bike: bike.docRef!,
+                        tags: [issue],
+                        comment: comment));
+                    });
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
                   ),
                   child: Text(
-                    'Report issue',
+                    'Report Issue',
                     style: TextStyle(fontSize: 16),
                   ),
                 ),
                 ElevatedButton(
                   onPressed: () {
+                    ref.read(activeRideProvider.notifier).startRide(bike);
                     checkOutBike(context, bike);
                   },
                   style: ElevatedButton.styleFrom(
@@ -49,7 +61,7 @@ class BikeDetailsScreen extends ConsumerWidget {
                     foregroundColor: Colors.white,
                   ),
                   child: Text(
-                    'Check out bike',
+                    'Check Out',
                     style: TextStyle(fontSize: 16),
                   ),
                 ),
