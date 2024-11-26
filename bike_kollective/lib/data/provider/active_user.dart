@@ -35,10 +35,10 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
     UserModel? user;
 
     try {
-      // Get the UID from the authentication service
+      // Get the UID and email from the authentication service
       if(method == SignInMethod.google) {
         final authResult = await authAccess.signInWithGoogle();
-        uid = authResult.uid;
+        uid = authResult!.uid;
         email = authResult.email;
       } else {
         throw UnimplementedError("Missing handling for ${method.name} sign in method");

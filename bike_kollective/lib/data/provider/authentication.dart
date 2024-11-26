@@ -1,6 +1,10 @@
+import 'dart:math';
+
+import 'package:bike_kollective/data/provider/active_user.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 // A UID is a string that uniquely identifies an authenticated user
 typedef Uid = String;
@@ -14,7 +18,7 @@ final authenticationProvider = Provider<Authentication>((ref) {
 
 // Interface for doing authentication
 abstract class Authentication {
-  Future<AuthResult> signInWithGoogle();
+  Future<AuthResult?> signInWithGoogle();
 }
 
 // This implementation can be used by developers to create fake data
@@ -30,31 +34,48 @@ class DummyAuthentication extends Authentication {
 class RealAuthentication extends Authentication {
   @override
   Future<AuthResult> signInWithGoogle() async {
-    GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    if (googleUser == null) {
-      throw Exception("Google sign-in stopped.");
+    try {
+      GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+      // get access tokens
+      AuthCredential credentials = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+
+      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credentials);
+
+      // get UID and email
+      String? uid = userCredential.user?.uid;
+      String? email = userCredential.user?.email;
+
+      // check if user exists
+      if (uid != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+        if (userDoc.exists) {
+          if (!userDoc.exists) {
+          // If the user doesn't exist, create a new user in Firestore
+          await FirebaseFirestore.instance.collection('users').doc(uid).set({
+            'email': email,
+            'displayName': userCredential.user?.displayName,
+            // Add other default fields if needed
+          });
+        }
+
+        // Return AuthResult with UID and Email
+        return AuthResult(
+          uid: uid,
+          email: email,
+        );
+      }
+    } catch (e) {
+      // Handle any errors (e.g., log or display a message)
+      print('Error during Google Sign-In: $e');
     }
-    GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-    // add checks for null variables
-    if (googleAuth.idToken == null) {
-      throw Exception("Null access tokens");
-    }
-    // get access tokens
-    AuthCredential credentials = GoogleAuthProvider.credential(
-      idToken: googleAuth.idToken!,
-    );
-    UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credentials);
-    User? firebaseUser = userCredential.user;
-    // check firebase database for user
-    if (firebaseUser == null) {
-      throw Exception("Firebase user null after signin.");
-    } 
-    if (firebaseUser.email == null || firebaseUser.uid.isEmpty) {
-      throw Exception("User is missing email or UID");
-    }
-    return AuthResult(uid: firebaseUser.uid, email: firebaseUser.email);
   }
+}
 }
 
 class AuthResult {
