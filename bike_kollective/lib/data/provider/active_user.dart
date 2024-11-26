@@ -31,7 +31,7 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
   Future<UserModel> signIn(SignInMethod method) async {
     // Sign in and sign up handling
     Uid uid;
-    Email? email;
+    Email email;
     UserModel? user;
 
     try {
@@ -39,7 +39,7 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
       if(method == SignInMethod.google) {
         final authResult = await authAccess.signInWithGoogle();
         uid = authResult!.uid;
-        email = authResult.email;
+        email = authResult!.email;
       } else {
         throw UnimplementedError("Missing handling for ${method.name} sign in method");
       }

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bike_kollective/data/provider/active_user.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -34,47 +32,25 @@ class DummyAuthentication extends Authentication {
 class RealAuthentication extends Authentication {
   @override
   Future<AuthResult> signInWithGoogle() async {
-    try {
-      GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+    GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+    AuthCredential credentials = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
 
-      // get access tokens
-      AuthCredential credentials = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
+    UserCredential userCredential = 
+      await FirebaseAuth.instance.signInWithCredential(credentials);
 
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credentials);
+    String uid = userCredential.user!.uid;
+    String? email = userCredential.user?.email;
+    print(userCredential.user!.uid);
+    print(userCredential.user!.email);
 
-      // get UID and email
-      String? uid = userCredential.user?.uid;
-      String? email = userCredential.user?.email;
-
-      // check if user exists
-      if (uid != null) {
-        DocumentSnapshot userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
-
-        if (userDoc.exists) {
-          if (!userDoc.exists) {
-          // If the user doesn't exist, create a new user in Firestore
-          await FirebaseFirestore.instance.collection('users').doc(uid).set({
-            'email': email,
-            'displayName': userCredential.user?.displayName,
-            // Add other default fields if needed
-          });
-        }
-
-        // Return AuthResult with UID and Email
-        return AuthResult(
-          uid: uid,
-          email: email,
-        );
-      }
-    } catch (e) {
-      // Handle any errors (e.g., log or display a message)
-      print('Error during Google Sign-In: $e');
-    }
-  }
+    return AuthResult(
+      uid: uid, 
+      email: email,
+    );
 }
 }
 
