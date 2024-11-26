@@ -28,7 +28,7 @@ class BikeDetailsScreen extends ConsumerWidget {
           children: [
             BikeDetailsView(
                 bike: bike), // Include the BikeDetailsView component
-            Spacer(),
+            //Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -114,6 +114,7 @@ void checkOutBike(BuildContext context, BikeModel bike) {
             child: TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the pop-out dialog box
+                Navigator.pushReplacementNamed(context, '/currentRide'); // Navigate back to current ride screen
               },
               child: Text('OK'),
             ),
