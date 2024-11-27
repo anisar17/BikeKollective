@@ -1,40 +1,12 @@
+import 'package:bike_kollective/data/model/issue.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: HomeScreen(),
-    );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () => reportIssue(context),
-          child: Text("Report an Issue"),
-        ),
-      ),
-    );
-  }
-}
-
-void reportIssue(BuildContext context) {
+void showReportIssueDialog(BuildContext context, Function(IssueTag issue, String comment) onClose) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return ReportIssueDialog(onClose: () {
+      return ReportIssueDialog(onClose: (IssueTag issue, String comment) {
+        onClose(issue, comment);
         Navigator.of(context).pop();  // Close the dialog from the callback
       });
     },
@@ -42,7 +14,7 @@ void reportIssue(BuildContext context) {
 }
 
 class ReportIssueDialog extends StatefulWidget {
-  final VoidCallback onClose;
+  final void Function(IssueTag issue, String comment) onClose;
 
   ReportIssueDialog({Key? key, required this.onClose}) : super(key: key);
 
@@ -52,7 +24,7 @@ class ReportIssueDialog extends StatefulWidget {
 
 class _ReportIssueDialogState extends State<ReportIssueDialog> {
   final TextEditingController feedbackController = TextEditingController();
-  String selectedIssueType = "";
+  IssueTag? selectedIssueType;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -80,21 +52,15 @@ class _ReportIssueDialogState extends State<ReportIssueDialog> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _issueButton("STOLEN"),
-                  _issueButton("NOT IN WORKING CONDITION"),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _issueButton("LOCK WON'T WORK"),
-                  _issueButton("LOCK MISSING"),
+                  _issueButton(IssueTag.stolen),
+                  _issueButton(IssueTag.broken),
+                  _issueButton(IssueTag.lockBroken),
+                  _issueButton(IssueTag.lockMissing),
                 ],
               ),
               const SizedBox(height: 20),
               Text(
-                selectedIssueType.isNotEmpty ? selectedIssueType : "Please select an issue",
+                (selectedIssueType != null) ? "" : "Please select an issue",
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
@@ -107,7 +73,7 @@ class _ReportIssueDialogState extends State<ReportIssueDialog> {
                 ),
                 maxLines: 5,
                 validator: (value) {
-                  if (selectedIssueType.isEmpty) {
+                  if (selectedIssueType == null) {
                     return "Please select an issue type";
                   }
                   return null; // Allow empty feedback
@@ -122,9 +88,7 @@ class _ReportIssueDialogState extends State<ReportIssueDialog> {
           child: ElevatedButton(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
-                String feedbackText = feedbackController.text;
-                print("Feedback for $selectedIssueType: $feedbackText");
-                widget.onClose(); // Call the onClose callback to close the dialog
+                widget.onClose(selectedIssueType!, feedbackController.text); // Call the onClose callback to close the dialog
               }
             },
             style: ElevatedButton.styleFrom(
@@ -138,18 +102,24 @@ class _ReportIssueDialogState extends State<ReportIssueDialog> {
     );
   }
 
-  ElevatedButton _issueButton(String type) {
+  ElevatedButton _issueButton(IssueTag tag) {
+    final Map<IssueTag, String> tagDisplayNames = {
+      IssueTag.stolen: 'Stolen',
+      IssueTag.broken: 'Broken',
+      IssueTag.lockBroken: 'Lock Broken',
+      IssueTag.lockMissing: 'Lock Missing',
+    };
     return ElevatedButton(
       onPressed: () {
         setState(() {
-          selectedIssueType = type;
+          selectedIssueType = tag;
         });
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: selectedIssueType == type ? Colors.blue : const Color.fromARGB(255, 239, 242, 243),
-        foregroundColor: selectedIssueType == type ? Colors.white : const Color.fromARGB(255, 2, 138, 250),
+        backgroundColor: selectedIssueType == tag ? Colors.blue : const Color.fromARGB(255, 239, 242, 243),
+        foregroundColor: selectedIssueType == tag ? Colors.white : const Color.fromARGB(255, 2, 138, 250),
       ),
-      child: Text(type, style: const TextStyle(fontSize: 12)),
+      child: Text(tagDisplayNames[tag]!, style: const TextStyle(fontSize: 12)),
     );
   }
 }
