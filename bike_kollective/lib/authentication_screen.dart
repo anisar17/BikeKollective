@@ -9,6 +9,9 @@ class AuthenticationScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -61,6 +64,79 @@ class AuthenticationScreen extends ConsumerWidget {
             ),
             // Login Button and Description at the bottom
             Expanded(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextField(
+                      controller: emailController,
+                      decoration: const InputDecoration(
+                        labelText: "Email",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    TextField(
+                      controller: passwordController,
+                      decoration: const InputDecoration(
+                        labelText: "Password",
+                        border: OutlineInputBorder(),
+                      ),
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 15),
+                    ElevatedButton(
+                      onPressed: () async{
+                        final email = emailController.text.trim();
+                        final password = passwordController.text.trim();
+                        if (email.isNotEmpty && password.isNotEmpty) {
+                          UserModel user = await ref.read(activeUserProvider.notifier).signIn(SignInMethod.google);
+                          if(user.isBanned()) {
+                          // The user has been banned, show them a screen that
+                          // lets them know and prevents them from using the app.
+                          // TODO: navigate to a banned screen
+                          throw UnimplementedError("Missing handling for banned users");
+                        } else if(!user.isAgreed()) {
+                          // The user has not yet signed an agreement, or 
+                          // needs to sign a new one. We need to show that
+                          // before they can use the app.
+                          Navigator.pushReplacementNamed(context, '/waiver');
+                        } else if(!user.isVerified()) {
+                          // The user has not yet verified their email.
+                          // TODO: handle verification step
+                          // TODO: remove below, for now allow unverified users
+                          Navigator.pushReplacementNamed(context, '/home');
+                        } else {
+                          // The user is ready, go to the main screen.
+                          Navigator.pushReplacementNamed(context, '/home');
+                        }
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent.shade700,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 15,
+                          horizontal: 80,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: const Text(
+                        'Login',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ), 
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
               flex: 2,
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -111,7 +187,7 @@ class AuthenticationScreen extends ConsumerWidget {
                         ),
                       ),
                       child: const Text(
-                        'Login',
+                        'Google Login',
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.white,
