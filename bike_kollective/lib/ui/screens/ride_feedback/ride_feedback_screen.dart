@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bike_kollective/data/model/bike.dart';
 import 'package:bike_kollective/data/model/ride.dart';
-import 'package:bike_kollective/data/provider/database.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bike_kollective/data/provider/active_ride.dart';
 
