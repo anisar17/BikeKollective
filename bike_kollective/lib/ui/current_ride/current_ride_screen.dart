@@ -40,7 +40,8 @@ class _CurrentRideScreenState extends ConsumerState<CurrentRideScreen> {
                 reporter: activeRide.rider,
                 bike: activeRide.bike,
                 tags: [issue],
-                comment: comment));
+                comment: comment,
+              ));
               setState(() {
                 isDialogOpen = false; // Close dialog and return to main screen
               });
@@ -90,6 +91,20 @@ class _CurrentRideScreenState extends ConsumerState<CurrentRideScreen> {
                 ),
               ),
               const SizedBox(height: 10),
+              // Check for over time and conditionally display a warning message
+              if (remainingTime.isNegative || remainingTime.inHours == 0 && remainingTime.inMinutes <= 0)
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  color: Colors.redAccent, // Background color for the warning
+                  child: const Text(
+                    "⚠️ Your time is out! Please finish ride and lock bike.",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               Expanded(
                 child: CurrentRideMap(enabled: !isDialogOpen), // Conditional rendering based on dialog state
               ),

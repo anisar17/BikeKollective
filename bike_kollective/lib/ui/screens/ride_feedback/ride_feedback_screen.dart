@@ -73,17 +73,19 @@ class _RideFeedbackFormState extends State<_RideFeedbackForm> {
       final review = RideReview(
         stars: selectedStars!,
         tags: likedTags + improvementTags,
-        comment: commentController.text,
+        comment: commentController.text.isNotEmpty ? commentController.text : '', // Set to empty string if empty
         submitted: DateTime.now(),
       );
+
       final activeRideNotifier = widget.ref.read(activeRideProvider.notifier); // Use passed ref
       try {
         await activeRideNotifier.finishRide(review);
         Navigator.pop(context); // Navigate back after submission
       } catch (e) {
-        print('Error submitting feedback: $e');
+        // Log the error message and show a snackbar
+        debugPrint("Error in finishRide: $e");
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error submitting feedback. Please try again.')),
+            const SnackBar(content: Text("Error submitting feedback. Please try again.")),
         );
       }
     } else {
@@ -188,17 +190,17 @@ class _RideFeedbackFormState extends State<_RideFeedbackForm> {
                   border: OutlineInputBorder(),
                   hintText: 'Write your comments here...',
                 ),
+                // Comments are optional
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your comments';
-                  }
-                  return null;
+                  return null; // Return null to indicate that the comments are not required
                 },
               ),
-              const SizedBox(height: 20),
 
               ElevatedButton(
-                onPressed: submitFeedback,
+                onPressed: () async {
+                  await submitFeedback();  // Wait for the feedback submission to complete
+                  Navigator.pushReplacementNamed(context, '/home');  // Navigate to the home screen
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
