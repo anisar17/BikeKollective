@@ -43,15 +43,6 @@ class BKDocumentReference {
   bool isFake() {
     return (fakeDocumentId != null);
   }
- Future<Map<String, dynamic>?> getData() async {
-    if (isFirestore() && firestoreDocumentReference != null) {
-      final snapshot = await firestoreDocumentReference!.get();
-      if (snapshot.exists) {
-        return snapshot.data();
-      }
-    } 
-    return null; // or throw an error or return default data
-  }
 
   String? getId() {
     if (isFirestore()) {
