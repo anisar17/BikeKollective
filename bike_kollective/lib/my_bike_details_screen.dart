@@ -12,6 +12,10 @@ class MyBikeDetailsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Assuming you have a getRating() method that retrieves the rating for the bike
+    // This logic should be consistent with how it is retrieved in BikeDetailsScreen
+    final starRating = bike.getRating(); // This should return a value suitable for the RatingBarIndicator
+
     return Scaffold(
       appBar: AppBar(
         title: Text(bike.name),
@@ -22,7 +26,9 @@ class MyBikeDetailsScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             BikeDetailsView(
-                bike: bike), // Include the BikeDetailsView component
+              bike: bike, // Include the BikeDetailsView component
+              rating: starRating, // Pass the rating to the BikeDetailsView
+            ),
             const Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

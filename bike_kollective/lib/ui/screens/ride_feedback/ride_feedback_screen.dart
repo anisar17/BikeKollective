@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:bike_kollective/data/model/bike.dart';
 import 'package:bike_kollective/data/model/ride.dart';
+import 'package:bike_kollective/data/provider/database.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bike_kollective/data/provider/active_ride.dart';
 
@@ -68,22 +70,24 @@ class _RideFeedbackFormState extends State<_RideFeedbackForm> {
     });
   }
 
-  Future<void> submitFeedback() async {
+ Future<void> submitFeedback() async {
     if (_formKey.currentState!.validate() && selectedStars != null) {
       final review = RideReview(
         stars: selectedStars!,
         tags: likedTags + improvementTags,
-        comment: commentController.text,
+        comment: commentController.text.isNotEmpty ? commentController.text : '', // Set to empty string if empty
         submitted: DateTime.now(),
       );
+
       final activeRideNotifier = widget.ref.read(activeRideProvider.notifier); // Use passed ref
       try {
         await activeRideNotifier.finishRide(review);
         Navigator.pop(context); // Navigate back after submission
       } catch (e) {
-        print('Error submitting feedback: $e');
+        // Log the error message and show a snackbar
+        debugPrint("Error in finishRide: $e");
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error submitting feedback. Please try again.')),
+            const SnackBar(content: Text("Error submitting feedback. Please try again.")),
         );
       }
     } else {
@@ -130,7 +134,7 @@ class _RideFeedbackFormState extends State<_RideFeedbackForm> {
                   return IconButton(
                     icon: Icon(
                       index < (selectedStars ?? 0) ? Icons.star : Icons.star_border,
-                      color: Colors.blue,
+                      color: Colors.amber,
                     ),
                     onPressed: () {
                       setState(() {
@@ -188,17 +192,17 @@ class _RideFeedbackFormState extends State<_RideFeedbackForm> {
                   border: OutlineInputBorder(),
                   hintText: 'Write your comments here...',
                 ),
+                // Comments are optional
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your comments';
-                  }
-                  return null;
+                  return null; // Return null to indicate that the comments are not required
                 },
               ),
-              const SizedBox(height: 20),
 
               ElevatedButton(
-                onPressed: submitFeedback,
+                onPressed: () async {
+                  await submitFeedback();  // Wait for the feedback submission to complete
+                  Navigator.pushReplacementNamed(context, '/home');  // Navigate to the home screen
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,

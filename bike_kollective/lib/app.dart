@@ -1,5 +1,6 @@
 import 'package:bike_kollective/authentication_screen.dart';
 import 'package:bike_kollective/ui/waiver_screen/waiver_screen.dart';
+import 'package:bike_kollective/ui/current_ride/current_ride_screen.dart';
 import 'package:flutter/material.dart';
 import 'landing_screen.dart';
 import 'home_screen.dart';
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
         '/waiver': (context) => WaiverScreen(),
         '/home': (context) => const MyHomePage(),
         '/auth': (context) => AuthenticationScreen(),
+        '/currentRide': (context) => CurrentRideScreen(),
       }
     );
   }
