@@ -92,8 +92,16 @@ class MyBikeDetailsScreenState extends ConsumerState<MyBikeDetailsScreen> {
   }
 
   @override
+//<<<<<<< campbeb3/bike-details
+//  Widget build(BuildContext context, WidgetRef ref) {
+    // Assuming you have a getRating() method that retrieves the rating for the bike
+    // This logic should be consistent with how it is retrieved in BikeDetailsScreen
+//    final starRating = bike.getRating(); // This should return a value suitable for the RatingBarIndicator
+
+//=======
   Widget build(BuildContext context) {
     IssueModel? issue = ref.watch(_activeIssueProvider);
+//>>>>>>> main
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.bike.name),
@@ -103,9 +111,16 @@ class MyBikeDetailsScreenState extends ConsumerState<MyBikeDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+//<<<<<<< campbeb3/bike-details
+//            BikeDetailsView(
+//              bike: bike, // Include the BikeDetailsView component
+//              rating: starRating, // Pass the rating to the BikeDetailsView
+//            ),
+//=======
             BikeDetailsView(bike: widget.bike),
             const Spacer(),
             BikeIssueView(bike: widget.bike, issue: issue),
+//>>>>>>> main
             const Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

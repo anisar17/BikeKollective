@@ -4,8 +4,9 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class BikeDetailsView extends StatelessWidget {
   final BikeModel bike;
+  final double? rating; // Add a rating parameter
 
-  const BikeDetailsView({Key? key, required this.bike}) : super(key: key);
+  const BikeDetailsView({Key? key, required this.bike, this.rating}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,16 +23,21 @@ class BikeDetailsView extends StatelessWidget {
         Text(bike.name,
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         SizedBox(height: 4),
-        RatingBarIndicator(
-          rating: 2.0,
-          itemCount: 5,
-          itemSize: 20.0,
-          direction: Axis.horizontal,
-          itemBuilder: (context, index) => Icon(
-            Icons.star,
-            color: Colors.amber,
+        
+        // Use the received rating, or show a default if null
+        if (rating != null) ...[
+          RatingBarIndicator(
+            rating: rating!,
+            itemCount: 5,
+            itemSize: 20.0,
+            direction: Axis.horizontal,
+            itemBuilder: (context, index) => Icon(
+              Icons.star,
+              color: Colors.amber,
+            ),
           ),
-        ),
+        ],
+        
         SizedBox(height: 8),
         Text('Owner: ${bike.owner}'),
         Text('Type: ${bike.type}'),

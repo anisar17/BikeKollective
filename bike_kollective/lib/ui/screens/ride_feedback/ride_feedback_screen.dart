@@ -68,7 +68,7 @@ class _RideFeedbackFormState extends State<_RideFeedbackForm> {
     });
   }
 
-  Future<void> submitFeedback() async {
+ Future<void> submitFeedback() async {
     if (_formKey.currentState!.validate() && selectedStars != null) {
       final review = RideReview(
         stars: selectedStars!,
@@ -132,7 +132,7 @@ class _RideFeedbackFormState extends State<_RideFeedbackForm> {
                   return IconButton(
                     icon: Icon(
                       index < (selectedStars ?? 0) ? Icons.star : Icons.star_border,
-                      color: Colors.blue,
+                      color: Colors.amber,
                     ),
                     onPressed: () {
                       setState(() {

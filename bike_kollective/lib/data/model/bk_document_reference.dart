@@ -43,4 +43,11 @@ class BKDocumentReference {
   bool isFake() {
     return (fakeDocumentId != null);
   }
+
+  String? getId() {
+    if (isFirestore()) {
+      return firestoreDocumentReference?.id;
+    } 
+    return fakeDocumentId; // Return the fake ID if no Firestore reference exists
+  }
 }

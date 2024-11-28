@@ -17,6 +17,8 @@ class BikeDetailsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var activeUser = ref.watch(activeUserProvider);
+    final starRating = bike.getRating(); // This should return a value suitable for the RatingBarIndicator
+
     return Scaffold(
       appBar: AppBar(
         title: Text(bike.name),
@@ -27,8 +29,11 @@ class BikeDetailsScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             BikeDetailsView(
-                bike: bike), // Include the BikeDetailsView component
-            //Spacer(),
+              bike: bike, // Include the BikeDetailsView component
+              rating: starRating, // Pass the rating to the BikeDetailsView
+            ),
+            Spacer(),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -36,10 +41,10 @@ class BikeDetailsScreen extends ConsumerWidget {
                   onPressed: () {
                     showReportIssueDialog(context, (IssueTag issue, String comment) async {
                       await ref.read(availableBikesProvider.notifier).reportBike(IssueModel.newIssue(
-                        reporter: activeUser!.docRef!,
-                        bike: bike.docRef!,
-                        tags: [issue],
-                        comment: comment));
+                          reporter: activeUser!.docRef!,
+                          bike: bike.docRef!,
+                          tags: [issue],
+                          comment: comment));
                       // Leave this bike and go back to the list of available bikes
                       Navigator.pushReplacementNamed(context, '/home');
                     });
