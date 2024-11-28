@@ -19,6 +19,13 @@ class _CurrentRideMapState extends State<CurrentRideMap> {
     mapController = MapController.withUserPosition(
       trackUserLocation: const UserTrackingOption(enableTracking: true),
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      var position = await mapController.myLocation();
+      if (position != null) {
+        mapController.goToLocation(position);
+      }
+    });
   }
 
   @override
@@ -27,7 +34,15 @@ class _CurrentRideMapState extends State<CurrentRideMap> {
       ignoring: !widget.enabled, // This will manage user interaction
       child: OSMFlutter(
         controller: mapController,
-        osmOption: const OSMOption(
+        onMapIsReady: (isReady) async {
+          if (isReady) {
+            var position = await mapController.myLocation();
+            if (position != null) {
+              mapController.goToLocation(position);
+            }
+          }
+        },
+        osmOption: OSMOption(
           userTrackingOption: UserTrackingOption(
             enableTracking: true,
             unFollowUser: false,
@@ -37,6 +52,21 @@ class _CurrentRideMapState extends State<CurrentRideMap> {
             minZoomLevel: 3,
             maxZoomLevel: 19,
             stepZoom: 1.0,
+          ),
+          userLocationMarker: UserLocationMaker(
+            personMarker: MarkerIcon(
+              icon: Icon(
+                Icons.location_history_rounded,
+                color: Colors.blue,
+                size: 48,
+              ),
+            ),
+            directionArrowMarker: MarkerIcon(
+              icon: Icon(
+                Icons.double_arrow,
+                size: 48,
+              ),
+            ),
           ),
         ),
       ),

@@ -29,8 +29,11 @@ class BikeDetailsScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             BikeDetailsView(
-                bike: bike), // Include the BikeDetailsView component
-            //Spacer(),
+              bike: bike, // Include the BikeDetailsView component
+              rating: starRating, // Pass the rating to the BikeDetailsView
+            ),
+            Spacer(),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
