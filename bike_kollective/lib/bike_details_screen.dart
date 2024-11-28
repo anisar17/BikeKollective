@@ -33,6 +33,7 @@ class BikeDetailsScreen extends ConsumerWidget {
               rating: starRating, // Pass the rating to the BikeDetailsView
             ),
             Spacer(),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
