@@ -158,7 +158,6 @@ class _BikesListViewState extends State<BikesListView> {
                             bike.name,
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Text("123 Main Street"),
                           trailing: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [

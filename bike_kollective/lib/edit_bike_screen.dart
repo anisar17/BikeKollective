@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bike_kollective/data/provider/owned_bikes.dart';
@@ -5,15 +7,13 @@ import 'package:bike_kollective/data/model/bk_document_reference.dart';
 import 'package:bike_kollective/data/model/bk_geo_point.dart';
 import 'package:bike_kollective/data/model/bike.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 class BikeNotifier extends ChangeNotifier {
   late TextEditingController nameController;
   late TextEditingController descriptionController; // Add separate controller
   late TextEditingController lockCodeController; // Add separate controller
   BikeType? _type;
-  File? _image; // Change this to the notifier to retain state
+  Uint8List? _image; // Change this to the notifier to retain state
 
   BikeNotifier() {
     nameController = TextEditingController();
@@ -36,24 +36,22 @@ class BikeNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setImage(File image) {
+  void setImage(Uint8List image) {
     _image = image; // Set selected image
     notifyListeners(); // Notify listeners to update UI
   }
 
   BikeModel? get bike {
     if (nameController.text.isNotEmpty && _type != null && descriptionController.text.isNotEmpty && lockCodeController.text.isNotEmpty) {
+      // Return a bike model with the data from the form, dummy data will be replaced later
       return BikeModel.newBike(
-        owner: BKDocumentReference.fake("ownerRef"),
-        // TODO: Temporary place holder
+        owner: BKDocumentReference.fake(""),
         name: nameController.text,
         type: _type!,
-        // TODO: Temporary place holder
-        description: descriptionController.text, // Get description from its controller
-        code: lockCodeController.text, // Get lock code from its controller
-        // TODO: Define image storage path
-        imageLocalPath: '', // Use the imageLocalPath here if applicable
-        startingPoint: BKGeoPoint(0, 0),
+        description: descriptionController.text,
+        code: lockCodeController.text,
+        imageUrl: '',
+        startingPoint: const BKGeoPoint(0, 0),
       );
     }
     return null;
@@ -68,12 +66,12 @@ class BikeNotifier extends ChangeNotifier {
       descriptionController.text = b.description;
       lockCodeController.text = b.code;
       _type = b.type;
-      _image = null; // TODO: set image
+      _image = null;
       notifyListeners();
     }
   }
 
-  File? get image => _image; // Getter for the image
+  Uint8List? get image => _image; // Getter for the image
 
   void clear() {
     nameController.clear();
@@ -214,18 +212,13 @@ class EditBikeScreenState extends ConsumerState<EditBikeScreen> {
                   ),
                   child: bikeNotifier.image == null
                       ? Center(child: Text('No image selected.'))
-                      : kIsWeb
-                          ? Image.network(
-                              bikeNotifier.image!.path,
-                              fit: BoxFit.cover,
-                            )
-                          : ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.file(
-                                bikeNotifier.image!,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.memory(
+                            bikeNotifier.image!,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                 ),
               ),
               SizedBox(height: 16.0),
@@ -234,7 +227,7 @@ class EditBikeScreenState extends ConsumerState<EditBikeScreen> {
               Center(
                 child: ElevatedButton(
                   onPressed: () async {
-                    File? image = await pickImage();
+                    Uint8List? image = await pickImage();
                     if (image != null) {
                       bikeNotifier.setImage(image); 
                     }
@@ -268,14 +261,16 @@ class EditBikeScreenState extends ConsumerState<EditBikeScreen> {
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         final bike = bikeNotifier.bike;
-                        if (bike != null) {
+                        final image = bikeNotifier.image;
+                        // Require new bikes to have images
+                        if (bike != null && (image != null || !_isNew())) {
                           if(_isNew()) {
                             await ref.read(ownedBikesProvider.notifier).addBike(
                               name: bike.name,
                               type: bike.type,
                               description: bike.description,
                               code: bike.code,
-                              imageLocalPath: bike.imageUrl,
+                              image: image!,
                             );
                           } else {
                             await ref.read(ownedBikesProvider.notifier).updateBikeDetails(
@@ -284,7 +279,7 @@ class EditBikeScreenState extends ConsumerState<EditBikeScreen> {
                               newType: bike.type,
                               newDescription: bike.description,
                               newCode: bike.code,
-                              newImageLocalPath: bike.imageUrl,
+                              newImage: image,
                             );
                           }
 
@@ -327,12 +322,11 @@ class EditBikeScreenState extends ConsumerState<EditBikeScreen> {
     );
   }
 
-  Future<File?> pickImage() async {
+  Future<Uint8List?> pickImage() async {
     final ImagePicker picker = ImagePicker();
     XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
     if (image != null) {
-      return File(image.path); // Convert to File
+      return image.readAsBytes();
     }
     return null; // Return null if no image is picked
   }
