@@ -44,6 +44,7 @@ abstract class BKDB {
   // Issue CRUD operations
   Future<IssueModel> addIssue(IssueModel issue);
   Future<IssueModel> getIssueByReference(BKDocumentReference ref);
+  Future<IssueModel?> getActiveIssueForBike(BikeModel bike);
   Future<IssueModel> updateIssue(IssueModel issue);
   // deleteIssue not needed yet
 }
@@ -339,6 +340,19 @@ class DummyData extends BKDB {
   }
 
   @override
+  Future<IssueModel?> getActiveIssueForBike(BikeModel bike) async {
+    // Note: this function assumes only one active issue
+    IssueModel? activeIssue;
+    for (var issue in issues.values) {
+      if(issue.bike == bike.docRef && !issue.isResolved()) {
+        activeIssue = issue;
+        break;
+      }
+    }
+    return activeIssue;
+  }
+
+  @override
   Future<IssueModel> updateIssue(IssueModel issue) async {
     var id = issue.docRef!.fakeDocumentId!;
     return issues.update(id, (_) {return issue;});
@@ -566,6 +580,21 @@ class RealFirestore extends BKDB {
     var snapshot = await ref.firestoreDocumentReference!.get();
     var data = snapshot.data()!;
     return _issueFromFirestore(data, snapshot.reference);
+  }
+
+  @override
+  Future<IssueModel?> getActiveIssueForBike(BikeModel bike) async {
+    var snapshot = await FirebaseFirestore.instance.collection("issues")
+      .where("bike", isEqualTo: bike.docRef!.firestoreDocumentReference!)
+      .where("resolved", isNull: true)
+      .orderBy("submitted", descending: true)
+      .get();
+    if(snapshot.docs.isEmpty) {
+      return null;
+    } else {
+      var doc = snapshot.docs[0];
+      return _issueFromFirestore(doc.data(), doc.reference);
+    }
   }
 
   @override

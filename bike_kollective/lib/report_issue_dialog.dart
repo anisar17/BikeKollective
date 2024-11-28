@@ -103,12 +103,6 @@ class _ReportIssueDialogState extends State<ReportIssueDialog> {
   }
 
   ElevatedButton _issueButton(IssueTag tag) {
-    final Map<IssueTag, String> tagDisplayNames = {
-      IssueTag.stolen: 'Stolen',
-      IssueTag.broken: 'Broken',
-      IssueTag.lockBroken: 'Lock Broken',
-      IssueTag.lockMissing: 'Lock Missing',
-    };
     return ElevatedButton(
       onPressed: () {
         setState(() {
