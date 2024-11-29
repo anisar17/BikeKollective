@@ -1,8 +1,10 @@
+import 'dart:typed_data';
 import 'package:bike_kollective/data/model/app_error.dart';
 import 'package:bike_kollective/data/model/bike.dart';
 import 'package:bike_kollective/data/model/user.dart';
 import 'package:bike_kollective/data/provider/active_user.dart';
 import 'package:bike_kollective/data/provider/database.dart';
+import 'package:bike_kollective/data/provider/image_storage.dart';
 import 'package:bike_kollective/data/provider/reported_app_errors.dart';
 import 'package:bike_kollective/data/provider/user_location.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,20 +13,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final ownedBikesProvider =
     StateNotifierProvider<OwnedBikesNotifier, List<BikeModel>>((ref) {
   final dbAccess = ref.watch(databaseProvider);
+  final imageStorageAccess = ref.watch(imageStorageProvider);
   final locAccess = ref.watch(userLocationProvider);
   final errorNotifier = ref.watch(errorProvider.notifier);
   final activeUser = ref.watch(activeUserProvider);
-  return OwnedBikesNotifier(dbAccess, locAccess, errorNotifier, activeUser);
+  return OwnedBikesNotifier(dbAccess, imageStorageAccess, locAccess, errorNotifier, activeUser);
 });
 
 // The owned bikes are handled by this class
 class OwnedBikesNotifier extends StateNotifier<List<BikeModel>> {
   final BKDB dbAccess;
+  final ImageStorage imageStorageAccess;
   final UserLocation locAccess;
   final ErrorNotifier errorNotifier;
   final UserModel? activeUser;
   OwnedBikesNotifier(
-      this.dbAccess, this.locAccess, this.errorNotifier, this.activeUser)
+      this.dbAccess, this.imageStorageAccess, this.locAccess, this.errorNotifier, this.activeUser)
       : super([]);
 
   Future<void> refresh() async {
@@ -45,18 +49,19 @@ class OwnedBikesNotifier extends StateNotifier<List<BikeModel>> {
       required BikeType type,
       required String description,
       required String code,
-      required String imageLocalPath}) async {
+      required Uint8List image}) async {
     // Note: this function should never be called before there is an active user
     try {
       var point = await locAccess.getCurrent();
       try {
+        var imageUrl = await imageStorageAccess.uploadBikeImage(image);
         var newBike = await dbAccess.addBike(BikeModel.newBike(
             owner: activeUser!.docRef!,
             name: name,
             type: type,
             description: description,
             code: code,
-            imageLocalPath: imageLocalPath,
+            imageUrl: imageUrl,
             startingPoint: point));
         // Add the bike to the list (force state update)
         state = [newBike, ...state];
@@ -81,14 +86,20 @@ class OwnedBikesNotifier extends StateNotifier<List<BikeModel>> {
       BikeType? newType,
       String? newDescription,
       String? newCode,
-      String? newImageLocalPath}) async {
+      Uint8List? newImage}) async {
     try {
+      var imageUrl  = bike.imageUrl;
+      if(newImage != null) {
+        // Replace the old image with the new one
+        await imageStorageAccess.deleteBikeImage(bike.imageUrl);
+        imageUrl = await imageStorageAccess.uploadBikeImage(newImage);
+      }
       var updatedBike = await dbAccess.updateBike(bike.copyWith(
         name: newName,
         type: newType,
         description: newDescription,
         code: newCode,
-        imageUrl: newImageLocalPath,
+        imageUrl: imageUrl,
       ));
       // Update the bike in the list (force state update)
       state = state.map((b) {
@@ -109,6 +120,7 @@ class OwnedBikesNotifier extends StateNotifier<List<BikeModel>> {
   Future<void> removeBike(BikeModel bike) async {
     // Delete existing bike
     try {
+      await imageStorageAccess.deleteBikeImage(bike.imageUrl);
       await dbAccess.deleteBike(bike);
       // Remove the bike from the list
       state = [
