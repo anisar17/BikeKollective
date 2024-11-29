@@ -158,6 +158,14 @@ class _BikesListViewState extends State<BikesListView> {
                             bike.name,
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
+                          subtitle: Text(
+                            bikeStatusDisplayNames[bike.status]!,
+                            style: TextStyle(color: {
+                              BikeStatus.available: Colors.green,
+                              BikeStatus.inUse: Colors.blue,
+                              BikeStatus.hasIssue: Colors.red
+                            }[bike.status],
+                          )),
                           trailing: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
