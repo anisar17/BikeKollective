@@ -17,7 +17,9 @@ final authenticationProvider = Provider<Authentication>((ref) {
 
 // Interface for doing authentication
 abstract class Authentication {
-  Future<AuthResult?> signInWithGoogle();
+  Future<AuthResult> signInWithGoogle();
+  Future<AuthResult> signInWithEmailAndPassword(String email, String password);
+  Future<AuthResult> createUserWithEmailAndPassword(String email, String password);
 }
 
 // This implementation can be used by developers to create fake data
@@ -27,14 +29,25 @@ class DummyAuthentication extends Authentication {
   Future<AuthResult> signInWithGoogle() async {
     return AuthResult(uid: "Dummer_UID", email: "Dummy_Email");
   }
+  @override
+  Future<AuthResult> signInWithEmailAndPassword(email, password) async {
+    return AuthResult(uid: "Dummy UID", email: "dummy_email2");
+  }
+  @override
+  Future<AuthResult> createUserWithEmailAndPassword(email, password) async{
+    return AuthResult(uid: "Dumb UID", email: "dumb_email");
+  }
 }
 
 // This implementation requests
 class RealAuthentication extends Authentication {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   Future<AuthResult> signInWithGoogle() async {
     GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
     AuthCredential credentials = GoogleAuthProvider.credential(
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
@@ -53,6 +66,26 @@ class RealAuthentication extends Authentication {
       email: email,
     );
   }
+
+  @override
+  Future<AuthResult> signInWithEmailAndPassword(String email, String password) async {
+    UserCredential userCredential = await _auth.signInWithEmailAndPassword(email: email, password: password);
+
+    return AuthResult(
+      uid: userCredential.user!.uid,
+      email: userCredential.user?.email,
+    );
+  }
+
+  @override
+  Future<AuthResult> createUserWithEmailAndPassword(String email, String password) async {
+    UserCredential userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+
+    return AuthResult(
+      uid: userCredential.user!.uid,
+      email: userCredential.user!.email,
+    );
+  }
 }
 
 class AuthResult {
@@ -62,45 +95,3 @@ class AuthResult {
   AuthResult({required this.uid, this.email});
 }
 
-// Provides access to login with email
-final emailAuthProvider = Provider<EmailAuthentication>((ref) {
-  return RealEmailAuthentication();
-});
-
-abstract class EmailAuthentication {
-  Future<EmailResult?> createUserWithEmailAndPassword(String email, String password);
-}
-
-class RealEmailAuthentication extends EmailAuthentication {
-  final _auth = FirebaseAuth.instance;
-
-  @override
-  Future<EmailResult> createUserWithEmailAndPassword(String email, String password) async {
-    final cred = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-
-    AuthCredential credentials = EmailAuthProvider.credential(
-      email: email, 
-      password: password
-    );
-    
-    UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credentials);
-
-    String uid = userCredential.user!.uid;
-    String? emailUser = userCredential.user!.email;
-    print(uid);
-    print(emailUser);
-
-    return EmailResult(
-      uid: uid, 
-      email: email, 
-      password: password);
-  }
-}
-
-class EmailResult {
-  final Uid uid;
-  final Email email;
-  final Password password;
-
-  EmailResult({required this.uid, required this.email, required this.password});
-}

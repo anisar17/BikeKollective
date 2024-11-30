@@ -35,7 +35,6 @@ void main() {
       docRef: fakeUserRef,
       uid: "FAKEUID",
       email: "email1@gmail.com",
-      password: "password",
       verified: DateTime.now(),
       agreed: DateTime.now(),
       banned: null,

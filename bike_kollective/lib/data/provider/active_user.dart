@@ -7,16 +7,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // The different ways the app supports user sign in
-enum SignInMethod { google }
-enum LogInMethod { email }
+enum SignInMethod { google, email }
 
 // Provides updates about the user account that is signed in (if any)
 final activeUserProvider = StateNotifierProvider<ActiveUserNotifier, UserModel?>((ref) {
   final authAccess = ref.watch(authenticationProvider);
   final dbAccess = ref.watch(databaseProvider);
   final errorNotifier = ref.watch(errorProvider.notifier);
-  final emailAccess = ref.watch(emailAuthProvider);
-  return ActiveUserNotifier(authAccess, dbAccess, errorNotifier, emailAccess);
+  return ActiveUserNotifier(authAccess, dbAccess, errorNotifier);
 });
 
 // The signed in user is determined by this class
@@ -24,124 +22,74 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
   final Authentication authAccess;
   final BKDB dbAccess;
   final ErrorNotifier error;
-  final EmailAuthentication emailAccess;
-  ActiveUserNotifier(this.authAccess, this.dbAccess, this.error, this.emailAccess) : super(null);
+  ActiveUserNotifier(this.authAccess, this.dbAccess, this.error) : super(null);
 
   Future<void> signOut() async {
     // Sign out of the current user's account
     state = null;
   }
 
-  Future<UserModel> signIn(SignInMethod method) async {
+  Future<UserModel> signIn(SignInMethod method, {String? email, String? password}) async {
     // Sign in and sign up handling
     Uid uid;
-    Email? email;
+    String? userEmail;
     UserModel? user;
 
     try {
       // Get the UID and email from the authentication service
       if(method == SignInMethod.google) {
         final authResult = await authAccess.signInWithGoogle();
-        uid = authResult!.uid;
+        uid = authResult.uid;
+        email = authResult.email;
+      } else if (method == SignInMethod.email) {
+        if (email == null || password == null) {
+          throw Exception("Email and Password must both be provided.");
+        }
+        final authResult = await authAccess.signInWithEmailAndPassword(email, password);
+        uid = authResult.uid;
         email = authResult.email;
       } else {
-        throw UnimplementedError("Missing handling for ${method.name} sign in method");
+        throw ArgumentError("Invalid Sign-in method");
       }
-    } catch(e) {
+    } catch (e) {
       error.report(AppError(
         category: ErrorCategory.user,
-        displayMessage: "Could not authenticate user",
-        logMessage: "Failed to authenticate user: $e"));
-      state = null;
-      rethrow;
-    }
-      
-    try {
-      // Get the user account details, null if this is a new account
-      user = await dbAccess.getUserByUid(uid);
-    } catch(e) {
-      error.report(AppError(
-        category: ErrorCategory.user,
-        displayMessage: "Could not get your account",
-        logMessage: "Failed to get user by UID: $e"));
+        displayMessage: "Failed to authenticate.",
+        logMessage: "Authentication error: $e",
+      ));
       state = null;
       rethrow;
     }
 
-    if(user == null) {
-      // email must be given
+    try {
+      user = await dbAccess.getUserByUid(uid);
+    } catch (e) {
+      error.report(AppError(
+        category: ErrorCategory.user,
+        displayMessage: "Failed to get or create user.",
+        logMessage: "Error: $e,"
+      ));
+      state = null;
+      rethrow;
+    }
+
+    if (user == null) {
       if (email == null) {
-        error.report(AppError(
-          category: ErrorCategory.user,
-          displayMessage: "Could not create your account",
-          logMessage: "Email is required to create new account but was not provided",
-        ));
-        throw Exception("email is missing for new user creation.");
+        throw Exception("Email is required to create a new user.");
       }
-      // Create a new account if one doesn't exist yet
       try {
         user = await dbAccess.addUser(uid, email);
-      } catch(e) {
+      } catch (e) {
         error.report(AppError(
           category: ErrorCategory.user,
-          displayMessage: "Could not create your account",
-          logMessage: "Failed to add a new user: $e"));
-        state = null;
-        rethrow;
-      }
-    }
-
-    // Set the active user and let the caller know the sign in was successful
-    state = user;
-    return user;
-  }
-
-  Future<UserModel> loginEmail(LogInMethod method, String email, String password) async {
-    // Sign in and sign up handling for email and password login
-    late Uid uid;
-    UserModel? user;
-
-    try {
-      // creates user
-      if(method == LogInMethod.email) {
-        final authResult = await emailAccess.createUserWithEmailAndPassword(email, password);
-        uid = authResult!.uid;
-        email = authResult.email;
-      }
-    } catch(e) {
-      error.report(AppError(
-        category: ErrorCategory.user,
-          displayMessage: "Authentication failed.",
-          logMessage: "Authentication error: $e",
-      ));    
-    }
-
-    try {
-      user = await dbAccess.getUserByUid(uid);
-    } catch(e) {
-      error.report(AppError(
-        category:ErrorCategory.user,
-        displayMessage: "Could not get your account",
-        logMessage: "Failed to get user by UID: $e"));
-      state = null;
-      rethrow;
-    }
-
-    if(user == null) {
-      try {
-        user = await dbAccess.addUserEmail(email, password);
-      } catch(e) {
-        error.report(AppError(
-          category: ErrorCategory.user,
-          displayMessage: "Could not create your account",
-          logMessage: "Failed to create new user: $e"));
-        state = null;
-        rethrow;
+          displayMessage: "Could not create your account.",
+          logMessage: "Failed to create a new user: $e",
+        ));
       }
     }
 
     state = user;
-    return user;
+    return user!;
   }
 
   Future<void> setVerified() async {

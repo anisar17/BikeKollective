@@ -97,26 +97,23 @@ class AuthenticationScreen extends ConsumerWidget {
                         final email = emailController.text.trim();
                         final password = passwordController.text.trim();
                         if (email.isNotEmpty && password.isNotEmpty) {
-                          UserModel user = await ref.read(activeUserProvider.notifier).loginEmail(LogInMethod.email, email, password);
-                          if(user.isBanned()) {
-                          // The user has been banned, show them a screen that
-                          // lets them know and prevents them from using the app.
-                          // TODO: navigate to a banned screen
-                          throw UnimplementedError("Missing handling for banned users");
-                        } else if(!user.isAgreed()) {
-                          // The user has not yet signed an agreement, or 
-                          // needs to sign a new one. We need to show that
-                          // before they can use the app.
-                          Navigator.pushReplacementNamed(context, '/waiver');
-                        } else if(!user.isVerified()) {
-                          // The user has not yet verified their email.
-                          // TODO: handle verification step
-                          // TODO: remove below, for now allow unverified users
-                          Navigator.pushReplacementNamed(context, '/home');
+                          try {
+                            UserModel user = await ref.read(activeUserProvider.notifier).signIn(SignInMethod.email, email: email, password: password);
+                            if (user.isBanned()) {
+                              // deal with user being banned banned screen??
+                              throw UnimplementedError("Missing handling for banned users");
+                            } else if (!user.isAgreed()) {
+                              // If user hasn't signed agreement navigate to waiver page
+                              Navigator.pushReplacementNamed(context, '/waiver');
+                            } else if (!user.isVerified()) {
+                              // TODO: handle email verification
+                              Navigator.pushReplacementNamed(context, '/home');
+                            }
+                          } catch (e) {
+                            print("Error during sign-in: $e");
+                          }
                         } else {
-                          // The user is ready, go to the main screen.
-                          Navigator.pushReplacementNamed(context, '/home');
-                        }
+                          print("Email or password cannot be empty");
                         }
                       },
                       style: ElevatedButton.styleFrom(
