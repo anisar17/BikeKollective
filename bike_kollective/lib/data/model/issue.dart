@@ -4,6 +4,13 @@ enum IssueTag {
   stolen, broken, lockBroken, lockMissing
 }
 
+final Map<IssueTag, String> tagDisplayNames = {
+  IssueTag.stolen: 'Stolen',
+  IssueTag.broken: 'Broken',
+  IssueTag.lockBroken: 'Lock Broken',
+  IssueTag.lockMissing: 'Lock Missing',
+};
+
 // Issue data, format version 1
 class IssueModel {
   final BKDocumentReference? docRef;

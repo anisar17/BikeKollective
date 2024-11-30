@@ -41,7 +41,7 @@ class BikeModel {
     required BikeType type,
     required String description,
     required String code,
-    required String imageLocalPath,
+    required String imageUrl,
     required BKGeoPoint startingPoint,
   }) {
     // Start the bike
@@ -52,7 +52,7 @@ class BikeModel {
       type: type,
       description: description,
       code: code,
-      imageUrl: imageLocalPath,
+      imageUrl: imageUrl,
       status: BikeStatus.available,
       locationPoint: startingPoint,
       locationUpdated: DateTime.now(),
