@@ -6,7 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 // A UID is a string that uniquely identifies an authenticated user
 typedef Uid = String;
-typedef Email = String?;
+typedef Email = String;
+typedef Password = String;
 
 // Provides access to the authentication services
 final authenticationProvider = Provider<Authentication>((ref) {
@@ -51,12 +52,55 @@ class RealAuthentication extends Authentication {
       uid: uid, 
       email: email,
     );
-}
+  }
 }
 
 class AuthResult {
+  final String uid;
+  final String? email;
+
+  AuthResult({required this.uid, this.email});
+}
+
+// Provides access to login with email
+final emailAuthProvider = Provider<EmailAuthentication>((ref) {
+  return RealEmailAuthentication();
+});
+
+abstract class EmailAuthentication {
+  Future<EmailResult?> createUserWithEmailAndPassword(String email, String password);
+}
+
+class RealEmailAuthentication extends EmailAuthentication {
+  final _auth = FirebaseAuth.instance;
+
+  @override
+  Future<EmailResult> createUserWithEmailAndPassword(String email, String password) async {
+    final cred = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+
+    AuthCredential credentials = EmailAuthProvider.credential(
+      email: email, 
+      password: password
+    );
+    
+    UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credentials);
+
+    String uid = userCredential.user!.uid;
+    String? emailUser = userCredential.user!.email;
+    print(uid);
+    print(emailUser);
+
+    return EmailResult(
+      uid: uid, 
+      email: email, 
+      password: password);
+  }
+}
+
+class EmailResult {
   final Uid uid;
   final Email email;
+  final Password password;
 
-  AuthResult({required this.uid, required this.email});
+  EmailResult({required this.uid, required this.email, required this.password});
 }

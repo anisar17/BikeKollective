@@ -4,8 +4,9 @@ import 'package:bike_kollective/data/model/bk_document_reference.dart';
 // User data, format version 1
 class UserModel {
   final BKDocumentReference? docRef;
-  final String uid;
+  final String? uid;
   final String? email;
+  final String? password;
   final DateTime? verified;
   final DateTime? agreed;
   final DateTime? banned;
@@ -15,6 +16,7 @@ class UserModel {
     required this.docRef,
     required this.uid,
     required this.email,
+    required this.password,
     required this.verified,
     required this.agreed,
     required this.banned,
@@ -22,14 +24,16 @@ class UserModel {
   });
 
   factory UserModel.newUser({
-    required String uid,
+    String? uid,
     String? email,
+    String? password,
     }) {
     // Start the user as needing verification and agreement
     return UserModel(
       docRef: null,
       uid: uid,
       email: email,
+      password: password,
       verified: null,
       agreed: null,
       banned: null,
@@ -42,6 +46,7 @@ class UserModel {
       docRef: docRef,
       uid: map["uid"],
       email: map["email"],
+      password: map["password"],
       verified: map["verified"],
       agreed: map["agreed"],
       banned: map["banned"],
@@ -53,6 +58,7 @@ class UserModel {
     return {
       "uid": uid,
       "email": email,
+      "password": password,
       "verified": verified,
       "agreed": agreed,
       "banned": banned,
@@ -64,6 +70,7 @@ class UserModel {
     BKDocumentReference? docRef,
     String? uid,
     String? email,
+    String? password,
     DateTime? verified,
     DateTime? agreed,
     DateTime? banned,
@@ -76,6 +83,7 @@ class UserModel {
       docRef: docRef ?? this.docRef,
       uid: uid ?? this.uid,
       email: email ?? this.email,
+      password: password ?? this.password,
       verified: verified ?? this.verified,
       agreed: agreed ?? this.agreed,
       banned: banned ?? this.banned,

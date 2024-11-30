@@ -20,6 +20,7 @@ final databaseProvider = Provider<BKDB>((ref) {
 abstract class BKDB {
   // User CRUD operations
   Future<UserModel> addUser(String uid, String email) ;
+  Future<UserModel> addUserEmail(String email, String password);
   Future<UserModel> getUserByReference(BKDocumentReference ref);
   Future<UserModel?> getUserByUid(String uid);
   Future<UserModel> updateUser(UserModel user);
@@ -117,6 +118,7 @@ class DummyData extends BKDB {
       docRef: null,
       uid: "FAKE_UID1",
       email: "email1@gmail.com",
+      password: "PASSWORD",
       verified: DateTime.now(),
       agreed: DateTime.now(),
       banned: null,
@@ -125,6 +127,7 @@ class DummyData extends BKDB {
       docRef: null,
       uid: "FAKE_UID2",
       email: "email2@gmail.com",
+      password: "PaSsWoRd",
       verified: DateTime.now(),
       agreed: DateTime.now(),
       banned: null,
@@ -207,6 +210,12 @@ class DummyData extends BKDB {
   @override
   Future<UserModel> addUser(String uid, String email) async {
     var ref = add(UserModel.newUser(uid: uid, email: email));
+    return getUserByReference(ref);
+  }
+
+  @override
+  Future<UserModel> addUserEmail(String email, String password) async {
+    var ref = add(UserModel.newUser(email: email, password: password));
     return getUserByReference(ref);
   }
 
@@ -427,6 +436,13 @@ class RealFirestore extends BKDB {
   @override
   Future<UserModel> addUser(String uid, String email) async {
     var data = _toFirestore(UserModel.newUser(uid: uid, email: email));
+    var ref = await FirebaseFirestore.instance.collection("users").add(data);
+    return _userFromFirestore(data, ref);
+  }
+
+  @override
+  Future<UserModel> addUserEmail(String email, String password) async {
+    var data = _toFirestore(UserModel.newUser(email: email, password: password));
     var ref = await FirebaseFirestore.instance.collection("users").add(data);
     return _userFromFirestore(data, ref);
   }

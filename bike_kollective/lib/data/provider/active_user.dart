@@ -3,17 +3,20 @@ import 'package:bike_kollective/data/provider/authentication.dart';
 import 'package:bike_kollective/data/provider/database.dart';
 import 'package:bike_kollective/data/model/app_error.dart';
 import 'package:bike_kollective/data/provider/reported_app_errors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // The different ways the app supports user sign in
 enum SignInMethod { google }
+enum LogInMethod { email }
 
 // Provides updates about the user account that is signed in (if any)
 final activeUserProvider = StateNotifierProvider<ActiveUserNotifier, UserModel?>((ref) {
   final authAccess = ref.watch(authenticationProvider);
   final dbAccess = ref.watch(databaseProvider);
   final errorNotifier = ref.watch(errorProvider.notifier);
-  return ActiveUserNotifier(authAccess, dbAccess, errorNotifier);
+  final emailAccess = ref.watch(emailAuthProvider);
+  return ActiveUserNotifier(authAccess, dbAccess, errorNotifier, emailAccess);
 });
 
 // The signed in user is determined by this class
@@ -21,7 +24,8 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
   final Authentication authAccess;
   final BKDB dbAccess;
   final ErrorNotifier error;
-  ActiveUserNotifier(this.authAccess, this.dbAccess, this.error) : super(null);
+  final EmailAuthentication emailAccess;
+  ActiveUserNotifier(this.authAccess, this.dbAccess, this.error, this.emailAccess) : super(null);
 
   Future<void> signOut() async {
     // Sign out of the current user's account
@@ -31,7 +35,7 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
   Future<UserModel> signIn(SignInMethod method) async {
     // Sign in and sign up handling
     Uid uid;
-    Email email;
+    Email? email;
     UserModel? user;
 
     try {
@@ -39,7 +43,7 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
       if(method == SignInMethod.google) {
         final authResult = await authAccess.signInWithGoogle();
         uid = authResult!.uid;
-        email = authResult!.email;
+        email = authResult.email;
       } else {
         throw UnimplementedError("Missing handling for ${method.name} sign in method");
       }
@@ -88,6 +92,54 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
     }
 
     // Set the active user and let the caller know the sign in was successful
+    state = user;
+    return user;
+  }
+
+  Future<UserModel> loginEmail(LogInMethod method, String email, String password) async {
+    // Sign in and sign up handling for email and password login
+    late Uid uid;
+    UserModel? user;
+
+    try {
+      // creates user
+      if(method == LogInMethod.email) {
+        final authResult = await emailAccess.createUserWithEmailAndPassword(email, password);
+        uid = authResult!.uid;
+        email = authResult.email;
+      }
+    } catch(e) {
+      error.report(AppError(
+        category: ErrorCategory.user,
+          displayMessage: "Authentication failed.",
+          logMessage: "Authentication error: $e",
+      ));    
+    }
+
+    try {
+      user = await dbAccess.getUserByUid(uid);
+    } catch(e) {
+      error.report(AppError(
+        category:ErrorCategory.user,
+        displayMessage: "Could not get your account",
+        logMessage: "Failed to get user by UID: $e"));
+      state = null;
+      rethrow;
+    }
+
+    if(user == null) {
+      try {
+        user = await dbAccess.addUserEmail(email, password);
+      } catch(e) {
+        error.report(AppError(
+          category: ErrorCategory.user,
+          displayMessage: "Could not create your account",
+          logMessage: "Failed to create new user: $e"));
+        state = null;
+        rethrow;
+      }
+    }
+
     state = user;
     return user;
   }

@@ -5,13 +5,18 @@ import 'package:bike_kollective/data/provider/active_user.dart';
 
 class AuthenticationScreen extends ConsumerWidget {
 
-  const AuthenticationScreen({super.key});
+  AuthenticationScreen({super.key});
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
-
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -92,7 +97,7 @@ class AuthenticationScreen extends ConsumerWidget {
                         final email = emailController.text.trim();
                         final password = passwordController.text.trim();
                         if (email.isNotEmpty && password.isNotEmpty) {
-                          UserModel user = await ref.read(activeUserProvider.notifier).signIn(SignInMethod.google);
+                          UserModel user = await ref.read(activeUserProvider.notifier).loginEmail(LogInMethod.email, email, password);
                           if(user.isBanned()) {
                           // The user has been banned, show them a screen that
                           // lets them know and prevents them from using the app.
