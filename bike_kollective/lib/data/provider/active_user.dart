@@ -3,6 +3,7 @@ import 'package:bike_kollective/data/provider/authentication.dart';
 import 'package:bike_kollective/data/provider/database.dart';
 import 'package:bike_kollective/data/model/app_error.dart';
 import 'package:bike_kollective/data/provider/reported_app_errors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // The different ways the app supports user sign in
@@ -25,6 +26,7 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
 
   Future<void> signOut() async {
     // Sign out of the current user's account
+    await FirebaseAuth.instance.signOut();
     state = null;
   }
 
@@ -113,5 +115,13 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
         logMessage: "Failed to record user ban: $e"));
       rethrow;
     }
+  }
+
+  Future<void> setDelete() async {
+    // delete account from firebase 
+    User? currentUser = FirebaseAuth.instance.currentUser;
+
+    await currentUser?.delete();
+    state = null;
   }
 }

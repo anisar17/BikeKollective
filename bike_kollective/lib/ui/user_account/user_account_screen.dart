@@ -1,10 +1,14 @@
+import 'package:bike_kollective/data/provider/active_user.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class UserAccountScreen extends StatelessWidget {
-  const UserAccountScreen({Key? key}) : super(key: key);
+
+class UserAccountScreen extends ConsumerWidget {
+
+  const UserAccountScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final TextEditingController nameController = TextEditingController(); // Controller for name input
 
     return Scaffold(
@@ -64,9 +68,10 @@ class UserAccountScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-                // Sign-out button logic (to be implemented later)
-                // TODO
+              onPressed: () async {
+                await ref.read(activeUserProvider.notifier).signOut();
+
+                Navigator.pushReplacementNamed(context, '/auth');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
@@ -75,9 +80,38 @@ class UserAccountScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-                // Delete account button logic (to be implemented later)
-                // TODO
+              onPressed: () async {
+                bool? confirmDelete = await showDialog<bool>(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Are you sure you want to delete your account?"),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text("No"),
+                          onPressed: () {
+                            Navigator.of(context).pop(false);
+                          },
+                        ),
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.red,
+                          ),
+                          child: const Text("Yes"),
+                          onPressed: () {
+                            Navigator.of(context).pop(true);
+                          },
+                        )
+                      ],
+                    );
+                  }
+                );
+
+                if (confirmDelete == true) {
+                  await ref.read(activeUserProvider.notifier).setDelete();
+                }
+
+                Navigator.pushReplacementNamed(context, '/');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
