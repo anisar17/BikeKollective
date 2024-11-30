@@ -3,7 +3,21 @@ import 'package:bike_kollective/data/model/bk_geo_point.dart';
 
 enum BikeStatus { available, inUse, hasIssue }
 
+final Map<BikeStatus, String> bikeStatusDisplayNames = {
+  BikeStatus.available: 'Available',
+  BikeStatus.inUse: 'In Use',
+  BikeStatus.hasIssue: 'Has Issue',
+};
+
 enum BikeType { road, mountain, electric, tandem, kids }
+
+final Map<BikeType, String> bikeTypeDisplayNames = {
+  BikeType.road: 'Road',
+  BikeType.mountain: 'Mountain',
+  BikeType.electric: 'Electric',
+  BikeType.tandem: 'Tandem',
+  BikeType.kids: 'Kids'
+};
 
 // Bike data, format version 1
 class BikeModel {
