@@ -15,13 +15,13 @@ class BikeDetailsView extends StatelessWidget {
       children: [
         Image.network(bike.imageUrl),
         SizedBox(height: 16),
+        Text(bike.name,
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        SizedBox(height: 16),
         Text(
           bike.description,
           style: TextStyle(fontSize: 16, color: Colors.grey[600]),
         ),
-        SizedBox(height: 16),
-        Text(bike.name,
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
         SizedBox(height: 4),
         
         // Use the received rating, or show a default if null
@@ -39,10 +39,9 @@ class BikeDetailsView extends StatelessWidget {
         ],
         
         SizedBox(height: 8),
-        Text('Owner: ${bike.owner}'),
-        Text('Type: ${bike.type}'),
-        Text('Status: ${bike.status}'),
-        Text('Location: ${bike.locationPoint}'),
+        Text('Type: ${bikeTypeDisplayNames[bike.type]}'),
+        Text('Status: ${bikeStatusDisplayNames[bike.status]}'),
+        Text('Location: ${bike.locationPoint.latitude} latitude, ${bike.locationPoint.longitude} longitude'),
       ],
     );
   }

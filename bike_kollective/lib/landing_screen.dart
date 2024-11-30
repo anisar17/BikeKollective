@@ -80,6 +80,7 @@ class LandingScreen extends StatelessWidget {
                         docRef: null, 
                         uid: '', 
                         email: '',
+                        name: null,
                         verified: null, 
                         agreed: null, 
                         banned: null, 

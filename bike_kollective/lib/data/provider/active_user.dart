@@ -26,6 +26,7 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
 
   Future<void> signOut() async {
     // Sign out of the current user's account
+    await FirebaseAuth.instance.signOut();
     state = null;
   }
 
@@ -123,6 +124,28 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
       error.report(AppError(
         category: ErrorCategory.user,
         logMessage: "Failed to record user ban: $e"));
+      rethrow;
+    }
+  }
+
+  Future<void> setDelete() async {
+    // delete account from firebase 
+    User? currentUser = FirebaseAuth.instance.currentUser;
+
+    await currentUser?.delete();
+    state = null;
+  }
+
+  Future<void> setName(String newName) async {
+    try {
+      final updateUser = state!.copyWith(name: newName);
+      state = await dbAccess.updateUser(updateUser);
+    } catch(e) {
+      error.report(AppError(
+        category: ErrorCategory.user,
+        displayMessage: "Could not update your name.",
+        logMessage: "Failed to update user name: $e",
+      ));
       rethrow;
     }
   }

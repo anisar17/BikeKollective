@@ -6,6 +6,7 @@ class UserModel {
   final BKDocumentReference? docRef;
   final String? uid;
   final String? email;
+  final String? name;
   final DateTime? verified;
   final DateTime? agreed;
   final DateTime? banned;
@@ -15,6 +16,7 @@ class UserModel {
     required this.docRef,
     required this.uid,
     required this.email,
+    required this.name,
     required this.verified,
     required this.agreed,
     required this.banned,
@@ -30,6 +32,7 @@ class UserModel {
       docRef: null,
       uid: uid,
       email: email,
+      name: null,
       verified: null,
       agreed: null,
       banned: null,
@@ -42,6 +45,7 @@ class UserModel {
       docRef: docRef,
       uid: map["uid"],
       email: map["email"],
+      name: map["name"],
       verified: map["verified"],
       agreed: map["agreed"],
       banned: map["banned"],
@@ -53,6 +57,7 @@ class UserModel {
     return {
       "uid": uid,
       "email": email,
+      "name": name,
       "verified": verified,
       "agreed": agreed,
       "banned": banned,
@@ -64,6 +69,7 @@ class UserModel {
     BKDocumentReference? docRef,
     String? uid,
     String? email,
+    String? name,
     DateTime? verified,
     DateTime? agreed,
     DateTime? banned,
@@ -76,6 +82,7 @@ class UserModel {
       docRef: docRef ?? this.docRef,
       uid: uid ?? this.uid,
       email: email ?? this.email,
+      name: name ?? this.name,
       verified: verified ?? this.verified,
       agreed: agreed ?? this.agreed,
       banned: banned ?? this.banned,

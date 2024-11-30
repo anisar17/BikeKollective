@@ -23,6 +23,7 @@ abstract class BKDB {
   Future<UserModel> getUserByReference(BKDocumentReference ref);
   Future<UserModel?> getUserByUid(String uid);
   Future<UserModel> updateUser(UserModel user);
+  Future<UserModel> setName(UserModel user, String newName);
   // deleteUser not needed yet
 
   // Bike CRUD operations
@@ -118,6 +119,7 @@ class DummyData extends BKDB {
       docRef: null,
       uid: "FAKE_UID1",
       email: "email1@gmail.com",
+      name: "Name",
       verified: DateTime.now(),
       agreed: DateTime.now(),
       banned: null,
@@ -126,6 +128,7 @@ class DummyData extends BKDB {
       docRef: null,
       uid: "FAKE_UID2",
       email: "email2@gmail.com",
+      name: "Name2",
       verified: DateTime.now(),
       agreed: DateTime.now(),
       banned: null,
@@ -236,6 +239,14 @@ class DummyData extends BKDB {
   Future<UserModel> updateUser(UserModel user) async {
     var id = user.docRef!.fakeDocumentId!;
     return users.update(id, (old) {return user;});
+  }
+
+  @override
+  Future<UserModel> setName(UserModel user, String newName) async {
+    var id = user.docRef!.fakeDocumentId!;
+    var updatedUser = user.copyWith(name: newName);
+    users[id] = updatedUser;
+    return updatedUser;
   }
 
   // Bike CRUD operations
@@ -482,6 +493,12 @@ class RealFirestore extends BKDB {
     var data = _toFirestore(user);
     await user.docRef!.firestoreDocumentReference!.set(data);
     return user;
+  }
+
+  @override 
+  Future<UserModel> setName(UserModel user, String newName) async {
+    await FirebaseFirestore.instance.collection('users').doc(user.uid).update({'name': newName});
+    return user.copyWith(name: newName);
   }
 
   // Bike CRUD operations
