@@ -4,7 +4,8 @@ import 'package:bike_kollective/data/model/bk_document_reference.dart';
 // User data, format version 1
 class UserModel {
   final BKDocumentReference? docRef;
-  final String uid;
+  final String? uid;
+  final String? email;
   final String? name;
   final DateTime? verified;
   final DateTime? agreed;
@@ -14,6 +15,7 @@ class UserModel {
   const UserModel({
     required this.docRef,
     required this.uid,
+    required this.email,
     required this.name,
     required this.verified,
     required this.agreed,
@@ -22,12 +24,14 @@ class UserModel {
   });
 
   factory UserModel.newUser({
-    required String uid
+    String? uid,
+    String? email,
     }) {
     // Start the user as needing verification and agreement
     return UserModel(
       docRef: null,
       uid: uid,
+      email: email,
       name: null,
       verified: null,
       agreed: null,
@@ -40,6 +44,7 @@ class UserModel {
     return UserModel(
       docRef: docRef,
       uid: map["uid"],
+      email: map["email"],
       name: map["name"],
       verified: map["verified"],
       agreed: map["agreed"],
@@ -51,6 +56,7 @@ class UserModel {
   Map<String, dynamic> toMap() {
     return {
       "uid": uid,
+      "email": email,
       "name": name,
       "verified": verified,
       "agreed": agreed,
@@ -62,6 +68,7 @@ class UserModel {
   UserModel copyWith({
     BKDocumentReference? docRef,
     String? uid,
+    String? email,
     String? name,
     DateTime? verified,
     DateTime? agreed,
@@ -74,6 +81,7 @@ class UserModel {
     return UserModel(
       docRef: docRef ?? this.docRef,
       uid: uid ?? this.uid,
+      email: email ?? this.email,
       name: name ?? this.name,
       verified: verified ?? this.verified,
       agreed: agreed ?? this.agreed,

@@ -5,7 +5,15 @@ import 'package:bike_kollective/data/provider/active_user.dart';
 
 class AuthenticationScreen extends ConsumerWidget {
 
-  const AuthenticationScreen({super.key});
+  AuthenticationScreen({super.key});
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -61,6 +69,76 @@ class AuthenticationScreen extends ConsumerWidget {
             ),
             // Login Button and Description at the bottom
             Expanded(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextField(
+                      controller: emailController,
+                      decoration: const InputDecoration(
+                        labelText: "Email",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
+                    TextField(
+                      controller: passwordController,
+                      decoration: const InputDecoration(
+                        labelText: "Password",
+                        border: OutlineInputBorder(),
+                      ),
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 15),
+                    ElevatedButton(
+                      onPressed: () async{
+                        final email = emailController.text.trim();
+                        final password = passwordController.text.trim();
+                        if (email.isNotEmpty && password.isNotEmpty) {
+                          try {
+                            UserModel user = await ref.read(activeUserProvider.notifier).signIn(SignInMethod.email, email: email, password: password);
+                            if (user.isBanned()) {
+                              // deal with user being banned banned screen??
+                              throw UnimplementedError("Missing handling for banned users");
+                            } else if (!user.isAgreed()) {
+                              // If user hasn't signed agreement navigate to waiver page
+                              Navigator.pushReplacementNamed(context, '/waiver');
+                            } else if (!user.isVerified()) {
+                              // TODO: handle email verification
+                              Navigator.pushReplacementNamed(context, '/home');
+                            }
+                          } catch (e) {
+                            print("Error during sign-in: $e");
+                          }
+                        } else {
+                          print("Email or password cannot be empty");
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent.shade700,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 15,
+                          horizontal: 80,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: const Text(
+                        'Login',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ), 
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
               flex: 2,
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -111,7 +189,7 @@ class AuthenticationScreen extends ConsumerWidget {
                         ),
                       ),
                       child: const Text(
-                        'Login',
+                        'Google Login',
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.white,

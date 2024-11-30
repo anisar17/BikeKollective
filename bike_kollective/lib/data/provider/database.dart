@@ -19,7 +19,7 @@ final databaseProvider = Provider<BKDB>((ref) {
 // Interface for Bike Kollective database (implementations are below)
 abstract class BKDB {
   // User CRUD operations
-  Future<UserModel> addUser(String uid) ;
+  Future<UserModel> addUser(String uid, String email) ;
   Future<UserModel> getUserByReference(BKDocumentReference ref);
   Future<UserModel?> getUserByUid(String uid);
   Future<UserModel> updateUser(UserModel user);
@@ -118,6 +118,7 @@ class DummyData extends BKDB {
     var fakeUserRef1 = add(UserModel(
       docRef: null,
       uid: "FAKE_UID1",
+      email: "email1@gmail.com",
       name: "Name",
       verified: DateTime.now(),
       agreed: DateTime.now(),
@@ -126,6 +127,7 @@ class DummyData extends BKDB {
     var fakeUserRef2 = add(UserModel(
       docRef: null,
       uid: "FAKE_UID2",
+      email: "email2@gmail.com",
       name: "Name2",
       verified: DateTime.now(),
       agreed: DateTime.now(),
@@ -207,8 +209,14 @@ class DummyData extends BKDB {
   // User CRUD operations
 
   @override
-  Future<UserModel> addUser(String uid) async {
-    var ref = add(UserModel.newUser(uid: uid));
+  Future<UserModel> addUser(String uid, String email) async {
+    var ref = add(UserModel.newUser(uid: uid, email: email));
+    return getUserByReference(ref);
+  }
+
+  @override
+  Future<UserModel> addUserEmail(String email, String password) async {
+    var ref = add(UserModel.newUser(email: email));
     return getUserByReference(ref);
   }
 
@@ -448,8 +456,15 @@ class RealFirestore extends BKDB {
   // User CRUD operations
 
   @override
-  Future<UserModel> addUser(String uid) async {
-    var data = _toFirestore(UserModel.newUser(uid: uid));
+  Future<UserModel> addUser(String uid, String email) async {
+    var data = _toFirestore(UserModel.newUser(uid: uid, email: email));
+    var ref = await FirebaseFirestore.instance.collection("users").add(data);
+    return _userFromFirestore(data, ref);
+  }
+
+  @override
+  Future<UserModel> addUserEmail(String email, String password) async {
+    var data = _toFirestore(UserModel.newUser(email: email));
     var ref = await FirebaseFirestore.instance.collection("users").add(data);
     return _userFromFirestore(data, ref);
   }
