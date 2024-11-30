@@ -9,7 +9,11 @@ class UserAccountScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final TextEditingController nameController = TextEditingController(); // Controller for name input
+    final activeUser = ref.watch(activeUserProvider);
+
+    final TextEditingController nameController = TextEditingController(
+      text: activeUser?.name ?? '',
+    ); // Controller for name input
 
     return Scaffold(
       appBar: AppBar(
@@ -57,9 +61,19 @@ class UserAccountScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: () {
-                // Save button logic (to be implemented later)
-                // TODO
+              onPressed: () async {
+                final newName = nameController.text.trim();
+                if (newName.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Name cannot be empty")),
+                  );
+                  return;
+                }
+                await ref.read(activeUserProvider.notifier).setName(newName);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Name successfully updated.")),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
