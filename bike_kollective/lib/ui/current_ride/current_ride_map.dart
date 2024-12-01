@@ -43,25 +43,25 @@ class _CurrentRideMapState extends State<CurrentRideMap> {
           }
         },
         osmOption: OSMOption(
-          userTrackingOption: UserTrackingOption(
+          userTrackingOption: const UserTrackingOption(
             enableTracking: true,
             unFollowUser: false,
           ),
-          zoomOption: ZoomOption(
+          zoomOption: const ZoomOption(
             initZoom: 14,
             minZoomLevel: 3,
             maxZoomLevel: 19,
             stepZoom: 1.0,
           ),
           userLocationMarker: UserLocationMaker(
-            personMarker: MarkerIcon(
+            personMarker: const MarkerIcon(
               icon: Icon(
                 Icons.location_history_rounded,
                 color: Colors.blue,
                 size: 48,
               ),
             ),
-            directionArrowMarker: MarkerIcon(
+            directionArrowMarker: const MarkerIcon(
               icon: Icon(
                 Icons.double_arrow,
                 size: 48,

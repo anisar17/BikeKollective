@@ -107,7 +107,11 @@ class _WaiverScreenState extends ConsumerState<WaiverScreen> {
               onPressed: isAgreed
                   ? () async {
                       await ref.read(activeUserProvider.notifier).setAgreed();
-                      Navigator.pushReplacementNamed(context, '/home');
+                      if (!user.isVerified()) {
+                        Navigator.pushReplacementNamed(context, '/email');
+                      } else {
+                        Navigator.pushReplacementNamed(context, '/home');
+                      }
                     }
                   : null,
               style: ElevatedButton.styleFrom(

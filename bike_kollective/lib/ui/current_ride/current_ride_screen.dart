@@ -31,7 +31,7 @@ class _CurrentRideScreenState extends ConsumerState<CurrentRideScreen> {
     else if (isDialogOpen) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Report an Issue'),
+          title: const Text('Report an Issue'),
         ),
         body: Center(
           child: ReportIssueDialog(
