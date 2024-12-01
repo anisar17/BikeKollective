@@ -54,6 +54,11 @@ class _ReportIssueDialogState extends State<ReportIssueDialog> {
                 children: [
                   _issueButton(IssueTag.stolen),
                   _issueButton(IssueTag.broken),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
                   _issueButton(IssueTag.lockBroken),
                   _issueButton(IssueTag.lockMissing),
                 ],

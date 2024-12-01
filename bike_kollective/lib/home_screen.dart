@@ -1,18 +1,22 @@
+import 'package:bike_kollective/data/provider/active_ride.dart';
+import 'package:bike_kollective/data/provider/available_bikes.dart';
+import 'package:bike_kollective/data/provider/owned_bikes.dart';
 import 'package:bike_kollective/edit_bike_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'ui/explore_bikes/explore_bikes_screen.dart';
 import 'ui/my_bikes_screen/my_bikes_screen.dart';
 import 'ui/current_ride/current_ride_screen.dart';
 import 'ui/user_account/user_account_screen.dart';
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends ConsumerStatefulWidget {
   const MyHomePage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  ConsumerState<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends ConsumerState<MyHomePage> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
@@ -30,7 +34,15 @@ class _MyHomePageState extends State<MyHomePage> {
     'Current Ride',
   ];
 
-  void _onItemTapped(int index) {
+  Future<void> _onItemTapped(int index) async {
+    // Refresh page content on tap
+    if(index == 0) {
+      await ref.read(availableBikesProvider.notifier).refresh();
+    } else if(index == 2) {
+      await ref.read(ownedBikesProvider.notifier).refresh();
+    } else if(index == 4) {
+      await ref.read(activeRideProvider.notifier).refresh();
+    }
     setState(() {
       _selectedIndex = index;
     });

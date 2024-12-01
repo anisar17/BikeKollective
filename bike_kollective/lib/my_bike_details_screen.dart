@@ -1,5 +1,6 @@
 import 'package:bike_kollective/data/model/app_error.dart';
 import 'package:bike_kollective/data/model/issue.dart';
+import 'package:bike_kollective/data/provider/available_bikes.dart';
 import 'package:bike_kollective/data/provider/database.dart';
 import 'package:bike_kollective/data/provider/owned_bikes.dart';
 import 'package:bike_kollective/data/provider/reported_app_errors.dart';
@@ -92,16 +93,8 @@ class MyBikeDetailsScreenState extends ConsumerState<MyBikeDetailsScreen> {
   }
 
   @override
-//<<<<<<< campbeb3/bike-details
-//  Widget build(BuildContext context, WidgetRef ref) {
-    // Assuming you have a getRating() method that retrieves the rating for the bike
-    // This logic should be consistent with how it is retrieved in BikeDetailsScreen
-//    final starRating = bike.getRating(); // This should return a value suitable for the RatingBarIndicator
-
-//=======
   Widget build(BuildContext context) {
     IssueModel? issue = ref.watch(_activeIssueProvider);
-//>>>>>>> main
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.bike.name),
@@ -111,23 +104,18 @@ class MyBikeDetailsScreenState extends ConsumerState<MyBikeDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-//<<<<<<< campbeb3/bike-details
-//            BikeDetailsView(
-//              bike: bike, // Include the BikeDetailsView component
-//              rating: starRating, // Pass the rating to the BikeDetailsView
-//            ),
-//=======
             BikeDetailsView(bike: widget.bike),
             const Spacer(),
             BikeIssueView(bike: widget.bike, issue: issue),
-//>>>>>>> main
             const Spacer(),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
-                  onPressed: () {
-                    ref.read(ownedBikesProvider.notifier).removeBike(widget.bike);
+                  onPressed: () async {
+                    await ref.read(ownedBikesProvider.notifier).removeBike(widget.bike);
+                    // Refresh the list of available bikes to remove this bike
+                    await ref.read(availableBikesProvider.notifier).refresh();
                     // Navigate back to home screen
                     Navigator.pushReplacementNamed(context, '/home');
                   },
@@ -136,7 +124,7 @@ class MyBikeDetailsScreenState extends ConsumerState<MyBikeDetailsScreen> {
                     foregroundColor: Colors.white,
                   ),
                   child: const Text(
-                    'Delete Bike',
+                    'Delete',
                     style: TextStyle(fontSize: 16),
                   ),
                 ),
@@ -154,7 +142,7 @@ class MyBikeDetailsScreenState extends ConsumerState<MyBikeDetailsScreen> {
                     foregroundColor: Colors.white,
                   ),
                   child: const Text(
-                    'Reset Status',
+                    'Reset',
                     style: TextStyle(fontSize: 16),
                   ),
                 ),
@@ -173,7 +161,7 @@ class MyBikeDetailsScreenState extends ConsumerState<MyBikeDetailsScreen> {
                     foregroundColor: Colors.white,
                   ),
                   child: const Text(
-                    'Edit Bike',
+                    ' Edit ',
                     style: TextStyle(fontSize: 16),
                   ),
                 ),

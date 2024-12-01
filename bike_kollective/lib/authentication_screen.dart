@@ -29,12 +29,10 @@ class AuthenticationScreen extends ConsumerWidget {
             end: Alignment.bottomCenter,
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: ListView(
           children: [
             // Title Section at the top
             const Expanded(
-              flex: 2,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -49,9 +47,7 @@ class AuthenticationScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            const Spacer(flex: 3),
             const Expanded(
-              flex: 3,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -69,7 +65,6 @@ class AuthenticationScreen extends ConsumerWidget {
             ),
             // Login Button and Description at the bottom
             Expanded(
-              flex: 3,
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -139,7 +134,6 @@ class AuthenticationScreen extends ConsumerWidget {
               ),
             ),
             Expanded(
-              flex: 2,
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(

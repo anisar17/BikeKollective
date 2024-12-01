@@ -13,7 +13,7 @@ class BKLogger extends ProviderObserver {
   ) {
     // Log all reported app errors that include a log message
     if(provider == errorProvider) {
-      var error = (newValue as AppError);
+      var error = (newValue as AsyncData<AppError>).value;
       if(error.shouldLog()) {
         log(error.logMessage!, time: error.timestamp!, name: error.category.name);
       }

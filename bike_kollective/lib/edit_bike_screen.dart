@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:bike_kollective/data/provider/available_bikes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bike_kollective/data/provider/owned_bikes.dart';
@@ -133,8 +134,7 @@ class EditBikeScreenState extends ConsumerState<EditBikeScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: <Widget>[
               // Name Field
               _buildLabeledTextField(
@@ -248,7 +248,7 @@ class EditBikeScreenState extends ConsumerState<EditBikeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       Navigator.pushReplacementNamed(context, '/home');
                     },
                     style: ElevatedButton.styleFrom(
@@ -282,6 +282,9 @@ class EditBikeScreenState extends ConsumerState<EditBikeScreen> {
                               newImage: image,
                             );
                           }
+
+                          // Update the available bikes with the new/updated entry
+                          await ref.read(availableBikesProvider.notifier).refresh();
 
                           bikeNotifier.clear(); // Clear after success
 
