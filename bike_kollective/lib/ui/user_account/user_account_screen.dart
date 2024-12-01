@@ -10,10 +10,15 @@ class UserAccountScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeUser = ref.watch(activeUserProvider);
+    debugPrint('Active User: ${activeUser?.toMap()}');
 
     final TextEditingController nameController = TextEditingController(
       text: activeUser?.name ?? '',
     ); // Controller for name input
+
+    final TextEditingController emailController = TextEditingController(
+      text: activeUser?.email ?? 'No email',
+    ); // takes email from active user
 
     return Scaffold(
       appBar: AppBar(
@@ -53,12 +58,13 @@ class UserAccountScreen extends ConsumerWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const TextField(
-              decoration: InputDecoration(
+            TextField(
+              controller: emailController,
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
               ),
-              enabled: false, // Email field is not editable
-            ),
+              enabled: false,
+            ), // Email field is not editable
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () async {

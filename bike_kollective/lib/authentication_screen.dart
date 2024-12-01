@@ -1,4 +1,5 @@
 import 'package:bike_kollective/data/model/user.dart';
+import 'package:bike_kollective/data/provider/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bike_kollective/data/provider/active_user.dart';
@@ -98,38 +99,48 @@ class AuthenticationScreen extends ConsumerWidget {
                           final password = passwordController.text.trim();
                           if (email.isNotEmpty && password.isNotEmpty) {
                             try {
-                              UserModel user = await ref.read(activeUserProvider.notifier).signIn(SignInMethod.email, email: email, password: password);
-                              if (user.isBanned()) {
-                                throw UnimplementedError("Missing handling for banned users.");
-                              } else if (!user.isAgreed()) {
+                              final user = await ref.read(activeUserProvider.notifier).signIn(SignInMethod.email, email: email, password: password);
+                              if (!user.isAgreed()) {
                                 Navigator.pushReplacementNamed(context, '/waiver');
                               } else if (!user.isVerified()) {
+                                Navigator.pushReplacementNamed(context, '/email');
+                              } else {
                                 Navigator.pushReplacementNamed(context, '/home');
                               }
                             } catch (e) {
-                              print("Error during sign in: $e");
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Login Failed: $e')),
+                              );
                             }
-                          } else {
-                            print("Email or password cannot be empty.");
                           }
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueAccent.shade700,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 15,
-                            horizontal: 80,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        child: const Text(
-                          'Login',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                          ),
-                        ),
+                        child: const Text('Login'),
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton( 
+                        onPressed: () async  {
+                          final email = emailController.text.trim();
+                          final password = passwordController.text.trim();
+                          if (email.isNotEmpty && password.isNotEmpty) {
+                            try {
+                              final authAccess = ref.read(authenticationProvider);
+                              final authResult = await authAccess.createUserWithEmailAndPassword(email, password);
+                              final user = await ref.read(activeUserProvider.notifier).signIn(SignInMethod.email, email: email, password: password);
+                              if (!user.isAgreed()) {
+                                Navigator.pushReplacementNamed(context, '/waiver');
+                              } else if (!user.isVerified()) {
+                                Navigator.pushReplacementNamed(context, '/email');
+                              } else {
+                                Navigator.pushReplacementNamed(context, '/home');
+                              }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Registration Failed: $e')),
+                              );
+                            }
+                          }
+                        },
+                        child: const Text('Sign Up'),
                       ),
                       const SizedBox(height: 30),
                       const Text(
