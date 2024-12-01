@@ -40,7 +40,7 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
       await ref.read(availableBikesProvider.notifier).refresh();
     } else if(index == 2) {
       await ref.read(ownedBikesProvider.notifier).refresh();
-    } else if(index == 4) {
+    } else if(index == 3) {
       await ref.read(activeRideProvider.notifier).refresh();
     }
     setState(() {

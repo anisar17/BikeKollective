@@ -1,6 +1,4 @@
 import 'dart:typed_data';
-
-import 'package:bike_kollective/data/provider/available_bikes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bike_kollective/data/provider/owned_bikes.dart';
@@ -114,7 +112,9 @@ class EditBikeScreenState extends ConsumerState<EditBikeScreen> {
     if(widget.oldBike != null) {
       // If we are editing an existing bike, initialize the fields
       // to show the old bike's details
-      ref.read(bikeProvider).bike = widget.oldBike!;
+      Future.microtask(() {
+        ref.read(bikeProvider).bike = widget.oldBike!;
+      });
     }
   }
 
@@ -284,9 +284,6 @@ class EditBikeScreenState extends ConsumerState<EditBikeScreen> {
                                 newImage: image,
                               );
                             }
-
-                            // Update the available bikes with the new/updated entry
-                            await ref.read(availableBikesProvider.notifier).refresh();
 
                             bikeNotifier.clear(); // Clear after success
 
