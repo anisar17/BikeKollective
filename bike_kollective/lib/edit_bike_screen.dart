@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bike_kollective/data/provider/owned_bikes.dart';
@@ -113,7 +112,9 @@ class EditBikeScreenState extends ConsumerState<EditBikeScreen> {
     if(widget.oldBike != null) {
       // If we are editing an existing bike, initialize the fields
       // to show the old bike's details
-      ref.read(bikeProvider).bike = widget.oldBike!;
+      Future.microtask(() {
+        ref.read(bikeProvider).bike = widget.oldBike!;
+      });
     }
   }
 

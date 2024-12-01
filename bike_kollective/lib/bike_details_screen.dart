@@ -119,7 +119,8 @@ void checkOutBike(BuildContext context, BikeModel bike) {
             child: TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the pop-out dialog box
-                Navigator.pushReplacementNamed(context, '/currentRide'); // Navigate back to current ride screen
+                // TODO: fix transition
+                //Navigator.pushReplacementNamed(context, '/currentRide'); // Navigate back to current ride screen
               },
               child: const Text('OK'),
             ),

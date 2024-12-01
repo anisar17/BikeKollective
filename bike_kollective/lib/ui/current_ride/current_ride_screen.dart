@@ -1,3 +1,4 @@
+import 'package:bike_kollective/data/provider/available_bikes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bike_kollective/data/model/issue.dart';
@@ -46,6 +47,7 @@ class _CurrentRideScreenState extends ConsumerState<CurrentRideScreen> {
                 isDialogOpen = false; // Close dialog and return to main screen
               });
               // Leave this bike and go back to the list of available bikes
+              await ref.read(availableBikesProvider.notifier).refresh();
               Navigator.pushReplacementNamed(context, '/home');
             },
           ),
@@ -66,8 +68,7 @@ class _CurrentRideScreenState extends ConsumerState<CurrentRideScreen> {
               FocusScope.of(context).unfocus();
             }
           },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: ListView(
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -80,7 +81,7 @@ class _CurrentRideScreenState extends ConsumerState<CurrentRideScreen> {
                 ),
               ),
               Container(
-                height: 300,
+                height: 200,
                 margin: const EdgeInsets.symmetric(horizontal: 16.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
@@ -105,8 +106,11 @@ class _CurrentRideScreenState extends ConsumerState<CurrentRideScreen> {
                     ),
                   ),
                 ),
-              Expanded(
-                child: CurrentRideMap(enabled: !isDialogOpen), // Conditional rendering based on dialog state
+              SizedBox(
+                height: 200,
+                child: Expanded(
+                  child: CurrentRideMap(enabled: !isDialogOpen), // Conditional rendering based on dialog state
+                )
               ),
               const SizedBox(height: 10),
               Padding(
@@ -147,7 +151,7 @@ class _CurrentRideScreenState extends ConsumerState<CurrentRideScreen> {
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                       ),
-                      child: const Text("Report an Issue"),
+                      child: const Text("Report Issue"),
                     ),
                     ElevatedButton(
                       onPressed: () {

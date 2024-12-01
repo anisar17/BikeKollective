@@ -13,21 +13,12 @@ class CurrentRideMap extends StatefulWidget {
 class _CurrentRideMapState extends State<CurrentRideMap> {
   late MapController mapController;
 
-  @override
-  void initState() {
-    super.initState();
+  _CurrentRideMapState() {
     mapController = MapController.withUserPosition(
       trackUserLocation: const UserTrackingOption(enableTracking: true),
     );
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      var position = await mapController.myLocation();
-      if (position != null) {
-        mapController.goToLocation(position);
-      }
-    });
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return IgnorePointer(

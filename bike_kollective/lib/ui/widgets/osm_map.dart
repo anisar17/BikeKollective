@@ -20,9 +20,7 @@ class _OSMMapWithMarkersState extends State<OSMMapWithMarkers> {
   String? hoveredBikeName;
   Offset? hoveredPosition;
 
-  @override
-  void initState() {
-    super.initState();
+  _OSMMapWithMarkersState() {
     mapController = MapController.withUserPosition(
       trackUserLocation: const UserTrackingOption(enableTracking: true),
     );

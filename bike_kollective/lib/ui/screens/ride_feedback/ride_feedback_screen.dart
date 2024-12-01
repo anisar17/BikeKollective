@@ -1,3 +1,4 @@
+import 'package:bike_kollective/data/provider/available_bikes.dart';
 import 'package:flutter/material.dart';
 import 'package:bike_kollective/data/model/ride.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,7 +21,7 @@ class RideFeedbackScreen extends ConsumerWidget {
   }
 }
 
-class _RideFeedbackForm extends StatefulWidget {
+class _RideFeedbackForm extends ConsumerStatefulWidget {
   final RideModel ride;
   final WidgetRef ref; // Pass WidgetRef to the form
 
@@ -30,7 +31,7 @@ class _RideFeedbackForm extends StatefulWidget {
   _RideFeedbackFormState createState() => _RideFeedbackFormState();
 }
 
-class _RideFeedbackFormState extends State<_RideFeedbackForm> {
+class _RideFeedbackFormState extends ConsumerState<_RideFeedbackForm> {
   // Initialize selectedStars and lists
   int? selectedStars;
   List<RideReviewTag> likedTags = [];
@@ -199,6 +200,7 @@ class _RideFeedbackFormState extends State<_RideFeedbackForm> {
               ElevatedButton(
                 onPressed: () async {
                   await submitFeedback();  // Wait for the feedback submission to complete
+                  await ref.read(availableBikesProvider.notifier).refresh();
                   Navigator.pushReplacementNamed(context, '/home');  // Navigate to the home screen
                 },
                 style: ElevatedButton.styleFrom(

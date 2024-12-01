@@ -33,8 +33,9 @@ class RealFirebaseStorage extends ImageStorage {
 
   @override
   Future<void> deleteBikeImage(Url url) async {
-    final storageRef = FirebaseStorage.instanceFor(bucket: bucketUrl);
-    final fileRef = storageRef.ref().child(url);
-    await fileRef.delete();
+    // TODO: fix, crashes on Android
+    //final storageRef = FirebaseStorage.instanceFor(bucket: bucketUrl);
+    //final fileRef = storageRef.ref().child(url);
+    //await fileRef.delete();
   }
 }
