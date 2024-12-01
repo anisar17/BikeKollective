@@ -53,8 +53,8 @@ class UserAccountScreen extends ConsumerWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            TextField(
-              decoration: const InputDecoration(
+            const TextField(
+              decoration: InputDecoration(
                 border: OutlineInputBorder(),
               ),
               enabled: false, // Email field is not editable
