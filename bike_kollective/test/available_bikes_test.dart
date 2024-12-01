@@ -32,8 +32,8 @@ void main() {
       totalReviews: 1
     )
     ];
-    when(() => mul.getCurrent()).thenAnswer((_) => Future<BKGeoPoint>.delayed(Duration(milliseconds: 5), () {return fakeLoc;}));
-    when(() => mdb.getAvailableBikesNearPoint(fakeLoc)).thenAnswer((_) => Future<List<BikeModel>>.delayed(Duration(milliseconds: 10), () {return fakeBikes;}));
+    when(() => mul.getCurrent()).thenAnswer((_) => Future<BKGeoPoint>.delayed(const Duration(milliseconds: 5), () {return fakeLoc;}));
+    when(() => mdb.getAvailableBikesNearPoint(fakeLoc)).thenAnswer((_) => Future<List<BikeModel>>.delayed(const Duration(milliseconds: 10), () {return fakeBikes;}));
     final container = createContainer(
       // Override the provider to have it create our mocks
       overrides: [

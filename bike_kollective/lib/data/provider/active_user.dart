@@ -33,7 +33,6 @@ class ActiveUserNotifier extends StateNotifier<UserModel?> {
   Future<UserModel> signIn(SignInMethod method, {String? email, String? password}) async {
     // Sign in and sign up handling
     Uid uid;
-    String? userEmail;
     UserModel? user;
 
     try {

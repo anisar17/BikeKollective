@@ -12,9 +12,9 @@ class BikeIssueView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if(bike.status != BikeStatus.hasIssue) {
-      return Text("No issues");
+      return const Text("No issues");
     } else if(issue == null) {
-      return Text("Loading issue...");
+      return const Text("Loading issue...");
     } else {
       return Container(
         decoration: BoxDecoration(
@@ -30,11 +30,11 @@ class BikeIssueView extends StatelessWidget {
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.calendar_month, color: Colors.blue),
-              SizedBox(height: 4),
+              const Icon(Icons.calendar_month, color: Colors.blue),
+              const SizedBox(height: 4),
               Text(
                 DateFormat("yyyy-MM-dd").format(issue!.submitted),
-                style: TextStyle(color: Colors.blue),
+                style: const TextStyle(color: Colors.blue),
               ),
             ],
           ),

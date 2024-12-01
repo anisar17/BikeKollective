@@ -76,7 +76,7 @@ class LandingScreen extends StatelessWidget {
                   const SizedBox(height: 30),
                   ElevatedButton(
                     onPressed: () {
-                      final userModelInstance = UserModel(
+                      const userModelInstance = UserModel(
                         docRef: null, 
                         uid: '', 
                         email: '',

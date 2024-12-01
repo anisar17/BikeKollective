@@ -52,7 +52,7 @@ class _BikesListViewState extends State<BikesListView> {
                         BoxShadow(
                           color: Colors.black.withOpacity(0.1),
                           blurRadius: 10,
-                          offset: Offset(0, 5),
+                          offset: const Offset(0, 5),
                         ),
                       ],
                     ),
@@ -62,7 +62,7 @@ class _BikesListViewState extends State<BikesListView> {
                           searchQuery = value;
                         });
                       },
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Search',
                         hintStyle: TextStyle(color: Colors.grey),
                         prefixIcon: Icon(Icons.search, color: Colors.grey),
@@ -83,14 +83,14 @@ class _BikesListViewState extends State<BikesListView> {
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
                         blurRadius: 10,
-                        offset: Offset(0, 5),
+                        offset: const Offset(0, 5),
                       ),
                     ],
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: DropdownButton<BikeType>(
                     value: selectedType,
-                    hint: Text(
+                    hint: const Text(
                       'Filter',
                       style: TextStyle(color: Colors.grey),
                     ),
@@ -99,14 +99,14 @@ class _BikesListViewState extends State<BikesListView> {
                         selectedType = value;
                       });
                     },
-                    underline: SizedBox(), // Removes default underline
-                    icon: Icon(Icons.filter_list, color: Colors.grey),
+                    underline: const SizedBox(), // Removes default underline
+                    icon: const Icon(Icons.filter_list, color: Colors.grey),
                     isExpanded: false,
-                    style: TextStyle(color: Colors.black),
+                    style: const TextStyle(color: Colors.black),
                     borderRadius: BorderRadius.circular(20),
                     dropdownColor: Colors.white,
                     items: [
-                      DropdownMenuItem(value: null, child: Text('All Types')),
+                      const DropdownMenuItem(value: null, child: Text('All Types')),
                       ...BikeType.values.map((type) => DropdownMenuItem(
                             value: type,
                             child: Text(type.toString().split('.').last),
@@ -169,11 +169,11 @@ class _BikesListViewState extends State<BikesListView> {
                           trailing: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.location_on, color: Colors.blue),
-                              SizedBox(height: 4),
+                              const Icon(Icons.location_on, color: Colors.blue),
+                              const SizedBox(height: 4),
                               Text(
-                                '${distance} Miles',
-                                style: TextStyle(color: Colors.blue),
+                                '$distance Miles',
+                                style: const TextStyle(color: Colors.blue),
                               ),
                             ],
                           ),

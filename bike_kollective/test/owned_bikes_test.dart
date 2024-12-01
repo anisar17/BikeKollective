@@ -42,7 +42,7 @@ void main() {
       points: 0);
     final mdb = MockBKDB();
     final mau = MockActiveUserNotifier(fakeUser);
-    when(() => mdb.getBikesOwnedByUser(fakeUser)).thenAnswer((_) => Future<List<BikeModel>>.delayed(Duration(milliseconds: 10), () {return fakeBikes;}));
+    when(() => mdb.getBikesOwnedByUser(fakeUser)).thenAnswer((_) => Future<List<BikeModel>>.delayed(const Duration(milliseconds: 10), () {return fakeBikes;}));
     final container = createContainer(
       // Override the provider to have it create our mocks
       overrides: [

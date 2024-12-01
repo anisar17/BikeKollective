@@ -14,15 +14,15 @@ class BikeDetailsView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Image.network(bike.imageUrl),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Text(bike.name,
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        SizedBox(height: 16),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 16),
         Text(
           bike.description,
           style: TextStyle(fontSize: 16, color: Colors.grey[600]),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         
         // Use the received rating, or show a default if null
         if (rating != null) ...[
@@ -31,14 +31,14 @@ class BikeDetailsView extends StatelessWidget {
             itemCount: 5,
             itemSize: 20.0,
             direction: Axis.horizontal,
-            itemBuilder: (context, index) => Icon(
+            itemBuilder: (context, index) => const Icon(
               Icons.star,
               color: Colors.amber,
             ),
           ),
         ],
         
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Text('Type: ${bikeTypeDisplayNames[bike.type]}'),
         Text('Status: ${bikeStatusDisplayNames[bike.status]}'),
         Text('Location: ${bike.locationPoint.latitude} latitude, ${bike.locationPoint.longitude} longitude'),

@@ -215,12 +215,6 @@ class DummyData extends BKDB {
   }
 
   @override
-  Future<UserModel> addUserEmail(String email, String password) async {
-    var ref = add(UserModel.newUser(email: email));
-    return getUserByReference(ref);
-  }
-
-  @override
   Future<UserModel> getUserByReference(BKDocumentReference ref) async {
     return users[ref.fakeDocumentId!]!;
   }
@@ -458,13 +452,6 @@ class RealFirestore extends BKDB {
   @override
   Future<UserModel> addUser(String uid, String email) async {
     var data = _toFirestore(UserModel.newUser(uid: uid, email: email));
-    var ref = await FirebaseFirestore.instance.collection("users").add(data);
-    return _userFromFirestore(data, ref);
-  }
-
-  @override
-  Future<UserModel> addUserEmail(String email, String password) async {
-    var data = _toFirestore(UserModel.newUser(email: email));
     var ref = await FirebaseFirestore.instance.collection("users").add(data);
     return _userFromFirestore(data, ref);
   }

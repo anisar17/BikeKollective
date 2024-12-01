@@ -32,7 +32,7 @@ class BikeDetailsScreen extends ConsumerWidget {
               bike: bike, // Include the BikeDetailsView component
               rating: starRating, // Pass the rating to the BikeDetailsView
             ),
-            Spacer(),
+            const Spacer(),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -53,7 +53,7 @@ class BikeDetailsScreen extends ConsumerWidget {
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
                   ),
-                  child: Text(
+                  child: const Text(
                     'Report Issue',
                     style: TextStyle(fontSize: 16),
                   ),
@@ -67,7 +67,7 @@ class BikeDetailsScreen extends ConsumerWidget {
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
                   ),
-                  child: Text(
+                  child: const Text(
                     'Check Out',
                     style: TextStyle(fontSize: 16),
                   ),
@@ -87,7 +87,7 @@ void checkOutBike(BuildContext context, BikeModel bike) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Center(
+        title: const Center(
             child: Text(
           'Enjoy your ride!',
           textAlign: TextAlign.center,
@@ -97,16 +97,16 @@ void checkOutBike(BuildContext context, BikeModel bike) {
           // Allow content to scroll
           child: Column(
             children: [
-              Text(
+              const Text(
                 'The lock combination is:',
                 textAlign: TextAlign.center, // Center align text
               ),
               Text(
                 ' ${bike.code}',
                 textAlign: TextAlign.center, // Center align text
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
-              Text(
+              const Text(
                 'You have 8 hours to return the bike',
                 textAlign: TextAlign.center, // Center align text
               ),
@@ -122,7 +122,7 @@ void checkOutBike(BuildContext context, BikeModel bike) {
                 // TODO: fix transition
                 //Navigator.pushReplacementNamed(context, '/currentRide'); // Navigate back to current ride screen
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ),
         ],

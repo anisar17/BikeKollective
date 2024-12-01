@@ -1,4 +1,5 @@
 import 'package:bike_kollective/data/model/user.dart';
+import 'package:bike_kollective/data/provider/authentication.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bike_kollective/data/provider/active_user.dart';
@@ -29,168 +30,160 @@ class AuthenticationScreen extends ConsumerWidget {
             end: Alignment.bottomCenter,
           ),
         ),
-        child: ListView(
+        child: Column(
           children: [
             // Title Section at the top
             const Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'The Bike Kollective',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+              flex: 1,
+              child: Center (
+                child: Text(
+                  'The Bike Kollective',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
-                ],
-              ),
-            ),
-            const Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    'Member Login',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blueAccent,
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                ],
-              ),
-            ),
-            // Login Button and Description at the bottom
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextField(
-                      controller: emailController,
-                      decoration: const InputDecoration(
-                        labelText: "Email",
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    TextField(
-                      controller: passwordController,
-                      decoration: const InputDecoration(
-                        labelText: "Password",
-                        border: OutlineInputBorder(),
-                      ),
-                      obscureText: true,
-                    ),
-                    const SizedBox(height: 15),
-                    ElevatedButton(
-                      onPressed: () async{
-                        final email = emailController.text.trim();
-                        final password = passwordController.text.trim();
-                        if (email.isNotEmpty && password.isNotEmpty) {
-                          try {
-                            UserModel user = await ref.read(activeUserProvider.notifier).signIn(SignInMethod.email, email: email, password: password);
-                            if (user.isBanned()) {
-                              // deal with user being banned banned screen??
-                              throw UnimplementedError("Missing handling for banned users");
-                            } else if (!user.isAgreed()) {
-                              // If user hasn't signed agreement navigate to waiver page
-                              Navigator.pushReplacementNamed(context, '/waiver');
-                            } else if (!user.isVerified()) {
-                              // TODO: handle email verification
-                              Navigator.pushReplacementNamed(context, '/home');
-                            }
-                          } catch (e) {
-                            print("Error during sign-in: $e");
-                          }
-                        } else {
-                          print("Email or password cannot be empty");
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent.shade700,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 15,
-                          horizontal: 80,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ), 
-                  ],
                 ),
               ),
             ),
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'The Bike Kollective user account is linked to your Google account to verify and authenticate your information.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 16,
+              flex: 3,
+              child: Center(
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.9, 
+                  padding: const EdgeInsets.all(20.0),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(16.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10.0,
+                        offset: const Offset(0, 5),
                       ),
-                    ),
-                    const SizedBox(height: 30),
-                    ElevatedButton(
-                      onPressed: () async {
-                        // Currently, we only support login using Google credentials.
-                        UserModel user = await ref.read(activeUserProvider.notifier).signIn(SignInMethod.google);
-                        // Show the user the next screen depending on the state of their account.
-                        if(user.isBanned()) {
-                          // The user has been banned, show them a screen that
-                          // lets them know and prevents them from using the app.
-                          // TODO: navigate to a banned screen
-                          throw UnimplementedError("Missing handling for banned users");
-                        } else if(!user.isAgreed()) {
-                          // The user has not yet signed an agreement, or 
-                          // needs to sign a new one. We need to show that
-                          // before they can use the app.
-                          Navigator.pushReplacementNamed(context, '/waiver');
-                        } else if(!user.isVerified()) {
-                          // The user has not yet verified their email.
-                          // TODO: handle verification step
-                          // TODO: remove below, for now allow unverified users
-                          Navigator.pushReplacementNamed(context, '/home');
-                        } else {
-                          // The user is ready, go to the main screen.
-                          Navigator.pushReplacementNamed(context, '/home');
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent.shade700,
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 15,
-                          horizontal: 80,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      child: const Text(
-                        'Google Login',
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Text(
+                        'Member Login',
                         style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blueAccent,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+                      TextField(
+                        controller: emailController,
+                        decoration: const InputDecoration(
+                          labelText: "Email",
+                          border: OutlineInputBorder(),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 15),
+                      TextField(
+                        controller: passwordController,
+                        decoration: const InputDecoration(
+                          labelText: "Password",
+                          border: OutlineInputBorder(),
+                        ),
+                        obscureText: true,
+                      ),
+                      const SizedBox(height: 15),
+                      ElevatedButton(
+                        onPressed: () async {
+                          final email = emailController.text.trim();
+                          final password = passwordController.text.trim();
+                          if (email.isNotEmpty && password.isNotEmpty) {
+                            try {
+                              final user = await ref.read(activeUserProvider.notifier).signIn(SignInMethod.email, email: email, password: password);
+                              if (!user.isAgreed()) {
+                                Navigator.pushReplacementNamed(context, '/waiver');
+                              } else if (!user.isVerified()) {
+                                Navigator.pushReplacementNamed(context, '/email');
+                              } else {
+                                Navigator.pushReplacementNamed(context, '/home');
+                              }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Login Failed: $e')),
+                              );
+                            }
+                          }
+                        },
+                        child: const Text('Login'),
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton( 
+                        onPressed: () async  {
+                          final email = emailController.text.trim();
+                          final password = passwordController.text.trim();
+                          if (email.isNotEmpty && password.isNotEmpty) {
+                            try {
+                              final authAccess = ref.read(authenticationProvider);
+                              final authResult = await authAccess.createUserWithEmailAndPassword(email, password);
+                              final user = await ref.read(activeUserProvider.notifier).signIn(SignInMethod.email, email: email, password: password);
+                              if (!user.isAgreed()) {
+                                Navigator.pushReplacementNamed(context, '/waiver');
+                              } else if (!user.isVerified()) {
+                                Navigator.pushReplacementNamed(context, '/email');
+                              } else {
+                                Navigator.pushReplacementNamed(context, '/home');
+                              }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Registration Failed: $e')),
+                              );
+                            }
+                          }
+                        },
+                        child: const Text('Sign Up'),
+                      ),
+                      const SizedBox(height: 30),
+                      const Text(
+                        'The Bike Kollective user account is linked to your Google account to verify and authenticate your account information.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () async {
+                          UserModel user = await ref.read(activeUserProvider.notifier).signIn(SignInMethod.google);
+                          if (user.isBanned()) {
+                            throw UnimplementedError("Missing Handling for banned users.");
+                          } else if (!user.isAgreed()) {
+                            Navigator.pushReplacementNamed(context, '/waiver');
+                          } else if (!user.isVerified()) {
+                            Navigator.pushReplacementNamed(context, '/home');
+                          } else {
+                            Navigator.pushReplacementNamed(context, '/home');
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueAccent.shade700,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 15,
+                            horizontal: 80,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: const Text(
+                          'Google Login',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
